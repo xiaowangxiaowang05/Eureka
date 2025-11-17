@@ -1,0 +1,23 @@
+Here is the environment's observation code:
+{task_obs_code_string}
+
+---
+Here is the task description: {task_description}
+---
+Based on the code and description, write a reward function.
+
+1. Find Available Variables:
+Your reward function can ONLY use `self` attributes from the environment code.
+- Look at the `_obs.py` code to find variables like `self.object_rot`, `self.goal_rot`, etc.
+- You can ALSO use common variables inherited from the base environment, such as:
+    - `self.progress_buf`: The current step count for each environment.
+    - `self.object_angvel`: The object's angular velocity.
+    - `self.object_linvel`: The object's linear velocity.
+(Note: Not all variables may be present; only use what is relevant).
+
+2. Design a Multi-Component Reward:
+A good reward function usually has multiple components. You should ALWAYS try to include:
+- A Main Goal Reward: (e.g., distance to target, orientation alignment)
+- A Stability/Control Penalty: (e.g., penalize high angular velocity, high action cost, or falling)
+
+This multi-component approach helps the agent learn complex tasks robustly.

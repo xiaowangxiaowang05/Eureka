@@ -1,0 +1,22 @@
+Executing the reward function code above has the following error: {traceback_msg}. 
+
+CRITICAL: MINIMAL BUG FIX REQUIRED
+- This is an execution error, not a performance issue. Fix ONLY the specific bug causing the error
+- PRESERVE all reward logic, components, and structure that are not related to the error
+- Make the MINIMAL change necessary to fix the error - do not rewrite the entire function
+- Only modify the specific line(s) or component(s) that are causing the execution failure
+
+When fixing the error, please:
+(1) Carefully read the error message and identify the EXACT root cause - what specific line or operation is failing?
+(2) Make the MINIMAL fix to address only that specific issue
+(3) Ensure the code is properly formatted in ```python ... ``` format
+(4) Make sure all variable types match their expected types (e.g., torch.Tensor vs float) - but only fix the type mismatches that are causing the error
+(5) Verify that all input variables exist in the environment class (they must have the 'self.' prefix) - but only fix the variables that are actually missing
+(6) Check that the function signature matches the expected format exactly - but only if the signature itself is the problem
+(7) Ensure the code is TorchScript compatible (no Python-only features) - but only remove the incompatible features that are causing the error
+(8) If the error is about an undefined function (e.g., "undefined value quat_angle"), replace it with standard PyTorch operations:
+    - For quaternion angle calculation: use quat_diff = quat_mul(q1, quat_conjugate(q2)); angle = 2.0 * torch.asin(torch.clamp(torch.norm(quat_diff[:, 0:3], p=2, dim=-1), max=1.0))
+    - Only use standard PyTorch functions (torch.*) or functions explicitly imported in the environment code
+    - DO NOT use any custom functions that are not visible in the environment code
+
+REMEMBER: Fix the bug, preserve everything else. Do not use this as an opportunity to rewrite or "improve" parts that are not related to the error.
