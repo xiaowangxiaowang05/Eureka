@@ -1,0 +1,30 @@
+You are an expert RL researcher. You have just completed an experiment with the reward function shown in the previous message.
+Below is the training feedback for that reward function.
+
+TRAINING FEEDBACK:{policy_feedback}
+
+Carefully analyze the feedback above using this logic:
+
+STEP 1: IS THE REWARD FUNCTION WORKING AT ALL?
+- Look at the `task_score` (or `success_rate`).
+- If `task_score` is high and clearly improving (e.g., `0.0 -> 6.39`):
+    - The reward function is GOOD. Your goal is cautious tuning. DO NOT rewrite the whole function.
+    - Proceed to STEP 2.
+- If `task_score` is stuck at 0:
+    - The reward function is BAD. It is either providing no gradient or encouraging the wrong behavior.
+    - You MUST discard this idea and write a completely new reward function. Try a different hypothesis.
+
+STEP 2: (Only if `task_score` is GOOD) HOW TO TUNE IT?
+- Analyze Internal Components: Look at the balance of reward components.
+- Is one component "dominant"? (e.g., `angvel_penalty` has a Mean of 0.54 while `orientation_reward` has a Mean of 0.30).
+    - This is NOT necessarily a problem! This balance might be why it works. Do not remove it without reason.
+- Is a component "stuck"? (e.g., `angvel_reward` Mean is 0.00).
+    - This is Reward Hacking. The agent is "cheating" (e.g., "lying still" to get a 0 penalty).
+    - FIX: You MUST make that component more sensitive (e.g., decrease its temperature) so it provides a gradient.
+- Is `task_score` good but `episode_lengths` are too high?
+    - FIX: Consider adding a small time penalty using `self.progress_buf`.
+
+Based on your expert analysis, provide the new, improved reward function.
+Remember the CRITICAL RULE from the system prompt: You MUST NOT change the function signature (the input arguments) unless you are adding a known `self` attribute (like `self.progress_buf` or `self.object_angvel`).
+
+Please provide ONLY the Python code string:

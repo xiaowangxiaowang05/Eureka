@@ -1,0 +1,98 @@
+Importing module 'gym_38' (/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/gym_38.so)
+Setting GYM_USD_PLUG_INFO_PATH to /home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/usd/plugInfo.json
+PyTorch version 2.0.0+cu117
+Device count 1
+/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/src/gymtorch
+Using /home/wangyuhang/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Emitting ninja build file /home/wangyuhang/.cache/torch_extensions/py38_cu117/gymtorch/build.ninja...
+Building extension module gymtorch...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+ninja: no work to do.
+Loading extension module gymtorch...
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+2025-11-17 04:24:04,364 - INFO - logger - logger initialized
+<unknown>:3: DeprecationWarning: invalid escape sequence \*
+Error: FBX library failed to load - importing FBX data will not succeed. Message: No module named 'fbx'
+FBX tools must be installed from https://help.autodesk.com/view/FBX/2020/ENU/?guid=FBX_Developer_Help_scripting_with_python_fbx_installing_python_fbx_html
+/home/wangyuhang/python/Eureka/eureka/../isaacgymenvs/isaacgymenvs/train.py:75: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_name="config", config_path="./cfg")
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/hydra/_internal/defaults_list.py:415: UserWarning: In config: Invalid overriding of hydra/job_logging:
+Default list overrides requires 'override' keyword.
+See https://hydra.cc/docs/1.2/upgrades/1.0_to_1.1/defaults_list_override for more information.
+
+  deprecation_warning(msg)
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/hydra/_internal/hydra.py:119: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/utils/tensorboard/__init__.py:4: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if not hasattr(tensorboard, "__version__") or LooseVersion(
+Setting seed: 1
+Network Directory: /home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-11-17_01-30-08/policy-2025-11-17_04-24-05/runs/ShadowHandGPT-2025-11-17_04-24-05/nn
+Tensorboard Directory: /home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-11-17_01-30-08/policy-2025-11-17_04-24-05/runs/ShadowHandGPT-2025-11-17_04-24-05/summaries
+self.seed = 1
+Started to train
+Obs type: full_state
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/gym/spaces/box.py:84: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+[Warning] [carb.gym.plugin] useGpu is set, forcing single scene (0 subscenes)
+Not connected to PVD
++++ Using GPU PhysX
+Physics Engine: PhysX
+Physics Device: cuda:0
+GPU Pipeline: enabled
+/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/shadow_handgpt.py:211: DeprecationWarning: an integer is required (got type isaacgym._bindings.linux-x86_64.gym_38.DofDriveMode).  Implicit conversion to integers using __int__ is deprecated, and may be removed in a future version of Python.
+  asset_options.default_dof_drive_mode = gymapi.DOF_MODE_NONE
+JointSpec type free not yet supported!
+JointSpec type free not yet supported!
+JointSpec type free not yet supported!
+[Error] [carb.gym.plugin] *** Could not create contact graph to compute collision filters! Are contacts specified properly?
+
+JointSpec type free not yet supported!
+JointSpec type free not yet supported!
+[Error] [carb.gym.plugin] *** Could not create contact graph to compute collision filters! Are contacts specified properly?
+
+Box(-1.0, 1.0, (20,), float32) Box(-inf, inf, (211,), float32)
+current training device: cuda:0
+build mlp: 211
+RunningMeanStd:  (1,)
+RunningMeanStd:  (211,)
+fps step: 38570 fps step and policy inference: 26500 fps total: 16647 epoch: 1/20000 frames: 0
+fps step: 121870 fps step and policy inference: 115493 fps total: 79033 epoch: 2/20000 frames: 81920
+fps step: 129113 fps step and policy inference: 121403 fps total: 83308 epoch: 3/20000 frames: 163840
+fps step: 125959 fps step and policy inference: 119244 fps total: 80540 epoch: 4/20000 frames: 245760
+fps step: 131625 fps step and policy inference: 124620 fps total: 84594 epoch: 5/20000 frames: 327680
+fps step: 131619 fps step and policy inference: 124418 fps total: 83093 epoch: 6/20000 frames: 409600
+fps step: 141342 fps step and policy inference: 131310 fps total: 88478 epoch: 7/20000 frames: 491520
+fps step: 139394 fps step and policy inference: 131479 fps total: 87082 epoch: 8/20000 frames: 573440
+fps step: 138660 fps step and policy inference: 130264 fps total: 87189 epoch: 9/20000 frames: 655360
+fps step: 136388 fps step and policy inference: 129248 fps total: 87046 epoch: 10/20000 frames: 737280
+fps step: 136465 fps step and policy inference: 129298 fps total: 86552 epoch: 11/20000 frames: 819200
+fps step: 141284 fps step and policy inference: 133497 fps total: 88913 epoch: 12/20000 frames: 901120
+fps step: 143120 fps step and policy inference: 135503 fps total: 89685 epoch: 13/20000 frames: 983040
+fps step: 139344 fps step and policy inference: 131831 fps total: 86300 epoch: 14/20000 frames: 1064960
+fps step: 136761 fps step and policy inference: 129712 fps total: 86159 epoch: 15/20000 frames: 1146880
+fps step: 139159 fps step and policy inference: 131163 fps total: 84489 epoch: 16/20000 frames: 1228800
+fps step: 128989 fps step and policy inference: 121741 fps total: 74239 epoch: 17/20000 frames: 1310720
+fps step: 109684 fps step and policy inference: 104145 fps total: 66008 epoch: 18/20000 frames: 1392640
+fps step: 109831 fps step and policy inference: 103662 fps total: 67649 epoch: 19/20000 frames: 1474560
+fps step: 112271 fps step and policy inference: 105390 fps total: 67821 epoch: 20/20000 frames: 1556480
+fps step: 111255 fps step and policy inference: 104353 fps total: 67664 epoch: 21/20000 frames: 1638400
+fps step: 106923 fps step and policy inference: 100845 fps total: 66111 epoch: 22/20000 frames: 1720320
+fps step: 107049 fps step and policy inference: 101000 fps total: 64823 epoch: 23/20000 frames: 1802240
+fps step: 104957 fps step and policy inference: 99025 fps total: 64600 epoch: 24/20000 frames: 1884160
+fps step: 106901 fps step and policy inference: 101134 fps total: 65586 epoch: 25/20000 frames: 1966080
+fps step: 113425 fps step and policy inference: 106406 fps total: 67624 epoch: 26/20000 frames: 2048000
+fps step: 108468 fps step and policy inference: 102251 fps total: 65850 epoch: 27/20000 frames: 2129920
+fps step: 105233 fps step and policy inference: 98750 fps total: 62829 epoch: 28/20000 frames: 2211840
+fps step: 102479 fps step and policy inference: 96128 fps total: 61704 epoch: 29/20000 frames: 2293760
+fps step: 99566 fps step and policy inference: 93663 fps total: 61713 epoch: 30/20000 frames: 2375680
+fps step: 34543 fps step and policy inference: 33583 fps total: 27078 epoch: 31/20000 frames: 2457600
+fps step: 81761 fps step and policy inference: 76990 fps total: 50057 epoch: 32/20000 frames: 2539520
+fps step: 86956 fps step and policy inference: 82384 fps total: 52680 epoch: 33/20000 frames: 2621440
+fps step: 85552 fps step and policy inference: 80587 fps total: 52369 epoch: 34/20000 frames: 2703360
+fps step: 87076 fps step and policy inference: 81636 fps total: 55633 epoch: 35/20000 frames: 2785280
