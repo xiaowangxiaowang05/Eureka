@@ -1,0 +1,8 @@
+LICENSE
+README.md
+setup.py
+eureka.egg-info/PKG-INFO
+eureka.egg-info/SOURCES.txt
+eureka.egg-info/dependency_links.txt
+eureka.egg-info/requires.txt
+eureka.egg-info/top_level.txt
