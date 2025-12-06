@@ -1,0 +1,5 @@
+- env=shadow_hand
+- sample=2
+- iteration=2
+- model=qwen3-max
+- model_vlm=qwen3-vl-plus

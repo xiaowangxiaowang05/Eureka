@@ -11,8 +11,13 @@ def find_files_with_substring(directory, substring):
     return matches
 
 def load_tensorboard_logs(path):
+    """Load tensorboard logs from a directory path (str or Path)."""
     data = defaultdict(list)
-    event_acc = EventAccumulator(path)
+    # Convert Path to string if needed
+    path_str = str(path) if path else ""
+    if not path_str:
+        return data
+    event_acc = EventAccumulator(path_str)
     event_acc.Reload()  # Load all data written so far
 
     for tag in event_acc.Tags()["scalars"]:

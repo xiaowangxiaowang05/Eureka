@@ -230,62 +230,6 @@ class VecTask(Env):
         self.gym.prepare_sim(self.sim)
         self.sim_initialized = True
 
-        # Check if GPU pipeline is actually enabled after prepare_sim
-        # If PhysX CUDA context creation failed, GPU pipeline will be disabled
-        # but self.device may still be set to cuda, causing errors
-        actual_sim_params = self.gym.get_sim_params(self.sim)
-        if not actual_sim_params.use_gpu_pipeline and self.device.startswith("cuda"):
-            import os
-            import sys
-            
-            error_msg = "\n" + "="*80 + "\n"
-            error_msg += "ERROR: GPU Pipeline failed to initialize!\n"
-            error_msg += "="*80 + "\n"
-            error_msg += f"Device was set to: {self.device}\n"
-            error_msg += f"GPU Pipeline status: DISABLED (expected: ENABLED)\n"
-            error_msg += "\nThis usually happens when:\n"
-            error_msg += "  1. PhysX CUDA context creation failed (libcuda.so not found)\n"
-            error_msg += "  2. CUDA libraries are not in LD_LIBRARY_PATH\n"
-            error_msg += "  3. CUDA driver/runtime mismatch\n"
-            error_msg += "\nTroubleshooting steps:\n"
-            
-            # Check CUDA availability
-            try:
-                if torch.cuda.is_available():
-                    error_msg += f"  ✓ PyTorch can see CUDA: {torch.cuda.get_device_name(0)}\n"
-                else:
-                    error_msg += "  ✗ PyTorch cannot see CUDA\n"
-            except:
-                error_msg += "  ? Could not check PyTorch CUDA status\n"
-            
-            # Check LD_LIBRARY_PATH
-            ld_path = os.environ.get('LD_LIBRARY_PATH', '')
-            if 'cuda' in ld_path.lower() or '/usr/local/cuda' in ld_path:
-                error_msg += f"  ✓ LD_LIBRARY_PATH contains CUDA paths\n"
-            else:
-                error_msg += "  ✗ LD_LIBRARY_PATH may not contain CUDA library paths\n"
-                error_msg += "    Try: export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH\n"
-            
-            # Check for libcuda.so
-            import subprocess
-            try:
-                result = subprocess.run(['find', '/usr', '-name', 'libcuda.so*', '2>/dev/null'], 
-                                      shell=True, capture_output=True, timeout=2)
-                if result.returncode == 0 and result.stdout:
-                    error_msg += "  ✓ Found libcuda.so on system\n"
-                else:
-                    error_msg += "  ✗ Could not find libcuda.so\n"
-            except:
-                pass
-            
-            error_msg += "\nFor WSL2 users:\n"
-            error_msg += "  - Ensure NVIDIA drivers are installed in Windows\n"
-            error_msg += "  - Install nvidia-utils in WSL: sudo apt-get install nvidia-utils-XXX\n"
-            error_msg += "  - Check: nvidia-smi should work in WSL\n"
-            error_msg += "\n" + "="*80 + "\n"
-            
-            raise RuntimeError(error_msg)
-
         self.set_viewer()
         self.allocate_buffers()
 
@@ -547,14 +491,11 @@ class VecTask(Env):
         if physics_engine == "physx":
             # set the parameters
             if "physx" in config_sim:
-                for opt, value in config_sim["physx"].items():
-                    if not hasattr(sim_params.physx, opt):
-                        print(f"[Warning] PhysX parameter '{opt}' is not supported by this Isaac Gym build. Skipping.")
-                        continue
+                for opt in config_sim["physx"].keys():
                     if opt == "contact_collection":
-                        setattr(sim_params.physx, opt, gymapi.ContactCollection(value))
+                        setattr(sim_params.physx, opt, gymapi.ContactCollection(config_sim["physx"][opt]))
                     else:
-                        setattr(sim_params.physx, opt, value)
+                        setattr(sim_params.physx, opt, config_sim["physx"][opt])
         else:
             # set the parameters
             if "flex" in config_sim:

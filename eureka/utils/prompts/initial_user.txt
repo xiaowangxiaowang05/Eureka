@@ -9,18 +9,19 @@ YOUR TASK: Write a Reward Function
 
 Based on the code and description, write a reward function.
 
-1. Find Available Variables:
-Your reward function can ONLY use `self` attributes from the environment code.
-- Look at the `_obs.py` code to find variables like `self.object_rot`, `self.goal_rot`, etc.
-- You can ALSO use common variables inherited from the base environment, such as:
-    - `self.progress_buf`: The current step count for each environment.
-    - `self.object_angvel`: The object's angular velocity.
-    - `self.object_linvel`: The object's linear velocity.
-(Note: Not all variables may be present; only use what is relevant).
+1. Identify Available Variables:
+   - Look at the `_obs.py` code provided above. You can use any variable defined there (e.g., `self.object_rot`, `self.dof_pos`, etc.).
+   - You can also use common variables inherited from the base environment, such as:
+     - `self.progress_buf`: The current step count.
+     - `self.object_angvel`: Object angular velocity.
+     - `self.object_linvel`: Object linear velocity.
+   (Note: Only use variables relevant to the task).
 
-2. Design a Multi-Component Reward:
-A good reward function usually has multiple components. You should ALWAYS try to include:
-- A Main Goal Reward: (e.g., distance to target, orientation alignment)
-- A Stability/Control Penalty: (e.g., penalize high angular velocity, high action cost, or falling)
+2. Define Function Arguments (CRITICAL):
+   - You MUST define these variables as inputs in the `compute_reward` function signature.
+   - DO NOT access `self.variable_name` inside the function body. Use the argument name directly.
 
-This multi-component approach helps the agent learn complex tasks robustly.
+   **WRONG (Will fail):**
+   ```python
+   def compute_reward(self):
+       return torch.norm(self.object_pos - self.goal_pos)

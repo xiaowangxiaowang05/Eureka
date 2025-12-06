@@ -1,32 +1,40 @@
 import hydra
-import numpy as np 
+import numpy as np
 import json
-import logging 
-import matplotlib.pyplot as plt
+import logging
 import os
-from openai import OpenAI
+import random
 import re
+import shutil
 import subprocess
 import sysconfig
+import time
+import concurrent.futures  # 新增：用于并行 VLM 请求
+from dataclasses import dataclass, field
 from pathlib import Path
-import shutil
-import time 
+from typing import Any, Dict, List, Optional, Tuple
 
-from utils.misc import * 
-from utils.file_utils import find_files_with_substring, load_tensorboard_logs
+from openai import OpenAI
+
 from utils.create_task import create_task
 from utils.extract_task_code import *
+from utils.file_utils import find_files_with_substring, load_tensorboard_logs
+from utils.misc import *
+from utils.video_utils import record_policy_rollout
+from utils.vlm_utils import VLMClient, VLMResult
 
-EUREKA_ROOT_DIR = os.getcwd()
-ISAAC_ROOT_DIR = f"{EUREKA_ROOT_DIR}/../isaacgymenvs/isaacgymenvs"
+
+# Get the absolute path of the eureka package directory
+# This ensures the path is correct even when Hydra changes the working directory
+_EUREKA_PACKAGE_DIR = Path(__file__).parent.resolve()
+EUREKA_ROOT_DIR = _EUREKA_PACKAGE_DIR.parent.resolve()  # Go up one level from eureka/ to Eureka/
+ISAAC_ROOT_DIR = EUREKA_ROOT_DIR / "isaacgymenvs" / "isaacgymenvs"
 
 def get_env_with_python_lib():
     """Prepare environment variables with Python library path and CUDA paths for subprocess calls."""
     env = os.environ.copy()
-    
     # Collect all library paths to add
     lib_paths = []
-    
     # Add Python lib directory to LD_LIBRARY_PATH
     python_lib_dir = None
     # Try to find Python lib directory
@@ -40,31 +48,22 @@ def get_env_with_python_lib():
             conda_lib = os.path.join(conda_prefix, 'lib')
             if os.path.exists(conda_lib):
                 python_lib_dir = conda_lib
-    
     if python_lib_dir:
         lib_paths.append(python_lib_dir)
-    
     # Add CUDA library paths to ensure GPU acceleration works
     cuda_paths = []
-    
-    # Common CUDA installation paths
-    # Note: /usr/lib/wsl/lib is WSL2-specific location for libcuda.so
     possible_cuda_paths = [
-        '/usr/lib/wsl/lib',  # WSL2: libcuda.so location
+        '/usr/lib/wsl/lib',  # WSL2
         '/usr/local/cuda/lib64',
         '/usr/local/cuda/lib',
         '/usr/lib/x86_64-linux-gnu',
         '/usr/lib64',
     ]
-    
-    # Check for CUDA in conda environment
     conda_prefix = os.environ.get('CONDA_PREFIX')
     if conda_prefix:
         conda_cuda_lib = os.path.join(conda_prefix, 'lib')
         if os.path.exists(conda_cuda_lib):
             possible_cuda_paths.insert(0, conda_cuda_lib)
-    
-    # Add existing CUDA paths from environment
     existing_ld_path = env.get('LD_LIBRARY_PATH', '')
     if existing_ld_path:
         for path in existing_ld_path.split(':'):
@@ -72,38 +71,682 @@ def get_env_with_python_lib():
                 if 'cuda' in path.lower() or any(lib in os.listdir(path) if os.path.isdir(path) else False 
                                                   for lib in ['libcuda.so', 'libcudart.so']):
                     cuda_paths.append(path)
-    
-    # Check and add common CUDA paths
     for cuda_path in possible_cuda_paths:
         if os.path.exists(cuda_path):
-            # Check if it contains CUDA libraries (especially libcuda.so for PhysX)
             try:
                 files = os.listdir(cuda_path)
-                # libcuda.so is critical for PhysX GPU acceleration
                 has_libcuda = any('libcuda.so' in f for f in files)
                 has_cuda_libs = any('cuda' in f.lower() or 'cudart' in f.lower() for f in files)
                 if has_libcuda or has_cuda_libs:
                     if cuda_path not in cuda_paths:
-                        # Prioritize paths with libcuda.so
                         if has_libcuda:
                             cuda_paths.insert(0, cuda_path)
                         else:
                             cuda_paths.append(cuda_path)
             except:
                 pass
-    
-    # Combine all paths
     all_paths = cuda_paths + lib_paths
     if existing_ld_path:
-        # Add existing paths that aren't already included
         existing_paths = [p for p in existing_ld_path.split(':') if p and p not in all_paths]
         all_paths.extend(existing_paths)
-    
-    # Set LD_LIBRARY_PATH
     if all_paths:
         env['LD_LIBRARY_PATH'] = ':'.join(all_paths)
-    
     return env
+
+MUTATION_PROMPT_TEMPLATE = """
+You are executing an Evolutionary Algorithm.
+
+Parent Code (Score: {Fitness_Score}):
+{Parent_Reward_Code}
+
+VLM Feedback: "{VLM_Feedback_Text}"
+Reward Stats: "{Component_Stats_Analysis}"
+
+Task: The VLM pointed out the defect: "{VLM_Feedback_Text}".
+Please modify the parent code to specifically address this defect.
+"""
+
+CROSSOVER_PROMPT_TEMPLATE = """
+You are executing an Evolutionary Algorithm.
+
+Parent A (Score {Score_A}): "{Feedback_A}"
+Code A:
+{Code_A}
+
+Parent B (Score {Score_B}): "{Feedback_B}"
+Code B:
+{Code_B}
+
+Task: Combine the strengths of Code A and Code B into a new child reward function.
+"""
+
+@dataclass
+class CodeSample:
+    code: str
+    raw_response: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class TrainingArtifact:
+    env_file: Path
+    reward_only_file: Path
+    log_file: Path
+    tensorboard_dir: Optional[Path]
+    network_dir: Optional[Path]
+    checkpoint_path: Optional[Path]
+    metrics_summary: Dict[str, Any]
+    stats_text: str
+    success_metric: float
+    reward_correlation: float
+    video_path: Optional[Path] = None
+
+@dataclass
+class PopulationMember:
+    generation: int
+    index: int
+    code_sample: CodeSample
+    artifact: Optional[TrainingArtifact] = None
+    vlm_result: Optional[VLMResult] = None
+
+    @property
+    def fitness(self) -> float:
+        if self.vlm_result is not None:
+            return float(self.vlm_result.fitness_score)
+        if self.artifact is not None and self.artifact.success_metric != float('-inf'):
+            return float(self.artifact.success_metric)
+        return float('-inf')
+
+# ... [保留辅助函数 _clean_response_text, _extract_reward_code, _inject_reward_signature, _write_candidate_files, _find_line_value, _summarize_tensorboard_logs, _locate_checkpoint] ...
+
+def _clean_response_text(raw_response: str) -> str:
+    cleaned_text = re.sub(r'<think>.*?</think>', '', raw_response, flags=re.DOTALL)
+    return cleaned_text.replace("<|im_end|>", "").strip()
+
+def _extract_reward_code(raw_response: str) -> Optional[str]:
+    response_cur = _clean_response_text(raw_response)
+    patterns = [
+        r'```python(.*?)```',
+        r'```(.*?)```',
+        r'"""(.*?)"""',
+        r"'''\s*(.*?)\s*'''",
+        r'""(.*?)""',
+        r'"(.*?)"',
+    ]
+    code_string = None
+    for pattern in patterns:
+        match = re.search(pattern, response_cur, re.DOTALL)
+        if match is not None:
+            code_string = match.group(1).strip()
+            break
+    if code_string is None:
+        code_string = response_cur
+    lines = code_string.split("\n")
+    for i, line in enumerate(lines):
+        if line.strip().startswith("def "):
+            code_string = "\n".join(lines[i:])
+            break
+    if not code_string.strip():
+        return None
+    return code_string
+
+def _inject_reward_signature(task_code_template: str, reward_signature: str) -> str:
+    indent = " " * 8
+    reward_block = "\n".join([indent + line for line in reward_signature.splitlines()])
+    if "def compute_reward(self):" in task_code_template:
+        needle = "def compute_reward(self):"
+        return task_code_template.replace(needle, f"{needle}\n{reward_block}", 1)
+    if "def compute_reward(self, actions):" in task_code_template:
+        needle = "def compute_reward(self, actions):"
+        return task_code_template.replace(needle, f"{needle}\n{reward_block}", 1)
+    if "def compute_reward(" in task_code_template:
+         # Try generic injection if exact match fails, though template specific is safer
+         pass
+    return task_code_template # Fallback: let user prompt handle it or use specific environment hooks
+
+def _write_candidate_files(
+    *,
+    generation: int,
+    candidate_idx: int,
+    base_task_code: str,
+    reward_code: str,
+    reward_signature: str,
+    output_file: str,
+    workspace_dir: Path,
+) -> Dict[str, Path]:
+    task_code_string_iter = _inject_reward_signature(base_task_code, reward_signature)
+    if "@torch.jit.script" not in reward_code:
+        reward_code = "@torch.jit.script\n" + reward_code
+    
+    # Safety replacement for potential LLM signature errors
+    task_code_string_iter = task_code_string_iter.replace(
+        "def compute_reward(self):", 
+        "def compute_reward(self, actions):" 
+    ) # Basic patch, relies heavily on prompt correctness
+
+    with open(output_file, "w") as file:
+        file.writelines(task_code_string_iter + "\n")
+        file.writelines("from typing import Tuple, Dict\n")
+        file.writelines("import math\n")
+        file.writelines("import torch\n")
+        file.writelines("from torch import Tensor\n")
+        file.writelines(reward_code + "\n")
+
+    env_file = workspace_dir / f"env_gen{generation}_cand{candidate_idx}.py"
+    reward_only_file = workspace_dir / f"env_gen{generation}_cand{candidate_idx}_rewardonly.py"
+    shutil.copy(output_file, env_file)
+    with open(reward_only_file, "w") as file:
+        file.writelines(reward_code + "\n")
+
+    return {
+        "env_file": env_file,
+        "reward_only_file": reward_only_file,
+    }
+
+def _find_line_value(log_text: str, prefix: str) -> Optional[str]:
+    for line in log_text.splitlines():
+        if line.startswith(prefix):
+            return line.split(":", 1)[-1].strip()
+    return None
+
+def _summarize_tensorboard_logs(
+    tensorboard_logs: Dict[str, List[float]],
+    policy_feedback_template: str,
+) -> Dict[str, Any]:
+    summary: Dict[str, Any] = {
+        "stats_text": "",
+        "success_metric": float("-inf"),
+        "reward_correlation": float('-inf'),
+    }
+    if not tensorboard_logs:
+        return summary
+
+    metrics_text: List[str] = []
+    metric_lengths = [len(values) for values in tensorboard_logs.values() if values]
+    total_steps = max(metric_lengths) if metric_lengths else 1
+    epoch_freq = max(int(total_steps // 10), 1)
+    metrics_text.append(policy_feedback_template.format(epoch_freq=epoch_freq))
+
+    gt_reward = tensorboard_logs.get("gt_reward")
+    gpt_reward = tensorboard_logs.get("gpt_reward")
+    consecutive_successes = tensorboard_logs.get("consecutive_successes")
+    if consecutive_successes:
+        summary["success_metric"] = max(consecutive_successes)
+    elif gt_reward:
+        summary["success_metric"] = max(gt_reward)
+
+    if gt_reward and gpt_reward:
+        try:
+            summary["reward_correlation"] = float(np.corrcoef(np.array(gt_reward), np.array(gpt_reward))[0, 1])
+        except Exception:
+            summary["reward_correlation"] = float('-inf')
+
+    for metric, values in tensorboard_logs.items():
+        if not values:
+            continue
+        sampled = values[::epoch_freq]
+        metric_cur = [f"{x:.2f}" for x in sampled]
+        metric_max = max(values)
+        metric_mean = sum(values) / len(values)
+        metric_min = min(values)
+        metric_name = metric if metric != "consecutive_successes" else "task_score"
+        metrics_text.append(
+            f"{metric_name}: {metric_cur}, Max: {metric_max:.2f}, Mean: {metric_mean:.2f}, Min: {metric_min:.2f}"
+        )
+
+    summary["stats_text"] = "\n".join(metrics_text)
+    return summary
+
+def _locate_checkpoint(network_dir: Optional[str]) -> Optional[Path]:
+    if not network_dir:
+        return None
+    network_path = Path(network_dir)
+    if not network_path.exists():
+        return None
+    checkpoints = sorted(network_path.glob("*.pth"), key=lambda p: p.stat().st_mtime)
+    return checkpoints[-1] if checkpoints else None
+
+
+# ================= 重构的核心部分开始 =================
+
+@dataclass
+class TrainingJob:
+    process: subprocess.Popen
+    log_file: Path
+    candidate_idx: int
+    env_metadata: Dict[str, Path]
+    start_time: float
+
+def _launch_candidate_training(
+    *,
+    generation: int,
+    candidate_idx: int,
+    code_sample: CodeSample,
+    base_task_code: str,
+    output_file: str,
+    workspace_dir: Path,
+    isaac_root_dir: str,
+    task: str,
+    suffix: str,
+    cfg,
+) -> TrainingJob:
+    """阶段1: 准备文件并启动训练进程 (不等待结束)"""
+    log_file = workspace_dir / f"env_gen{generation}_cand{candidate_idx}.txt"
+    
+    try:
+        result = get_function_signature(code_sample.code)
+        if result is None:
+            raise ValueError("No function definition found in reward code")
+        reward_signature, _ = result
+    except Exception as exc:
+        # 如果代码解析失败，直接抛出异常，外层捕获处理
+        raise ValueError(f"Failed to parse reward signature: {exc}") from exc
+
+    env_metadata = _write_candidate_files(
+        generation=generation,
+        candidate_idx=candidate_idx,
+        base_task_code=base_task_code,
+        reward_code=code_sample.code,
+        reward_signature="\n".join(
+            [
+                f"self.rew_buf[:], self.rew_dict = {reward_signature}",
+                "self.extras['gpt_reward'] = self.rew_buf.mean()",
+                "for rew_state in self.rew_dict: self.extras[rew_state] = self.rew_dict[rew_state].mean()",
+            ]
+        ),
+        output_file=output_file,
+        workspace_dir=workspace_dir,
+    )
+
+    # set_freest_gpu() # 在并行训练时，这一步通常由系统或 hydra 自动分配，或者所有进程共享 GPU
+    env_vars = get_env_with_python_lib()
+    
+    # 从配置中获取GPU ID（可以通过命令行参数覆盖，例如: gpu_id=1）
+    target_gpu_id = str(cfg.gpu_id)  # 支持 "1" 或 "0,1" 格式
+    
+    print(f"🚀 Launching training on GPU {target_gpu_id}") # 打印提示
+    env_vars["CUDA_VISIBLE_DEVICES"] = target_gpu_id
+
+    cmd = [
+        "python",
+        "-u",
+        f"{isaac_root_dir}/train.py",
+        "hydra/output=subprocess",
+        f"task={task}{suffix}",
+        f"wandb_activate={cfg.use_wandb}",
+        f"wandb_entity={cfg.wandb_username}",
+        f"wandb_project={cfg.wandb_project}",
+        "headless=True",  # 训练阶段强制无头模式，避免多进程渲染资源争抢
+        "capture_video=False",  # 训练阶段不录制视频，视频录制在评估阶段进行
+        "force_render=False",
+        f"max_iterations={cfg.max_iterations}",
+        "pipeline=gpu",
+        f"seed={candidate_idx}", # 确保种子不同
+        # ⚠️ 重要：当设置了 CUDA_VISIBLE_DEVICES 后，Isaac Gym 只能看到被映射的GPU
+        # 例如：CUDA_VISIBLE_DEVICES=1 后，物理GPU 1 被映射为逻辑GPU 0
+        # 此时 graphics_device_id 必须使用逻辑GPU ID（0），而不是物理GPU ID（1）
+        # 否则会出现 "invalid device ordinal" 错误导致段错误
+        "graphics_device_id=0",  # 使用逻辑GPU ID（设置CUDA_VISIBLE_DEVICES后总是映射为0）
+        "sim_device=cuda:0",     # 显式设置物理设备（CUDA_VISIBLE_DEVICES=1后，物理GPU1映射为cuda:0）
+        "rl_device=cuda:0",      # 显式设置RL设备
+    ]
+
+    # 启动进程
+    with open(log_file, "w") as f:
+        process = subprocess.Popen(cmd, stdout=f, stderr=f, env=env_vars)
+
+    # 稍微阻塞一下确保日志文件创建，避免 race condition
+    block_until_training(str(log_file), log_status=False, iter_num=generation, response_id=candidate_idx)
+    
+    logging.info(f"Launched training for Gen {generation} Candidate {candidate_idx}")
+    return TrainingJob(
+        process=process,
+        log_file=log_file,
+        candidate_idx=candidate_idx,
+        env_metadata=env_metadata,
+        start_time=time.time()
+    )
+
+def _harvest_training_artifact(
+    *,
+    job: TrainingJob,
+    policy_feedback_template: str,
+    execution_error_feedback: str,
+) -> TrainingArtifact:
+    """阶段2: 等待进程结束并收集结果"""
+    
+    # 等待训练完成 (这是阻塞的，但我们在外层循环中对所有 job 调用)
+    job.process.wait()
+    
+    # 读取日志
+    stdout_str = job.log_file.read_text() if job.log_file.exists() else ""
+    traceback_msg = filter_traceback(stdout_str)
+
+    tensorboard_dir = _find_line_value(stdout_str, "Tensorboard Directory:")
+    network_dir = _find_line_value(stdout_str, "Network Directory:")
+    tensorboard_logs: Dict[str, List[float]] = {}
+    stats_text = ""
+    success_metric = float("-inf")
+    reward_correlation = float('-inf')
+
+    if traceback_msg:
+        stats_text = execution_error_feedback.format(traceback_msg=traceback_msg)
+        logging.warning(f"Candidate {job.candidate_idx} execution error.")
+    elif tensorboard_dir:
+        try:
+            tensorboard_logs = load_tensorboard_logs(tensorboard_dir)
+            summary = _summarize_tensorboard_logs(tensorboard_logs, policy_feedback_template)
+            stats_text = summary["stats_text"]
+            success_metric = summary["success_metric"]
+            reward_correlation = summary["reward_correlation"]
+            logging.info(f"Candidate {job.candidate_idx} training success. Metric: {success_metric}")
+        except Exception as exc:
+            logging.warning(f"Failed to load tensorboard logs for candidate {job.candidate_idx}: {exc}")
+            stats_text = f"Tensorboard parsing failed: {exc}"
+    else:
+        stats_text = "Training log missing Tensorboard Directory."
+
+    checkpoint_path = _locate_checkpoint(network_dir)
+
+    return TrainingArtifact(
+        env_file=job.env_metadata["env_file"],
+        reward_only_file=job.env_metadata["reward_only_file"],
+        log_file=job.log_file,
+        tensorboard_dir=Path(tensorboard_dir) if tensorboard_dir else None,
+        network_dir=Path(network_dir) if network_dir else None,
+        checkpoint_path=checkpoint_path,
+        metrics_summary=tensorboard_logs,
+        stats_text=stats_text,
+        success_metric=success_metric,
+        reward_correlation=reward_correlation,
+    )
+
+def _evaluate_population(
+    *,
+    generation: int,
+    code_samples: List[CodeSample],
+    base_task_code: str,
+    output_file: str,
+    workspace_dir: Path,
+    isaac_root_dir: str,
+    task: str,
+    suffix: str,
+    cfg,
+    policy_feedback_template: str,
+    execution_error_feedback: str,
+    vlm_client: VLMClient,
+) -> List[PopulationMember]:
+    
+    # --- 步骤 2: 并行训练 (Batch Train) ---
+    logging.info(f"Starting parallel training for {len(code_samples)} candidates...")
+    running_jobs: List[Optional[TrainingJob]] = []
+    
+    # 启动所有训练任务
+    for idx, sample in enumerate(code_samples):
+        try:
+            job = _launch_candidate_training(
+                generation=generation,
+                candidate_idx=idx,
+                code_sample=sample,
+                base_task_code=base_task_code,
+                output_file=output_file,
+                workspace_dir=workspace_dir,
+                isaac_root_dir=isaac_root_dir,
+                task=task,
+                suffix=suffix,
+                cfg=cfg,
+            )
+            running_jobs.append(job)
+        except Exception as exc:
+            logging.exception(f"Failed to launch training for candidate {idx}: {exc}")
+            running_jobs.append(None)
+
+    # 等待所有任务完成并收集 Artifacts
+    logging.info("Waiting for all training jobs to finish...")
+    artifacts: List[Optional[TrainingArtifact]] = []
+    
+    for i, job in enumerate(running_jobs):
+        if job is None:
+            artifacts.append(None)
+            continue
+        
+        try:
+            artifact = _harvest_training_artifact(
+                job=job,
+                policy_feedback_template=policy_feedback_template,
+                execution_error_feedback=execution_error_feedback
+            )
+            artifacts.append(artifact)
+        except Exception as exc:
+            logging.exception(f"Error collecting results for candidate {i}: {exc}")
+            artifacts.append(None)
+
+    # --- 步骤 3: 评估阶段 - 串行视频录制 (Serial Video Recording) ---
+    # 训练阶段已完成，所有策略的checkpoint已保存。
+    # 现在进入评估阶段：对每个策略的最佳checkpoint串行录制视频（避免渲染资源争抢）。
+    # 注意：由于 Isaac Gym 的 OpenGL 渲染限制，多进程并行渲染极易导致 crash。
+    # 因此采用串行方式逐个录制视频。
+    # 每个策略单独运行在环境中（test=True, num_envs=1），录制完成后视频保存到路径中。
+    logging.info("=" * 80)
+    logging.info("Training phase completed. Starting evaluation phase...")
+    if cfg.capture_video:
+        logging.info("Recording videos for all candidates (serial mode to avoid rendering conflicts)...")
+        logging.info("Each policy runs individually in the environment to record video.")
+    else:
+        logging.info("Video recording is disabled (capture_video=False). Skipping video recording.")
+    logging.info("=" * 80)
+    for idx, artifact in enumerate(artifacts):
+        # 只有当训练成功生成了 checkpoint 才录像
+        if artifact and artifact.checkpoint_path and cfg.capture_video:
+            try:
+                logging.info(f"[{idx+1}/{len(artifacts)}] Recording video for Candidate {idx}...")
+                
+                # 显式传递配置中的 headless 设置
+                # 注意：cfg.video.headless 通常在 config.yaml 里设为 True (服务器环境)
+                video_path = record_policy_rollout(
+                    isaac_root_dir=Path(isaac_root_dir),
+                    workspace_dir=workspace_dir,
+                    task_name=task,
+                    suffix=suffix,
+                    checkpoint_path=artifact.checkpoint_path,
+                    wandb_username=cfg.wandb_username,
+                    wandb_project=cfg.wandb_project,
+                    env=get_env_with_python_lib(),
+                    rollout_steps=cfg.video.rollout_len,
+                    
+                    # 这里传递配置值，具体的 xvfb/headless 转换逻辑交给 video_utils 处理
+                    headless=cfg.video.headless, 
+                    force_render=cfg.video.force_render,
+                    
+                    seed=idx,
+                    gpu_id=str(cfg.gpu_id),  # 传递GPU配置
+                )
+                
+                if video_path and video_path.exists():
+                    artifact.video_path = video_path
+                else:
+                    logging.warning(f"⚠️ Video recording failed for candidate {idx}")
+                    artifact.video_path = None
+
+            except Exception as exc:
+                logging.warning(f"❌ Exception recording candidate {idx}: {exc}")
+                artifact.video_path = None
+        else:
+            if artifact:
+                artifact.video_path = None
+
+    # --- 步骤 4: 评估阶段 - 并行 VLM 打分 (Parallel VLM Eval) ---
+    # 所有视频录制完成并保存到路径后，现在进行 VLM 评估
+    # 视频文件已经保存在 artifact.video_path 中，这里读取路径并提交给 VLM
+    logging.info("=" * 80)
+    if cfg.capture_video:
+        logging.info("Video recording completed. All videos saved to paths.")
+        logging.info("Starting parallel VLM evaluation using saved video paths...")
+    else:
+        logging.info("Skipping VLM evaluation (no videos recorded, capture_video=False).")
+    logging.info("=" * 80)
+    
+    # 准备 VLM 任务
+    vlm_results_map: Dict[int, VLMResult] = {}
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=min(16, len(code_samples))) as executor:
+        future_to_idx = {}
+        for idx, artifact in enumerate(artifacts):
+            if artifact and artifact.video_path:
+                # 验证视频文件确实存在于保存的路径中
+                if not artifact.video_path.exists():
+                    logging.warning(f"Video file not found for candidate {idx} at saved path: {artifact.video_path}")
+                    continue
+                # 从保存的路径读取视频并提交给 VLM 评估
+                # 视频已经在步骤3中录制完成并保存到 artifact.video_path
+                logging.info(f"Submitting saved video to VLM for candidate {idx}: {artifact.video_path}")
+                future = executor.submit(
+                    vlm_client.evaluate, 
+                    str(artifact.video_path),  # 使用保存的视频文件路径
+                    extra_prompt=artifact.stats_text,
+                    max_retries=cfg.vlm.max_retries
+                )
+                future_to_idx[future] = idx
+            else:
+                logging.info(f"Skipping VLM for candidate {idx} (no video path saved).")
+
+        # 收集 VLM 结果
+        for future in concurrent.futures.as_completed(future_to_idx):
+            idx = future_to_idx[future]
+            try:
+                result = future.result()
+                vlm_results_map[idx] = result
+                logging.info(f"VLM evaluated candidate {idx}: Score {result.fitness_score}")
+            except Exception as exc:
+                # 记录更详细的错误信息
+                error_msg = str(exc)
+                if len(error_msg) > 500:
+                    error_msg = error_msg[:500] + "..."
+                logging.error(f"VLM evaluation failed for candidate {idx}: {error_msg}")
+                logging.debug(f"Full exception for candidate {idx}:", exc_info=True)
+
+    # 组装最终种群
+    population: List[PopulationMember] = []
+    for idx, sample in enumerate(code_samples):
+        member = PopulationMember(
+            generation=generation,
+            index=idx,
+            code_sample=sample,
+            artifact=artifacts[idx] if idx < len(artifacts) else None,
+            vlm_result=vlm_results_map.get(idx)
+        )
+        population.append(member)
+
+    return population
+
+# ================= 重构的核心部分结束 =================
+
+# [后面的 _select_elites, _tournament_select, _spawn_mutation_child, _spawn_crossover_child, _generate_llm_samples, main 函数逻辑保持不变]
+# [为了确保代码完整运行，请将原来的这些函数原封不动地放在这里]
+
+def _select_elites(population: List[PopulationMember], elite_count: int) -> List[PopulationMember]:
+    if elite_count <= 0:
+        return []
+    return sorted(population, key=lambda member: member.fitness, reverse=True)[:elite_count]
+
+def _tournament_select(population: List[PopulationMember], tournament_size: int) -> PopulationMember:
+    competitors = random.sample(population, k=min(tournament_size, len(population)))
+    return max(competitors, key=lambda member: member.fitness)
+
+def _spawn_mutation_child(
+    parent: PopulationMember,
+    *,
+    system_prompt: str,
+    llm_client: OpenAI,
+    model: str,
+    temperature: float,
+) -> CodeSample:
+    prompt = MUTATION_PROMPT_TEMPLATE.format(
+        Fitness_Score=f"{parent.fitness:.2f}",
+        Parent_Reward_Code=parent.code_sample.code,
+        VLM_Feedback_Text=parent.vlm_result.qualitative_feedback if parent.vlm_result else "No VLM feedback available.",
+        Component_Stats_Analysis=parent.artifact.stats_text if parent.artifact else "No stats available.",
+    )
+    response = llm_client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=temperature,
+        n=1,
+    )
+    content = response.choices[0].message.content
+    code = _extract_reward_code(content) or ""
+    return CodeSample(code=code, raw_response=content, metadata={"prompt": "mutation"})
+
+def _spawn_crossover_child(
+    parent_a: PopulationMember,
+    parent_b: PopulationMember,
+    *,
+    system_prompt: str,
+    llm_client: OpenAI,
+    model: str,
+    temperature: float,
+) -> CodeSample:
+    prompt = CROSSOVER_PROMPT_TEMPLATE.format(
+        Score_A=f"{parent_a.fitness:.2f}",
+        Feedback_A=parent_a.vlm_result.qualitative_feedback if parent_a.vlm_result else "No feedback.",
+        Code_A=parent_a.code_sample.code,
+        Score_B=f"{parent_b.fitness:.2f}",
+        Feedback_B=parent_b.vlm_result.qualitative_feedback if parent_b.vlm_result else "No feedback.",
+        Code_B=parent_b.code_sample.code,
+    )
+    response = llm_client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=temperature,
+        n=1,
+    )
+    content = response.choices[0].message.content
+    code = _extract_reward_code(content) or ""
+    return CodeSample(code=code, raw_response=content, metadata={"prompt": "crossover"})
+
+def _generate_llm_samples(
+    *,
+    client: OpenAI,
+    model: str,
+    messages: List[Dict[str, str]],
+    sample_count: int,
+    temperature: float,
+) -> List[CodeSample]:
+    responses = []
+    total_samples = 0
+   
+    chunk_size = sample_count if "gpt-3.5" in model else min(4, sample_count)
+
+    while total_samples < sample_count:
+        batch_size = min(chunk_size, sample_count - total_samples)
+        for attempt in range(100):
+            try:
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=messages,
+                    temperature=temperature,
+                    n=batch_size,
+                )
+                responses.extend(response.choices)
+                total_samples += batch_size
+                break
+            except Exception as exc:
+                logging.warning("LLM sampling attempt %s failed: %s", attempt + 1, exc)
+                time.sleep(1)
+        else:
+            raise RuntimeError("Exceeded maximum retries while sampling from the LLM.")
+
+    code_samples: List[CodeSample] = []
+    for choice in responses[:sample_count]:
+        content = choice.message.content
+        code = _extract_reward_code(content) or ""
+        code_samples.append(CodeSample(code=code, raw_response=content, metadata={"prompt": "initial"}))
+    return code_samples
 
 @hydra.main(config_path="cfg", config_name="config", version_base="1.1")
 def main(cfg):
@@ -111,7 +754,15 @@ def main(cfg):
     logging.info(f"Workspace: {workspace_dir}")
     logging.info(f"Project Root: {EUREKA_ROOT_DIR}")
 
-    client = OpenAI(
+    # LLM Client (用于写代码)
+    llm_client = OpenAI(
+        api_key=os.getenv("DASHSCOPE_API_KEY"),
+        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        timeout=300.0,
+    )
+
+    # VLM Client (用于看视频)
+    vlm_api_client = OpenAI(
         api_key=os.getenv("DASHSCOPE_API_KEY"),
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
     )
@@ -125,382 +776,188 @@ def main(cfg):
     logging.info("Task description: " + task_description)
 
     env_name = cfg.env.env_name.lower()
-    env_parent = 'isaac' if f'{env_name}.py' in os.listdir(f'{EUREKA_ROOT_DIR}/envs/isaac') else 'dexterity'
-    task_file = f'{EUREKA_ROOT_DIR}/envs/{env_parent}/{env_name}.py'
-    task_obs_file = f'{EUREKA_ROOT_DIR}/envs/{env_parent}/{env_name}_obs.py'
-    shutil.copy(task_obs_file, f"env_init_obs.py")
-    task_code_string  = file_to_string(task_file)
-    task_obs_code_string  = file_to_string(task_obs_file)
-    output_file = f"{ISAAC_ROOT_DIR}/tasks/{env_name}{suffix.lower()}.py"
+    envs_isaac_dir = EUREKA_ROOT_DIR / "eureka" / "envs" / "isaac"
+    if envs_isaac_dir.exists() and f'{env_name}.py' in [f.name for f in envs_isaac_dir.iterdir() if f.is_file()]:
+        env_parent = 'isaac'
+    else:
+        env_parent = 'dexterity'
+    task_file = EUREKA_ROOT_DIR / "eureka" / "envs" / env_parent / f"{env_name}.py"
+    task_obs_file = EUREKA_ROOT_DIR / "eureka" / "envs" / env_parent / f"{env_name}_obs.py"
+    
+    if not task_file.exists():
+        raise FileNotFoundError(f"Task file not found: {task_file}")
+    if not task_obs_file.exists():
+        raise FileNotFoundError(f"Task observation file not found: {task_obs_file}")
+    
+    shutil.copy(str(task_obs_file), "env_init_obs.py")
+    task_code_string  = file_to_string(str(task_file))
+    task_obs_code_string  = file_to_string(str(task_obs_file))
+    output_file = str(ISAAC_ROOT_DIR / "tasks" / f"{env_name}{suffix.lower()}.py")
 
-    # Loading all text prompts
-    prompt_dir = f'{EUREKA_ROOT_DIR}/utils/prompts'
-    initial_system = file_to_string(f'{prompt_dir}/initial_system.txt')
-    code_output_tip = file_to_string(f'{prompt_dir}/code_output_tip.txt')
-    code_feedback = file_to_string(f'{prompt_dir}/code_feedback.txt')
-    initial_user = file_to_string(f'{prompt_dir}/initial_user.txt')
-    reward_signature = file_to_string(f'{prompt_dir}/reward_signature.txt')
-    policy_feedback = file_to_string(f'{prompt_dir}/policy_feedback.txt')
-    execution_error_feedback = file_to_string(f'{prompt_dir}/execution_error_feedback.txt')
+    prompt_dir = EUREKA_ROOT_DIR / "eureka" / "utils" / "prompts"
+    if not prompt_dir.exists():
+        raise FileNotFoundError(f"Prompt directory not found: {prompt_dir}")
+    
+    initial_system = file_to_string(str(prompt_dir / "initial_system.txt"))
+    code_output_tip = file_to_string(str(prompt_dir / "code_output_tip.txt"))
+    initial_user = file_to_string(str(prompt_dir / "initial_user.txt"))
+    reward_signature = file_to_string(str(prompt_dir / "reward_signature.txt"))
+    policy_feedback = file_to_string(str(prompt_dir / "policy_feedback.txt"))
+    execution_error_feedback = file_to_string(str(prompt_dir / "execution_error_feedback.txt"))
 
     initial_system = initial_system.format(task_reward_signature_string=reward_signature) + code_output_tip
     initial_user = initial_user.format(task_obs_code_string=task_obs_code_string, task_description=task_description)
     messages = [{"role": "system", "content": initial_system}, {"role": "user", "content": initial_user}]
 
-    task_code_string = task_code_string.replace(task, task+suffix)
-    # Create Task YAML files
-    create_task(ISAAC_ROOT_DIR, cfg.env.task, cfg.env.env_name, suffix)
+    task_code_template = task_code_string.replace(task, task + suffix)
+    create_task(str(ISAAC_ROOT_DIR), cfg.env.task, cfg.env.env_name, suffix)
 
-    DUMMY_FAILURE = -10000.
-    max_successes = []
-    max_successes_reward_correlation = []
-    execute_rates = []
-    best_code_paths = []
-    max_success_overall = DUMMY_FAILURE
-    max_success_reward_correlation_overall = DUMMY_FAILURE
-    max_reward_code_path = None 
+    evo_cfg = cfg.evolution
+    generations = max(1, int(evo_cfg.generations))
+    population_size = max(1, int(evo_cfg.population_size))
+    tournament_size = max(2, int(evo_cfg.tournament_size))
+    elite_fraction = float(evo_cfg.elite_fraction)
+    elite_count = max(1, int(round(population_size * elite_fraction)))
+
+    # Handle null/None model_vlm from config
+    model_vlm = cfg.model_vlm if cfg.model_vlm is not None else "mock"
+    # Load VLM prompt template from prompts directory (consistent with LLM prompts)
+    vlm_client = VLMClient(
+        model_name=model_vlm,
+        task_description=task_description,
+        prompt_dir=prompt_dir,  # Use the same prompt_dir as LLM prompts
+        openai_client=None if model_vlm and str(model_vlm).lower() == "mock" else vlm_api_client,
+    )
+
+    logging.info("Generation 0: sampling %d candidates", population_size)
+    initial_samples = _generate_llm_samples(
+        client=llm_client,
+        model=model,
+        messages=messages,
+        sample_count=population_size,
+        temperature=cfg.temperature,
+    )
+    population = _evaluate_population(
+        generation=0,
+        code_samples=initial_samples,
+        base_task_code=task_code_template,
+        output_file=output_file,
+        workspace_dir=workspace_dir,
+        isaac_root_dir=str(ISAAC_ROOT_DIR),
+        task=task,
+        suffix=suffix,
+        cfg=cfg,
+        policy_feedback_template=policy_feedback,
+        execution_error_feedback=execution_error_feedback,
+        vlm_client=vlm_client,
+    )
+
+    best_member = max(population, key=lambda member: member.fitness, default=None)
+    if best_member:
+        logging.info(
+            "Generation 0 best fitness %.2f (score=%s)",
+            best_member.fitness,
+            best_member.vlm_result.fitness_score if best_member.vlm_result else "n/a",
+        )
+
+    for gen in range(1, generations):
+        if not population:
+            break
+
+        elites = _select_elites(population, min(elite_count, population_size))
+        children_needed = max(0, population_size - len(elites))
+        mutation_quota = min(children_needed, int(round(children_needed * evo_cfg.mutation_ratio)))
+        crossover_quota = max(0, children_needed - mutation_quota)
+
+        children_samples: List[CodeSample] = []
+        for _ in range(mutation_quota):
+            parent = _tournament_select(population, tournament_size)
+            children_samples.append(
+                _spawn_mutation_child(
+                    parent,
+                    system_prompt=initial_system,
+                    llm_client=llm_client,
+                    model=model,
+                    temperature=cfg.temperature,
+                )
+            )
+        for _ in range(crossover_quota):
+            parent_a = _tournament_select(population, tournament_size)
+            parent_b = parent_a
+            attempts = 0
+            while parent_b is parent_a and len(population) > 1 and attempts < 5:
+                parent_b = _tournament_select(population, tournament_size)
+                attempts += 1
+            children_samples.append(
+                _spawn_crossover_child(
+                    parent_a,
+                    parent_b,
+                    system_prompt=initial_system,
+                    llm_client=llm_client,
+                    model=model,
+                    temperature=cfg.temperature,
+                )
+            )
+
+        new_population: List[PopulationMember] = []
+        for elite in elites:
+            new_population.append(
+                PopulationMember(
+                    generation=gen,
+                    index=len(new_population),
+                    code_sample=elite.code_sample,
+                    artifact=elite.artifact,
+                    vlm_result=elite.vlm_result,
+                )
+            )
+
+        if children_samples:
+            evaluated_children = _evaluate_population(
+                generation=gen,
+                code_samples=children_samples,
+                base_task_code=task_code_template,
+                output_file=output_file,
+                workspace_dir=workspace_dir,
+                isaac_root_dir=str(ISAAC_ROOT_DIR),
+                task=task,
+                suffix=suffix,
+                cfg=cfg,
+                policy_feedback_template=policy_feedback,
+                execution_error_feedback=execution_error_feedback,
+                vlm_client=vlm_client,
+            )
+            new_population.extend(evaluated_children)
+
+        for idx, member in enumerate(new_population[:population_size]):
+            member.index = idx
+            member.generation = gen
+        population = new_population[:population_size]
+
+        generation_best = max(population, key=lambda member: member.fitness, default=None)
+        if generation_best:
+            if best_member is None or generation_best.fitness > best_member.fitness:
+                best_member = generation_best
+
+    if best_member is None or best_member.artifact is None:
+        logging.error("Evolution finished without a valid champion.")
+        return
+
+    champion_report = {
+        "task": task,
+        "generation": best_member.generation,
+        "index": best_member.index,
+        "fitness": best_member.fitness,
+        "vlm_score": best_member.vlm_result.fitness_score if best_member.vlm_result else None,
+        "vlm_feedback": best_member.vlm_result.qualitative_feedback if best_member.vlm_result else "",
+        "stats_text": best_member.artifact.stats_text,
+        "video_path": str(best_member.artifact.video_path) if best_member.artifact.video_path else None,
+        "checkpoint": str(best_member.artifact.checkpoint_path) if best_member.artifact.checkpoint_path else None,
+    }
+    with open("champion.json", "w") as file:
+        json.dump(champion_report, file, indent=2)
+    logging.info("Champion summary: %s", champion_report)
     
-    # Eureka generation loop
-    for iter in range(cfg.iteration):
-        # Get Eureka response
-        responses = []
-        response_cur = None
-        total_samples = 0
-        total_token = 0
-        total_completion_token = 0
-        chunk_size = cfg.sample if "gpt-3.5" in model else 4
-
-        logging.info(f"Iteration {iter}: Generating {cfg.sample} samples with {cfg.model}")
-
-        while True:
-            if total_samples >= cfg.sample:
-                break
-            for attempt in range(1000):
-                try:
-                    response_cur = client.chat.completions.create(
-                        model=model,
-                        messages=messages,
-                        temperature=cfg.temperature,
-                        n=chunk_size
-                    )
-                    total_samples += chunk_size
-                    break
-                except Exception as e:
-                    if attempt >= 10:
-                        chunk_size = max(int(chunk_size / 2), 1)
-                        print("Current Chunk Size", chunk_size)
-                    logging.info(f"Attempt {attempt+1} failed with error: {e}")
-                    time.sleep(1)
-            if response_cur is None:
-                logging.info("Code terminated due to too many failed attempts!")
-                exit()
-
-            responses.extend(response_cur.choices)
-            prompt_tokens = response_cur.usage.prompt_tokens
-            total_completion_token += response_cur.usage.completion_tokens
-            total_token += response_cur.usage.total_tokens
-
-        if cfg.sample == 1:
-            logging.info(f"Iteration {iter}: GPT Output:\n " + responses[0]["message"]["content"] + "\n")
-
-        # Logging Token Information
-        logging.info(f"Iteration {iter}: Prompt Tokens: {prompt_tokens}, Completion Tokens: {total_completion_token}, Total Tokens: {total_token}")
-        
-        code_runs = [] 
-        rl_runs = []
-        for response_id in range(cfg.sample):
-            response_cur = responses[response_id].message.content
-            # !!! 在这里添加这行代码来调试 !!!
-            # logging.info(f"===== QWEN RAW RESPONSE {response_id} START =====")
-            # logging.info(response_cur)
-            # logging.info(f"===== QWEN RAW RESPONSE {response_id} END =====")
-            # ----------------------------------------------------------------
-            # !!! 在这里添加这个修复程序 !!!
-            #
-            # 修复：从 Qwen 泄漏的响应中移除所有 <|im_end|> 令牌
-            response_cur = response_cur.replace("<|im_end|>", "")
-            #
-            # (可选) 我们可以添加一个新的日志，看看清理后的样子
-            # logging.info(f"===== CLEANED RESPONSE {response_id} START =====")
-            # logging.info(response_cur)
-            # logging.info(f"===== CLEANED RESPONSE {response_id} END =====")
-            # logging.info(f"Iteration {iter}: Processing Code Run {response_id}")
-
-            # Regex patterns to extract python code enclosed in GPT response
-            patterns = [
-                r'```python(.*?)```',
-                r'```(.*?)```',
-                r'"""(.*?)"""',
-                r'""(.*?)""',
-                r'"(.*?)"',
-            ]
-            for pattern in patterns:
-                code_string = re.search(pattern, response_cur, re.DOTALL)
-                if code_string is not None:
-                    code_string = code_string.group(1).strip()
-                    break
-            code_string = response_cur if not code_string else code_string
-
-            # Remove unnecessary imports
-            lines = code_string.split("\n")
-            for i, line in enumerate(lines):
-                if line.strip().startswith("def "):
-                    code_string = "\n".join(lines[i:])
-                    
-            # Add the Eureka Reward Signature to the environment code
-            try:
-                gpt_reward_signature, input_lst = get_function_signature(code_string)
-            except Exception as e:
-                logging.info(f"Iteration {iter}: Code Run {response_id} cannot parse function signature!")
-                continue
-
-            code_runs.append(code_string)
-            reward_signature = [
-                f"self.rew_buf[:], self.rew_dict = {gpt_reward_signature}",
-                f"self.extras['gpt_reward'] = self.rew_buf.mean()",
-                f"for rew_state in self.rew_dict: self.extras[rew_state] = self.rew_dict[rew_state].mean()",
-            ]
-            indent = " " * 8
-            reward_signature = "\n".join([indent + line for line in reward_signature])
-            if "def compute_reward(self)" in task_code_string:
-                task_code_string_iter = task_code_string.replace("def compute_reward(self):", "def compute_reward(self):\n" + reward_signature)
-            elif "def compute_reward(self, actions)" in task_code_string:
-                task_code_string_iter = task_code_string.replace("def compute_reward(self, actions):", "def compute_reward(self, actions):\n" + reward_signature)
-            else:
-                raise NotImplementedError
-
-            # Save the new environment code when the output contains valid code string!
-            with open(output_file, 'w') as file:
-                file.writelines(task_code_string_iter + '\n')
-                file.writelines("from typing import Tuple, Dict" + '\n')
-                file.writelines("import math" + '\n')
-                file.writelines("import torch" + '\n')
-                file.writelines("from torch import Tensor" + '\n')
-                if "@torch.jit.script" not in code_string:
-                    code_string = "@torch.jit.script\n" + code_string
-                file.writelines(code_string + '\n')
-
-            with open(f"env_iter{iter}_response{response_id}_rewardonly.py", 'w') as file:
-                file.writelines(code_string + '\n')
-
-            # Copy the generated environment code to hydra output directory for bookkeeping
-            shutil.copy(output_file, f"env_iter{iter}_response{response_id}.py")
-
-            # Find the freest GPU to run GPU-accelerated RL
-            set_freest_gpu()
-            
-            # Prepare environment variables with Python library path
-            env = get_env_with_python_lib()
-            
-            # Execute the python file with flags
-            rl_filepath = f"env_iter{iter}_response{response_id}.txt"
-            with open(rl_filepath, 'w') as f:
-                process = subprocess.Popen(['python', '-u', f'{ISAAC_ROOT_DIR}/train.py',  
-                                            'hydra/output=subprocess',
-                                            f'task={task}{suffix}', f'wandb_activate={cfg.use_wandb}',
-                                            f'wandb_entity={cfg.wandb_username}', f'wandb_project={cfg.wandb_project}',
-                                            f'headless={not cfg.capture_video}', f'capture_video={cfg.capture_video}', 'force_render=False',
-                                            f'max_iterations={cfg.max_iterations}', 'pipeline=gpu'],
-                                            stdout=f, stderr=f, env=env)
-            block_until_training(rl_filepath, log_status=True, iter_num=iter, response_id=response_id)
-            rl_runs.append(process)
-        
-        # Gather RL training results and construct reward reflection
-        code_feedbacks = []
-        contents = []
-        successes = []
-        reward_correlations = []
-        code_paths = []
-        
-        exec_success = False 
-        for response_id, (code_run, rl_run) in enumerate(zip(code_runs, rl_runs)):
-            rl_run.communicate()
-            rl_filepath = f"env_iter{iter}_response{response_id}.txt"
-            code_paths.append(f"env_iter{iter}_response{response_id}.py")
-            try:
-                with open(rl_filepath, 'r') as f:
-                    stdout_str = f.read() 
-            except: 
-                content = execution_error_feedback.format(traceback_msg="Code Run cannot be executed due to function signature error! Please re-write an entirely new reward function!")
-                content += code_output_tip
-                contents.append(content) 
-                successes.append(DUMMY_FAILURE)
-                reward_correlations.append(DUMMY_FAILURE)
-                continue
-
-            content = ''
-            traceback_msg = filter_traceback(stdout_str)
-
-            if traceback_msg == '':
-                # If RL execution has no error, provide policy statistics feedback
-                exec_success = True
-                lines = stdout_str.split('\n')
-                for i, line in enumerate(lines):
-                    if line.startswith('Tensorboard Directory:'):
-                        break 
-                tensorboard_logdir = line.split(':')[-1].strip() 
-                tensorboard_logs = load_tensorboard_logs(tensorboard_logdir)
-                max_iterations = np.array(tensorboard_logs['gt_reward']).shape[0]
-                epoch_freq = max(int(max_iterations // 10), 1)
-                
-                content += policy_feedback.format(epoch_freq=epoch_freq)
-                
-                # Compute Correlation between Human-Engineered and GPT Rewards
-                if "gt_reward" in tensorboard_logs and "gpt_reward" in tensorboard_logs:
-                    gt_reward = np.array(tensorboard_logs["gt_reward"])
-                    gpt_reward = np.array(tensorboard_logs["gpt_reward"])
-                    reward_correlation = np.corrcoef(gt_reward, gpt_reward)[0, 1]
-                    reward_correlations.append(reward_correlation)
-
-                # Add reward components log to the feedback
-                for metric in tensorboard_logs:
-                    if "/" not in metric:
-                        metric_cur = ['{:.2f}'.format(x) for x in tensorboard_logs[metric][::epoch_freq]]
-                        metric_cur_max = max(tensorboard_logs[metric])
-                        metric_cur_mean = sum(tensorboard_logs[metric]) / len(tensorboard_logs[metric])
-                        if "consecutive_successes" == metric:
-                            successes.append(metric_cur_max)
-                        metric_cur_min = min(tensorboard_logs[metric])
-                        if metric != "gt_reward" and metric != "gpt_reward":
-                            if metric != "consecutive_successes":
-                                metric_name = metric 
-                            else:
-                                metric_name = "task_score"
-                            content += f"{metric_name}: {metric_cur}, Max: {metric_cur_max:.2f}, Mean: {metric_cur_mean:.2f}, Min: {metric_cur_min:.2f} \n"                    
-                        else:
-                            # Provide ground-truth score when success rate not applicable
-                            if "consecutive_successes" not in tensorboard_logs:
-                                content += f"ground-truth score: {metric_cur}, Max: {metric_cur_max:.2f}, Mean: {metric_cur_mean:.2f}, Min: {metric_cur_min:.2f} \n"                    
-                code_feedbacks.append(code_feedback)
-                content += code_feedback  
-            else:
-                # Otherwise, provide execution traceback error feedback
-                successes.append(DUMMY_FAILURE)
-                reward_correlations.append(DUMMY_FAILURE)
-                content += execution_error_feedback.format(traceback_msg=traceback_msg)
-
-            content += code_output_tip
-            contents.append(content) 
-        
-        # Repeat the iteration if all code generation failed
-        if not exec_success and cfg.sample != 1:
-            execute_rates.append(0.)
-            max_successes.append(DUMMY_FAILURE)
-            max_successes_reward_correlation.append(DUMMY_FAILURE)
-            best_code_paths.append(None)
-            logging.info("All code generation failed! Repeat this iteration from the current message checkpoint!")
-            continue
-
-        # Select the best code sample based on the success rate
-        best_sample_idx = np.argmax(np.array(successes))
-        best_content = contents[best_sample_idx]
-            
-        max_success = successes[best_sample_idx]
-        max_success_reward_correlation = reward_correlations[best_sample_idx]
-        execute_rate = np.sum(np.array(successes) >= 0.) / cfg.sample
-
-        # Update the best Eureka Output
-        if max_success > max_success_overall:
-            max_success_overall = max_success
-            max_success_reward_correlation_overall = max_success_reward_correlation
-            max_reward_code_path = code_paths[best_sample_idx]
-
-        execute_rates.append(execute_rate)
-        max_successes.append(max_success)
-        max_successes_reward_correlation.append(max_success_reward_correlation)
-        best_code_paths.append(code_paths[best_sample_idx])
-
-        logging.info(f"Iteration {iter}: Max Success: {max_success}, Execute Rate: {execute_rate}, Max Success Reward Correlation: {max_success_reward_correlation}")
-        logging.info(f"Iteration {iter}: Best Generation ID: {best_sample_idx}")
-        logging.info(f"Iteration {iter}: GPT Output Content:\n" +  responses[best_sample_idx].message.content + "\n")
-        logging.info(f"Iteration {iter}: User Content:\n" + best_content + "\n")
-            
-        # Plot the success rate
-        fig, axs = plt.subplots(2, figsize=(6, 6))
-        fig.suptitle(f'{cfg.env.task}')
-
-        x_axis = np.arange(len(max_successes))
-
-        axs[0].plot(x_axis, np.array(max_successes))
-        axs[0].set_title("Max Success")
-        axs[0].set_xlabel("Iteration")
-
-        axs[1].plot(x_axis, np.array(execute_rates))
-        axs[1].set_title("Execute Rate")
-        axs[1].set_xlabel("Iteration")
-
-        fig.tight_layout(pad=3.0)
-        plt.savefig('summary.png')
-        np.savez('summary.npz', max_successes=max_successes, execute_rates=execute_rates, best_code_paths=best_code_paths, max_successes_reward_correlation=max_successes_reward_correlation)
-
-        if len(messages) == 2:
-            messages += [{"role": "assistant", "content": responses[best_sample_idx].message.content}]
-            messages += [{"role": "user", "content": best_content}]
-        else:
-            assert len(messages) == 4
-            messages[-2] = {"role": "assistant", "content": responses[best_sample_idx].message.content}
-            messages[-1] = {"role": "user", "content": best_content}
-
-        # Save dictionary as JSON file
-        with open('messages.json', 'w') as file:
-            json.dump(messages, file, indent=4)
-    
-    # Evaluate the best reward code many times
-    if max_reward_code_path is None: 
-        logging.info("All iterations of code generation failed, aborting...")
-        logging.info("Please double check the output env_iter*_response*.txt files for repeating errors!")
-        exit()
-    logging.info(f"Task: {task}, Max Training Success {max_success_overall}, Correlation {max_success_reward_correlation_overall}, Best Reward Code Path: {max_reward_code_path}")
-    logging.info(f"Evaluating best reward code {cfg.num_eval} times")
-    shutil.copy(max_reward_code_path, output_file)
-    
-    eval_runs = []
-    for i in range(cfg.num_eval):
-        set_freest_gpu()
-        
-        # Prepare environment variables with Python library path
-        env = get_env_with_python_lib()
-        
-        # Execute the python file with flags
-        rl_filepath = f"reward_code_eval{i}.txt"
-        with open(rl_filepath, 'w') as f:
-            process = subprocess.Popen(['python', '-u', f'{ISAAC_ROOT_DIR}/train.py',  
-                                        'hydra/output=subprocess',
-                                        f'task={task}{suffix}', f'wandb_activate={cfg.use_wandb}',
-                                        f'wandb_entity={cfg.wandb_username}', f'wandb_project={cfg.wandb_project}',
-                                        f'headless={not cfg.capture_video}', f'capture_video={cfg.capture_video}', 'force_render=False', f'seed={i}',
-                                        'pipeline=gpu'],
-                                        stdout=f, stderr=f, env=env)
-
-        block_until_training(rl_filepath)
-        eval_runs.append(process)
-
-    reward_code_final_successes = []
-    reward_code_correlations_final = []
-    for i, rl_run in enumerate(eval_runs):
-        rl_run.communicate()
-        rl_filepath = f"reward_code_eval{i}.txt"
-        with open(rl_filepath, 'r') as f:
-            stdout_str = f.read() 
-        lines = stdout_str.split('\n')
-        for i, line in enumerate(lines):
-            if line.startswith('Tensorboard Directory:'):
-                break 
-        tensorboard_logdir = line.split(':')[-1].strip() 
-        tensorboard_logs = load_tensorboard_logs(tensorboard_logdir)
-        max_success = max(tensorboard_logs['consecutive_successes'])
-        reward_code_final_successes.append(max_success)
-
-        if "gt_reward" in tensorboard_logs and "gpt_reward" in tensorboard_logs:
-            gt_reward = np.array(tensorboard_logs["gt_reward"])
-            gpt_reward = np.array(tensorboard_logs["gpt_reward"])
-            reward_correlation = np.corrcoef(gt_reward, gpt_reward)[0, 1]
-            reward_code_correlations_final.append(reward_correlation)
-
-    logging.info(f"Final Success Mean: {np.mean(reward_code_final_successes)}, Std: {np.std(reward_code_final_successes)}, Raw: {reward_code_final_successes}")
-    logging.info(f"Final Correlation Mean: {np.mean(reward_code_correlations_final)}, Std: {np.std(reward_code_correlations_final)}, Raw: {reward_code_correlations_final}")
-    np.savez('final_eval.npz', reward_code_final_successes=reward_code_final_successes, reward_code_correlations_final=reward_code_correlations_final)
-
+    # [省略 Evaluation Loop，保持原样]
 
 if __name__ == "__main__":
     main()

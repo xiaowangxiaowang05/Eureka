@@ -1,0 +1,30 @@
+model: qwen3-max
+model_vlm: qwen3-vl-plus
+temperature: 1.0
+suffix: Qwen
+iteration: 2
+sample: 2
+max_iterations: 30
+num_eval: 5
+capture_video: true
+evolution:
+  generations: ${iteration}
+  population_size: ${sample}
+  elite_fraction: 0.25
+  mutation_ratio: 0.5
+  crossover_ratio: 0.6
+  tournament_size: 2
+video:
+  rollout_len: 20
+  headless: true
+  force_render: true
+gpu_id: '1'
+vlm:
+  max_retries: 3
+use_wandb: false
+wandb_username: ''
+wandb_project: ''
+env:
+  task: ShadowHand
+  env_name: shadow_hand
+  description: to make the shadow hand spin the object to a target orientation

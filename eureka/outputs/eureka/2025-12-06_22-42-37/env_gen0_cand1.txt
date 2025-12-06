@@ -1,0 +1,95 @@
+Importing module 'gym_38' (/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/gym_38.so)
+Setting GYM_USD_PLUG_INFO_PATH to /home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/usd/plugInfo.json
+PyTorch version 2.0.0+cu117
+Device count 1
+/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/src/gymtorch
+Using /home/wangyuhang/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Emitting ninja build file /home/wangyuhang/.cache/torch_extensions/py38_cu117/gymtorch/build.ninja...
+Building extension module gymtorch...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+ninja: no work to do.
+Loading extension module gymtorch...
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+2025-12-06 22:43:26,883 - INFO - logger - logger initialized
+<unknown>:3: DeprecationWarning: invalid escape sequence \*
+Error: FBX library failed to load - importing FBX data will not succeed. Message: No module named 'fbx'
+FBX tools must be installed from https://help.autodesk.com/view/FBX/2020/ENU/?guid=FBX_Developer_Help_scripting_with_python_fbx_installing_python_fbx_html
+/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/train.py:75: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_name="config", config_path="./cfg")
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/hydra/_internal/defaults_list.py:415: UserWarning: In config: Invalid overriding of hydra/job_logging:
+Default list overrides requires 'override' keyword.
+See https://hydra.cc/docs/1.2/upgrades/1.0_to_1.1/defaults_list_override for more information.
+
+  deprecation_warning(msg)
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/hydra/_internal/hydra.py:119: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/utils/tensorboard/__init__.py:4: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if not hasattr(tensorboard, "__version__") or LooseVersion(
+Setting seed: 1
+Network Directory: /home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-06_22-42-37/policy-2025-12-06_22-43-28/runs/ShadowHandQwen-2025-12-06_22-43-28/nn
+Tensorboard Directory: /home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-06_22-42-37/policy-2025-12-06_22-43-28/runs/ShadowHandQwen-2025-12-06_22-43-28/summaries
+self.seed = 1
+Started to train
+Obs type: full_state
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/gym/spaces/box.py:84: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+[Warning] [carb.gym.plugin] useGpu is set, forcing single scene (0 subscenes)
+Not connected to PVD
++++ Using GPU PhysX
+Physics Engine: PhysX
+Physics Device: cuda:0
+GPU Pipeline: enabled
+/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/shadow_handqwen.py:211: DeprecationWarning: an integer is required (got type isaacgym._bindings.linux-x86_64.gym_38.DofDriveMode).  Implicit conversion to integers using __int__ is deprecated, and may be removed in a future version of Python.
+  asset_options.default_dof_drive_mode = gymapi.DOF_MODE_NONE
+JointSpec type free not yet supported!
+JointSpec type free not yet supported!
+JointSpec type free not yet supported!
+[Error] [carb.gym.plugin] *** Could not create contact graph to compute collision filters! Are contacts specified properly?
+
+JointSpec type free not yet supported!
+JointSpec type free not yet supported!
+[Error] [carb.gym.plugin] *** Could not create contact graph to compute collision filters! Are contacts specified properly?
+
+Box(-1.0, 1.0, (20,), float32) Box(-inf, inf, (211,), float32)
+current training device: cuda:0
+build mlp: 211
+RunningMeanStd:  (1,)
+RunningMeanStd:  (211,)
+fps step: 34496 fps step and policy inference: 33964 fps total: 31989 epoch: 1/30 frames: 0
+fps step: 96720 fps step and policy inference: 93711 fps total: 80550 epoch: 2/30 frames: 131072
+fps step: 87203 fps step and policy inference: 84570 fps total: 73534 epoch: 3/30 frames: 262144
+fps step: 81184 fps step and policy inference: 78593 fps total: 68911 epoch: 4/30 frames: 393216
+fps step: 82790 fps step and policy inference: 79982 fps total: 69606 epoch: 5/30 frames: 524288
+fps step: 92133 fps step and policy inference: 88913 fps total: 76186 epoch: 6/30 frames: 655360
+fps step: 83941 fps step and policy inference: 81465 fps total: 70191 epoch: 7/30 frames: 786432
+fps step: 76144 fps step and policy inference: 74124 fps total: 65631 epoch: 8/30 frames: 917504
+fps step: 67376 fps step and policy inference: 64944 fps total: 57095 epoch: 9/30 frames: 1048576
+fps step: 73630 fps step and policy inference: 71612 fps total: 63103 epoch: 10/30 frames: 1179648
+fps step: 90674 fps step and policy inference: 87400 fps total: 75012 epoch: 11/30 frames: 1310720
+fps step: 71921 fps step and policy inference: 69727 fps total: 62227 epoch: 12/30 frames: 1441792
+fps step: 84840 fps step and policy inference: 82143 fps total: 71291 epoch: 13/30 frames: 1572864
+fps step: 83734 fps step and policy inference: 81160 fps total: 71386 epoch: 14/30 frames: 1703936
+fps step: 99880 fps step and policy inference: 97656 fps total: 87778 epoch: 15/30 frames: 1835008
+fps step: 126822 fps step and policy inference: 123381 fps total: 101432 epoch: 16/30 frames: 1966080
+fps step: 98780 fps step and policy inference: 95177 fps total: 81181 epoch: 17/30 frames: 2097152
+fps step: 103772 fps step and policy inference: 100146 fps total: 87986 epoch: 18/30 frames: 2228224
+fps step: 132806 fps step and policy inference: 128108 fps total: 106099 epoch: 19/30 frames: 2359296
+fps step: 108931 fps step and policy inference: 104984 fps total: 90291 epoch: 20/30 frames: 2490368
+fps step: 116920 fps step and policy inference: 112608 fps total: 95270 epoch: 21/30 frames: 2621440
+fps step: 112982 fps step and policy inference: 108876 fps total: 92476 epoch: 22/30 frames: 2752512
+fps step: 108536 fps step and policy inference: 104800 fps total: 89837 epoch: 23/30 frames: 2883584
+fps step: 116891 fps step and policy inference: 112517 fps total: 95212 epoch: 24/30 frames: 3014656
+fps step: 115963 fps step and policy inference: 111640 fps total: 94417 epoch: 25/30 frames: 3145728
+fps step: 117489 fps step and policy inference: 113096 fps total: 95532 epoch: 26/30 frames: 3276800
+fps step: 121758 fps step and policy inference: 117054 fps total: 98550 epoch: 27/30 frames: 3407872
+fps step: 122523 fps step and policy inference: 117736 fps total: 98920 epoch: 28/30 frames: 3538944
+fps step: 118547 fps step and policy inference: 114086 fps total: 96296 epoch: 29/30 frames: 3670016
+fps step: 124790 fps step and policy inference: 119910 fps total: 100324 epoch: 30/30 frames: 3801088
+=> saving checkpoint 'runs/ShadowHandQwen-2025-12-06_22-43-28/nn/last_ShadowHandQwen_ep_30.pth'
+MAX EPOCHS NUM!

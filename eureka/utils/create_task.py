@@ -8,8 +8,15 @@ def create_task(root_dir, task, env_name, suffix):
     # Create task YAML file 
     input_file = f"{root_dir}/cfg/task/{task}.yaml"
     output_file = f"{root_dir}/cfg/task/{task}{suffix}.yaml"
+    
+    import os
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"Task YAML file not found: {input_file}")
+    
     with open(input_file, 'r') as yamlfile:
         data = yaml.safe_load(yamlfile)
+        if data is None:
+            raise ValueError(f"Failed to parse YAML file: {input_file}")
 
     # Modify the "name" field
     data['name'] = f'{task}{suffix}'
@@ -22,9 +29,14 @@ def create_task(root_dir, task, env_name, suffix):
     # Create training YAML file
     input_file = f"{root_dir}/cfg/train/{task}PPO.yaml"
     output_file = f"{root_dir}/cfg/train/{task}{suffix}PPO.yaml"
+    
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"Training YAML file not found: {input_file}")
 
     with open(input_file, 'r') as yamlfile:
         data = yaml.safe_load(yamlfile)
+        if data is None:
+            raise ValueError(f"Failed to parse YAML file: {input_file}")
 
     # Modify the "name" field
     data['params']['config']['name'] = data['params']['config']['name'].replace(task, f'{task}{suffix}')

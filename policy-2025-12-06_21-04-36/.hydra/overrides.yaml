@@ -1,0 +1,10 @@
+- task=ShadowHand
+- headless=False
+- force_render=Ture
+- capture_video=True
+- capture_video_freq=1
+- capture_video_len=100
+- task.env.enableCameraSensors=True
+- graphics_device_id=0
+- test=True
+- num_envs=1

@@ -367,7 +367,7 @@ class ShadowHandGPT(VecTask):
         self.goal_object_indices = to_torch(self.goal_object_indices, dtype=torch.long, device=self.device)
 
     def compute_reward(self, actions):
-        self.rew_buf[:], self.rew_dict = compute_reward(self.object_rot, self.goal_rot, self.object_angvel, self.actions, self.object_linvel)
+        self.rew_buf[:], self.rew_dict = compute_reward(self.object_rot, self.goal_rot, self.fingertip_pos, self.object_pos)
         self.extras['gpt_reward'] = self.rew_buf.mean()
         for rew_state in self.rew_dict: self.extras[rew_state] = self.rew_dict[rew_state].mean()
         self.rew_buf[:] = compute_bonus(
@@ -763,38 +763,32 @@ import math
 import torch
 from torch import Tensor
 @torch.jit.script
-def compute_reward(object_rot: torch.Tensor, goal_rot: torch.Tensor, object_angvel: torch.Tensor, actions: torch.Tensor, object_linvel: torch.Tensor) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
-    # Compute orientation error using quaternion difference
-    quat_diff = quat_mul(object_rot, quat_conjugate(goal_rot))
-    rot_error = 2.0 * torch.asin(torch.clamp(torch.norm(quat_diff[:, 0:3], p=2, dim=-1), max=1.0))
+def compute_reward(object_rot: torch.Tensor, goal_rot: torch.Tensor, fingertip_pos: torch.Tensor, object_pos: torch.Tensor) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+    device = object_rot.device
     
-    # Main goal reward: encourage alignment with target orientation
-    rot_reward_temp = 2.0
-    rot_reward = torch.exp(-rot_error * rot_reward_temp)
+    # Distance between object rotation and goal rotation
+    object_goal_rot_diff = torch.norm(object_rot - goal_rot, dim=1)
     
-    # Penalize excessive angular velocity (for stability)
-    angvel_penalty_temp = 0.1
-    angvel_penalty = torch.sum(torch.square(object_angvel), dim=-1)
-    angvel_reward = torch.exp(-angvel_penalty * angvel_penalty_temp)
+    # Distance between each fingertip and the object
+    fingertip_object_diff = torch.norm(fingertip_pos - object_pos.unsqueeze(1), dim=2)
+    avg_fingertip_object_diff = fingertip_object_diff.mean(dim=1)
     
-    # Penalize large actions (for smooth control)
-    action_penalty_temp = 0.01
-    action_penalty = torch.sum(torch.square(actions), dim=-1)
-    action_reward = torch.exp(-action_penalty * action_penalty_temp)
+    # Reward Components
+    rot_reward = -object_goal_rot_diff
+    fingertip_reward = -avg_fingertip_object_diff
     
-    # Penalize linear movement of the object (keep it centered while spinning)
-    linvel_penalty_temp = 1.0
-    linvel_penalty = torch.sum(torch.square(object_linvel), dim=-1)
-    linvel_reward = torch.exp(-linvel_penalty * linvel_penalty_temp)
+    # Temperature parameters for reward normalization
+    rot_temperature = torch.tensor(1.0).to(device)
+    fingertip_temperature = torch.tensor(1.0).to(device)
     
-    # Combine rewards
-    total_reward = rot_reward * angvel_reward * action_reward * linvel_reward
+    # Normalize reward components using exponential function
+    rot_reward_normalized = torch.exp(rot_reward / rot_temperature)
+    fingertip_reward_normalized = torch.exp(fingertip_reward / fingertip_temperature)
     
-    reward_dict = {
-        "rot_reward": rot_reward,
-        "angvel_reward": angvel_reward,
-        "action_reward": action_reward,
-        "linvel_reward": linvel_reward
-    }
+    # Combine normalized rewards
+    total_reward = rot_reward_normalized + fingertip_reward_normalized
+    
+    # Store individual reward components in a dictionary
+    reward_dict = {"rot_reward": rot_reward_normalized, "fingertip_reward": fingertip_reward_normalized}
     
     return total_reward, reward_dict

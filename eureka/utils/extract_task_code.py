@@ -1,8 +1,14 @@
 import re 
 
 def file_to_string(filename):
-    with open(filename, 'r') as file:
-        return file.read()
+    """Read file content to string with error handling."""
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            return file.read()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {filename}")
+    except Exception as e:
+        raise IOError(f"Error reading file {filename}: {e}")
     
 def extract_task_code(filename):
     in_code = False
