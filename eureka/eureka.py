@@ -9,13 +9,11 @@ import shutil
 import subprocess
 import sysconfig
 import time
-import concurrent.futures  # 新增：用于并行 VLM 请求
+import concurrent.futures
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-
 from openai import OpenAI
-
 from utils.create_task import create_task
 from utils.extract_task_code import *
 from utils.file_utils import find_files_with_substring, load_tensorboard_logs
@@ -23,26 +21,19 @@ from utils.misc import *
 from utils.video_utils import record_policy_rollout
 from utils.vlm_utils import VLMClient, VLMResult
 
-
-# Get the absolute path of the eureka package directory
-# This ensures the path is correct even when Hydra changes the working directory
 _EUREKA_PACKAGE_DIR = Path(__file__).parent.resolve()
-EUREKA_ROOT_DIR = _EUREKA_PACKAGE_DIR.parent.resolve()  # Go up one level from eureka/ to Eureka/
+EUREKA_ROOT_DIR = _EUREKA_PACKAGE_DIR.parent.resolve()
 ISAAC_ROOT_DIR = EUREKA_ROOT_DIR / "isaacgymenvs" / "isaacgymenvs"
 
 def get_env_with_python_lib():
     """Prepare environment variables with Python library path and CUDA paths for subprocess calls."""
     env = os.environ.copy()
-    # Collect all library paths to add
     lib_paths = []
-    # Add Python lib directory to LD_LIBRARY_PATH
     python_lib_dir = None
-    # Try to find Python lib directory
     lib_dir = sysconfig.get_config_var('LIBDIR')
     if lib_dir and os.path.exists(lib_dir):
         python_lib_dir = lib_dir
     else:
-        # Fallback: try conda environment
         conda_prefix = os.environ.get('CONDA_PREFIX')
         if conda_prefix:
             conda_lib = os.path.join(conda_prefix, 'lib')
@@ -50,10 +41,9 @@ def get_env_with_python_lib():
                 python_lib_dir = conda_lib
     if python_lib_dir:
         lib_paths.append(python_lib_dir)
-    # Add CUDA library paths to ensure GPU acceleration works
     cuda_paths = []
     possible_cuda_paths = [
-        '/usr/lib/wsl/lib',  # WSL2
+        '/usr/lib/wsl/lib',
         '/usr/local/cuda/lib64',
         '/usr/local/cuda/lib',
         '/usr/lib/x86_64-linux-gnu',
@@ -156,8 +146,6 @@ class PopulationMember:
             return float(self.artifact.success_metric)
         return float('-inf')
 
-# ... [保留辅助函数 _clean_response_text, _extract_reward_code, _inject_reward_signature, _write_candidate_files, _find_line_value, _summarize_tensorboard_logs, _locate_checkpoint] ...
-
 def _clean_response_text(raw_response: str) -> str:
     cleaned_text = re.sub(r'<think>.*?</think>', '', raw_response, flags=re.DOTALL)
     return cleaned_text.replace("<|im_end|>", "").strip()
@@ -199,9 +187,8 @@ def _inject_reward_signature(task_code_template: str, reward_signature: str) -> 
         needle = "def compute_reward(self, actions):"
         return task_code_template.replace(needle, f"{needle}\n{reward_block}", 1)
     if "def compute_reward(" in task_code_template:
-         # Try generic injection if exact match fails, though template specific is safer
          pass
-    return task_code_template # Fallback: let user prompt handle it or use specific environment hooks
+    return task_code_template
 
 def _write_candidate_files(
     *,
@@ -216,12 +203,10 @@ def _write_candidate_files(
     task_code_string_iter = _inject_reward_signature(base_task_code, reward_signature)
     if "@torch.jit.script" not in reward_code:
         reward_code = "@torch.jit.script\n" + reward_code
-    
-    # Safety replacement for potential LLM signature errors
     task_code_string_iter = task_code_string_iter.replace(
         "def compute_reward(self):", 
         "def compute_reward(self, actions):" 
-    ) # Basic patch, relies heavily on prompt correctness
+    )
 
     with open(output_file, "w") as file:
         file.writelines(task_code_string_iter + "\n")
@@ -306,8 +291,6 @@ def _locate_checkpoint(network_dir: Optional[str]) -> Optional[Path]:
     return checkpoints[-1] if checkpoints else None
 
 
-# ================= 重构的核心部分开始 =================
-
 @dataclass
 class TrainingJob:
     process: subprocess.Popen
@@ -329,7 +312,6 @@ def _launch_candidate_training(
     suffix: str,
     cfg,
 ) -> TrainingJob:
-    """阶段1: 准备文件并启动训练进程 (不等待结束)"""
     log_file = workspace_dir / f"env_gen{generation}_cand{candidate_idx}.txt"
     
     try:
@@ -338,7 +320,6 @@ def _launch_candidate_training(
             raise ValueError("No function definition found in reward code")
         reward_signature, _ = result
     except Exception as exc:
-        # 如果代码解析失败，直接抛出异常，外层捕获处理
         raise ValueError(f"Failed to parse reward signature: {exc}") from exc
 
     env_metadata = _write_candidate_files(
@@ -357,44 +338,46 @@ def _launch_candidate_training(
         workspace_dir=workspace_dir,
     )
 
-    # set_freest_gpu() # 在并行训练时，这一步通常由系统或 hydra 自动分配，或者所有进程共享 GPU
     env_vars = get_env_with_python_lib()
-    
-    # 从配置中获取GPU ID（可以通过命令行参数覆盖，例如: gpu_id=1）
-    target_gpu_id = str(cfg.gpu_id)  # 支持 "1" 或 "0,1" 格式
-    
-    print(f"🚀 Launching training on GPU {target_gpu_id}") # 打印提示
-    env_vars["CUDA_VISIBLE_DEVICES"] = target_gpu_id
+    env_vars["PYTHONUNBUFFERED"] = "1"
 
-    cmd = [
-        "python",
-        "-u",
+    gpu_list = [g.strip() for g in str(cfg.gpu_id).split(",")]
+    num_gpus = len(gpu_list)
+    
+    # 为每个candidate分配单个GPU（轮询分配）
+    assigned_gpu_idx = candidate_idx % num_gpus
+    assigned_gpu_id = gpu_list[assigned_gpu_idx]
+    env_vars["CUDA_VISIBLE_DEVICES"] = assigned_gpu_id
+    
+    # 为每个candidate分配不同的端口，避免冲突
+    base_port = 29500
+    master_port = base_port + candidate_idx
+
+    base_args = [
         f"{isaac_root_dir}/train.py",
         "hydra/output=subprocess",
         f"task={task}{suffix}",
         f"wandb_activate={cfg.use_wandb}",
         f"wandb_entity={cfg.wandb_username}",
         f"wandb_project={cfg.wandb_project}",
-        "headless=True",  # 训练阶段强制无头模式，避免多进程渲染资源争抢
-        "capture_video=False",  # 训练阶段不录制视频，视频录制在评估阶段进行
+        "headless=True",
+        "capture_video=False",
         "force_render=False",
         f"max_iterations={cfg.max_iterations}",
         "pipeline=gpu",
-        f"seed={candidate_idx}", # 确保种子不同
-        # ⚠️ 重要：当设置了 CUDA_VISIBLE_DEVICES 后，Isaac Gym 只能看到被映射的GPU
-        # 例如：CUDA_VISIBLE_DEVICES=1 后，物理GPU 1 被映射为逻辑GPU 0
-        # 此时 graphics_device_id 必须使用逻辑GPU ID（0），而不是物理GPU ID（1）
-        # 否则会出现 "invalid device ordinal" 错误导致段错误
-        "graphics_device_id=0",  # 使用逻辑GPU ID（设置CUDA_VISIBLE_DEVICES后总是映射为0）
-        "sim_device=cuda:0",     # 显式设置物理设备（CUDA_VISIBLE_DEVICES=1后，物理GPU1映射为cuda:0）
-        "rl_device=cuda:0",      # 显式设置RL设备
+        f"seed={candidate_idx}",
+        "graphics_device_id=0",
+        "sim_device=cuda:0",
+        "rl_device=cuda:0",
     ]
 
-    # 启动进程
+    # 每个candidate使用单GPU训练
+    cmd = ["python", "-u"] + base_args
+    logging.info(f"Candidate {candidate_idx}: Using single GPU {assigned_gpu_id} (port {master_port})")
+
     with open(log_file, "w") as f:
         process = subprocess.Popen(cmd, stdout=f, stderr=f, env=env_vars)
 
-    # 稍微阻塞一下确保日志文件创建，避免 race condition
     block_until_training(str(log_file), log_status=False, iter_num=generation, response_id=candidate_idx)
     
     logging.info(f"Launched training for Gen {generation} Candidate {candidate_idx}")
@@ -412,12 +395,7 @@ def _harvest_training_artifact(
     policy_feedback_template: str,
     execution_error_feedback: str,
 ) -> TrainingArtifact:
-    """阶段2: 等待进程结束并收集结果"""
-    
-    # 等待训练完成 (这是阻塞的，但我们在外层循环中对所有 job 调用)
     job.process.wait()
-    
-    # 读取日志
     stdout_str = job.log_file.read_text() if job.log_file.exists() else ""
     traceback_msg = filter_traceback(stdout_str)
 
@@ -474,13 +452,11 @@ def _evaluate_population(
     policy_feedback_template: str,
     execution_error_feedback: str,
     vlm_client: VLMClient,
-) -> List[PopulationMember]:
+    ) -> List[PopulationMember]:
     
-    # --- 步骤 2: 并行训练 (Batch Train) ---
     logging.info(f"Starting parallel training for {len(code_samples)} candidates...")
     running_jobs: List[Optional[TrainingJob]] = []
     
-    # 启动所有训练任务
     for idx, sample in enumerate(code_samples):
         try:
             job = _launch_candidate_training(
@@ -500,7 +476,6 @@ def _evaluate_population(
             logging.exception(f"Failed to launch training for candidate {idx}: {exc}")
             running_jobs.append(None)
 
-    # 等待所有任务完成并收集 Artifacts
     logging.info("Waiting for all training jobs to finish...")
     artifacts: List[Optional[TrainingArtifact]] = []
     
@@ -520,28 +495,11 @@ def _evaluate_population(
             logging.exception(f"Error collecting results for candidate {i}: {exc}")
             artifacts.append(None)
 
-    # --- 步骤 3: 评估阶段 - 串行视频录制 (Serial Video Recording) ---
-    # 训练阶段已完成，所有策略的checkpoint已保存。
-    # 现在进入评估阶段：对每个策略的最佳checkpoint串行录制视频（避免渲染资源争抢）。
-    # 注意：由于 Isaac Gym 的 OpenGL 渲染限制，多进程并行渲染极易导致 crash。
-    # 因此采用串行方式逐个录制视频。
-    # 每个策略单独运行在环境中（test=True, num_envs=1），录制完成后视频保存到路径中。
-    logging.info("=" * 80)
     logging.info("Training phase completed. Starting evaluation phase...")
-    if cfg.capture_video:
-        logging.info("Recording videos for all candidates (serial mode to avoid rendering conflicts)...")
-        logging.info("Each policy runs individually in the environment to record video.")
-    else:
-        logging.info("Video recording is disabled (capture_video=False). Skipping video recording.")
-    logging.info("=" * 80)
     for idx, artifact in enumerate(artifacts):
-        # 只有当训练成功生成了 checkpoint 才录像
         if artifact and artifact.checkpoint_path and cfg.capture_video:
             try:
                 logging.info(f"[{idx+1}/{len(artifacts)}] Recording video for Candidate {idx}...")
-                
-                # 显式传递配置中的 headless 设置
-                # 注意：cfg.video.headless 通常在 config.yaml 里设为 True (服务器环境)
                 video_path = record_policy_rollout(
                     isaac_root_dir=Path(isaac_root_dir),
                     workspace_dir=workspace_dir,
@@ -552,56 +510,40 @@ def _evaluate_population(
                     wandb_project=cfg.wandb_project,
                     env=get_env_with_python_lib(),
                     rollout_steps=cfg.video.rollout_len,
-                    
-                    # 这里传递配置值，具体的 xvfb/headless 转换逻辑交给 video_utils 处理
                     headless=cfg.video.headless, 
                     force_render=cfg.video.force_render,
-                    
                     seed=idx,
-                    gpu_id=str(cfg.gpu_id),  # 传递GPU配置
+                    gpu_id=str(cfg.gpu_id),
                 )
                 
                 if video_path and video_path.exists():
                     artifact.video_path = video_path
                 else:
-                    logging.warning(f"⚠️ Video recording failed for candidate {idx}")
+                    logging.warning(f"Video recording failed for candidate {idx}")
                     artifact.video_path = None
-
             except Exception as exc:
-                logging.warning(f"❌ Exception recording candidate {idx}: {exc}")
+                logging.warning(f"Exception recording candidate {idx}: {exc}")
                 artifact.video_path = None
         else:
             if artifact:
                 artifact.video_path = None
 
-    # --- 步骤 4: 评估阶段 - 并行 VLM 打分 (Parallel VLM Eval) ---
-    # 所有视频录制完成并保存到路径后，现在进行 VLM 评估
-    # 视频文件已经保存在 artifact.video_path 中，这里读取路径并提交给 VLM
-    logging.info("=" * 80)
     if cfg.capture_video:
-        logging.info("Video recording completed. All videos saved to paths.")
-        logging.info("Starting parallel VLM evaluation using saved video paths...")
-    else:
-        logging.info("Skipping VLM evaluation (no videos recorded, capture_video=False).")
-    logging.info("=" * 80)
+        logging.info("Video recording completed. Starting parallel VLM evaluation...")
     
-    # 准备 VLM 任务
     vlm_results_map: Dict[int, VLMResult] = {}
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=min(16, len(code_samples))) as executor:
         future_to_idx = {}
         for idx, artifact in enumerate(artifacts):
             if artifact and artifact.video_path:
-                # 验证视频文件确实存在于保存的路径中
                 if not artifact.video_path.exists():
                     logging.warning(f"Video file not found for candidate {idx} at saved path: {artifact.video_path}")
                     continue
-                # 从保存的路径读取视频并提交给 VLM 评估
-                # 视频已经在步骤3中录制完成并保存到 artifact.video_path
-                logging.info(f"Submitting saved video to VLM for candidate {idx}: {artifact.video_path}")
+                logging.info(f"Submitting video to VLM for candidate {idx}: {artifact.video_path}")
                 future = executor.submit(
                     vlm_client.evaluate, 
-                    str(artifact.video_path),  # 使用保存的视频文件路径
+                    str(artifact.video_path),
                     extra_prompt=artifact.stats_text,
                     max_retries=cfg.vlm.max_retries
                 )
@@ -609,7 +551,6 @@ def _evaluate_population(
             else:
                 logging.info(f"Skipping VLM for candidate {idx} (no video path saved).")
 
-        # 收集 VLM 结果
         for future in concurrent.futures.as_completed(future_to_idx):
             idx = future_to_idx[future]
             try:
@@ -617,14 +558,12 @@ def _evaluate_population(
                 vlm_results_map[idx] = result
                 logging.info(f"VLM evaluated candidate {idx}: Score {result.fitness_score}")
             except Exception as exc:
-                # 记录更详细的错误信息
                 error_msg = str(exc)
                 if len(error_msg) > 500:
                     error_msg = error_msg[:500] + "..."
                 logging.error(f"VLM evaluation failed for candidate {idx}: {error_msg}")
                 logging.debug(f"Full exception for candidate {idx}:", exc_info=True)
 
-    # 组装最终种群
     population: List[PopulationMember] = []
     for idx, sample in enumerate(code_samples):
         member = PopulationMember(
@@ -637,11 +576,6 @@ def _evaluate_population(
         population.append(member)
 
     return population
-
-# ================= 重构的核心部分结束 =================
-
-# [后面的 _select_elites, _tournament_select, _spawn_mutation_child, _spawn_crossover_child, _generate_llm_samples, main 函数逻辑保持不变]
-# [为了确保代码完整运行，请将原来的这些函数原封不动地放在这里]
 
 def _select_elites(population: List[PopulationMember], elite_count: int) -> List[PopulationMember]:
     if elite_count <= 0:
@@ -752,16 +686,13 @@ def _generate_llm_samples(
 def main(cfg):
     workspace_dir = Path.cwd()
     logging.info(f"Workspace: {workspace_dir}")
-    logging.info(f"Project Root: {EUREKA_ROOT_DIR}")
 
-    # LLM Client (用于写代码)
     llm_client = OpenAI(
         api_key=os.getenv("DASHSCOPE_API_KEY"),
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         timeout=300.0,
     )
 
-    # VLM Client (用于看视频)
     vlm_api_client = OpenAI(
         api_key=os.getenv("DASHSCOPE_API_KEY"),
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -819,13 +750,11 @@ def main(cfg):
     elite_fraction = float(evo_cfg.elite_fraction)
     elite_count = max(1, int(round(population_size * elite_fraction)))
 
-    # Handle null/None model_vlm from config
     model_vlm = cfg.model_vlm if cfg.model_vlm is not None else "mock"
-    # Load VLM prompt template from prompts directory (consistent with LLM prompts)
     vlm_client = VLMClient(
         model_name=model_vlm,
         task_description=task_description,
-        prompt_dir=prompt_dir,  # Use the same prompt_dir as LLM prompts
+        prompt_dir=prompt_dir,
         openai_client=None if model_vlm and str(model_vlm).lower() == "mock" else vlm_api_client,
     )
 
@@ -956,8 +885,6 @@ def main(cfg):
     with open("champion.json", "w") as file:
         json.dump(champion_report, file, indent=2)
     logging.info("Champion summary: %s", champion_report)
-    
-    # [省略 Evaluation Loop，保持原样]
 
 if __name__ == "__main__":
     main()
