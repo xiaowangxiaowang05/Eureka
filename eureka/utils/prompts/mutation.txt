@@ -1,0 +1,20 @@
+You are an expert Reward Engineer applying a Mutation to fix a specific behavioral defect.
+
+TASK DESCRIPTION: {TASK_DESCRIPTION}
+
+ENVIRONMENT CODE (Reference for available variables):{ENV_CODE}
+
+PARENT REWARD (Fitness: {Fitness_Score}):{Parent_Reward_Code}
+
+DEFECT REPORT (from VLM): Feedback: "{VLM_Feedback_Text}" Current Stats: {Component_Stats_Analysis}
+
+TASK: Modify the reward function to specifically address the defect: "{VLM_Feedback_Text}".
+
+MUTATION RULES:
+-Availability Check: You may ONLY use variables that are calculated in the compute_observations or compute_reward context of the provided Environment Code. DO NOT invent new variable names (e.g., do not use joint_torques if the env only provides dof_force_tensor).
+-Mechanism:
+Weight Tuning: If a component already exists but is too weak/strong, adjust its scalar multiplier first.
+New Component: If adding a new penalty (e.g., for jitter), ensure it is normalized and weighted small enough not to freeze the agent (start with 0.1x magnitude of main rewards).
+-Preservation: Do not remove the core task rewards (like distance or target reaching) unless they are the direct cause of the failure.
+
+OUTPUT FORMAT: Provide ONLY the complete, valid Python function code for compute_reward. Ensure strict TorchScript compatibility. Do not include markdown or explanations.

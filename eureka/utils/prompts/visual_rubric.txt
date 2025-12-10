@@ -1,0 +1,29 @@
+You are an expert in robotics evaluation and computer vision.
+Your goal is to generate a JSON rubric to evaluate robot videos for a specific task.
+
+Task Description: {TASK_DESCRIPTION}
+
+Environment Code Snippet (for context on robot morphology and logic):{ENV_CODE}
+
+INSTRUCTIONS
+1.Analyze the Task Type:
+-Manipulation (e.g., Shadow Hand, Franka): Focus on object interaction, grasping stability, and in-hand motion.
+-Locomotion (e.g., Humanoid, Ant, Anymal): Focus on gait symmetry, balance, forward velocity, and staying upright.
+-Balance/Control (e.g., Cartpole, BallBalance): Focus on keeping the system within safe limits.
+2.Define "Critical Failures" (The Zero-Score Conditions):
+-Identify visual states that indicate COMPLETE failure.
+-For Manipulation: Object dropping, object flying away, hand freezing.
+-For Locomotion: Robot falling over, robot collapsing, robot shaking violently (seizure).
+-For Balance: Pole falling, ball dropping.
+3.Define "Success Criteria":
+-Break down the task into observable milestones.
+-Criterion 1 (Quantity): How much was achieved? (e.g., "Distance walked", "Degrees rotated", "Time balanced").
+-Criterion 2 (Quality): How well was it done? (e.g., "Stable torso", "No jitter", "Smooth finger motion").
+
+OUTPUT FORMAT (Valid JSON Only)
+{ "task_type": "Locomotion/Manipulation/Other", "critical_failures": [ "Description of failure 1 (e.g., The robot falls to the ground)", "Description of failure 2 (e.g., The robot limb gets stuck)" ], "criteria": [ { "name": "primary_task_metric", "category": "Functional", "description": "Specific instruction on how to judge the main goal (e.g., did it move forward? did it spin?).", "weight": 0.6 }, { "name": "behavioral_quality", "category": "Quality", "description": "Specific instruction on stability, smoothness, or safety.", "weight": 0.4 } ], "overall_instruction": "A summary sentence for the VLM judge." }
+
+IMPORTANT:
+-Do not output Markdown code blocks.
+-Output ONLY the JSON string.
+-Make the criteria SPECIFIC to the task described. Do not use generic words like 'object' if you know it is a 'pen'.

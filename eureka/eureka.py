@@ -10,105 +10,64 @@ import subprocess
 import sysconfig
 import time
 import concurrent.futures
+from http import HTTPStatus
+import matplotlib
+matplotlib.use("Agg")  # Ensure plotting works without a display
+import matplotlib.pyplot as plt
+
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from openai import OpenAI
-from utils.create_task import create_task
-from utils.extract_task_code import *
-from utils.file_utils import find_files_with_substring, load_tensorboard_logs
-from utils.misc import *
-from utils.video_utils import record_policy_rollout
-from utils.vlm_utils import VLMClient, VLMResult
+import dashscope
 
+# Import original utility functions (keeping original directory structure)
+from utils.create_task import create_task
+from utils.extract_task_code import file_to_string, get_function_signature
+from utils.file_utils import load_tensorboard_logs, filter_traceback
+from utils.misc import block_until_training
+from utils.video_utils import record_policy_rollout
+
+# Constants
 _EUREKA_PACKAGE_DIR = Path(__file__).parent.resolve()
 EUREKA_ROOT_DIR = _EUREKA_PACKAGE_DIR.parent.resolve()
 ISAAC_ROOT_DIR = EUREKA_ROOT_DIR / "isaacgymenvs" / "isaacgymenvs"
 
+# ==========================================
+# 1. Core Utility Functions: Environment
+# ==========================================
+
 def get_env_with_python_lib():
-    """Prepare environment variables with Python library path and CUDA paths for subprocess calls."""
+    """
+    Constructs the subprocess environment, ensuring Python/LD_LIBRARY paths are correct.
+    """
     env = os.environ.copy()
-    lib_paths = []
-    python_lib_dir = None
-    lib_dir = sysconfig.get_config_var('LIBDIR')
-    if lib_dir and os.path.exists(lib_dir):
-        python_lib_dir = lib_dir
-    else:
-        conda_prefix = os.environ.get('CONDA_PREFIX')
-        if conda_prefix:
-            conda_lib = os.path.join(conda_prefix, 'lib')
-            if os.path.exists(conda_lib):
-                python_lib_dir = conda_lib
-    if python_lib_dir:
-        lib_paths.append(python_lib_dir)
-    cuda_paths = []
-    possible_cuda_paths = [
-        '/usr/lib/wsl/lib',
-        '/usr/local/cuda/lib64',
-        '/usr/local/cuda/lib',
-        '/usr/lib/x86_64-linux-gnu',
-        '/usr/lib64',
-    ]
-    conda_prefix = os.environ.get('CONDA_PREFIX')
-    if conda_prefix:
-        conda_cuda_lib = os.path.join(conda_prefix, 'lib')
-        if os.path.exists(conda_cuda_lib):
-            possible_cuda_paths.insert(0, conda_cuda_lib)
-    existing_ld_path = env.get('LD_LIBRARY_PATH', '')
-    if existing_ld_path:
-        for path in existing_ld_path.split(':'):
-            if path and os.path.exists(path):
-                if 'cuda' in path.lower() or any(lib in os.listdir(path) if os.path.isdir(path) else False 
-                                                  for lib in ['libcuda.so', 'libcudart.so']):
-                    cuda_paths.append(path)
-    for cuda_path in possible_cuda_paths:
-        if os.path.exists(cuda_path):
-            try:
-                files = os.listdir(cuda_path)
-                has_libcuda = any('libcuda.so' in f for f in files)
-                has_cuda_libs = any('cuda' in f.lower() or 'cudart' in f.lower() for f in files)
-                if has_libcuda or has_cuda_libs:
-                    if cuda_path not in cuda_paths:
-                        if has_libcuda:
-                            cuda_paths.insert(0, cuda_path)
-                        else:
-                            cuda_paths.append(cuda_path)
-            except:
-                pass
-    all_paths = cuda_paths + lib_paths
-    if existing_ld_path:
-        existing_paths = [p for p in existing_ld_path.split(':') if p and p not in all_paths]
-        all_paths.extend(existing_paths)
-    if all_paths:
-        env['LD_LIBRARY_PATH'] = ':'.join(all_paths)
+    env["PYTHONUNBUFFERED"] = "1"
+    
+    def _append_path(env_key: str, paths: List[str]):
+        existing = env.get(env_key, "")
+        existing_list = [p for p in existing.split(os.pathsep) if p]
+        for p in paths:
+            if p and os.path.exists(p) and p not in existing_list:
+                existing_list.append(p)
+        if existing_list:
+            env[env_key] = os.pathsep.join(existing_list)
+    
+    # Python lib paths
+    python_lib = sysconfig.get_paths().get("purelib")
+    site_packages = sysconfig.get_paths().get("platlib")
+    _append_path("PYTHONPATH", [python_lib, site_packages, str(EUREKA_ROOT_DIR)])
+    
+    # Torch/Isaac common dependency paths
+    cuda_lib = "/usr/local/cuda/lib64"
+    isaac_lib = str(ISAAC_ROOT_DIR / "bindings" / "python")
+    _append_path("LD_LIBRARY_PATH", [cuda_lib, isaac_lib])
+    
     return env
 
-MUTATION_PROMPT_TEMPLATE = """
-You are executing an Evolutionary Algorithm.
-
-Parent Code (Score: {Fitness_Score}):
-{Parent_Reward_Code}
-
-VLM Feedback: "{VLM_Feedback_Text}"
-Reward Stats: "{Component_Stats_Analysis}"
-
-Task: The VLM pointed out the defect: "{VLM_Feedback_Text}".
-Please modify the parent code to specifically address this defect.
-"""
-
-CROSSOVER_PROMPT_TEMPLATE = """
-You are executing an Evolutionary Algorithm.
-
-Parent A (Score {Score_A}): "{Feedback_A}"
-Code A:
-{Code_A}
-
-Parent B (Score {Score_B}): "{Feedback_B}"
-Code B:
-{Code_B}
-
-Task: Combine the strengths of Code A and Code B into a new child reward function.
-"""
+# ==========================================
+# 2. Data Structures
+# ==========================================
 
 @dataclass
 class CodeSample:
@@ -121,14 +80,19 @@ class TrainingArtifact:
     env_file: Path
     reward_only_file: Path
     log_file: Path
-    tensorboard_dir: Optional[Path]
-    network_dir: Optional[Path]
-    checkpoint_path: Optional[Path]
     metrics_summary: Dict[str, Any]
     stats_text: str
     success_metric: float
     reward_correlation: float
+    checkpoint_path: Optional[Path] = None
+    tensorboard_dir: Optional[Path] = None
     video_path: Optional[Path] = None
+
+@dataclass
+class VLMResult:
+    fitness_score: float
+    qualitative_feedback: str
+    analysis_notes: Dict[str, str] = field(default_factory=dict)
 
 @dataclass
 class PopulationMember:
@@ -137,159 +101,210 @@ class PopulationMember:
     code_sample: CodeSample
     artifact: Optional[TrainingArtifact] = None
     vlm_result: Optional[VLMResult] = None
+    skip_vlm: bool = False
+    visual_score: float = 0.0
+    reflection_text: str = ""     # Data-based reflection
+    final_reflection: str = ""    # Combined reflection (Data + Visual)
+    lineage_history: List[str] = field(default_factory=list)
 
     @property
-    def fitness(self) -> float:
-        if self.vlm_result is not None:
-            return float(self.vlm_result.fitness_score)
+    def physical_metric(self) -> float:
         if self.artifact is not None and self.artifact.success_metric != float('-inf'):
             return float(self.artifact.success_metric)
         return float('-inf')
 
+# ==========================================
+# 3. LLM/VLM Interaction
+# ==========================================
+
 def _clean_response_text(raw_response: str) -> str:
-    cleaned_text = re.sub(r'<think>.*?</think>', '', raw_response, flags=re.DOTALL)
-    return cleaned_text.replace("<|im_end|>", "").strip()
+    cleaned = re.sub(r'<think>.*?</think>', '', raw_response, flags=re.DOTALL)
+    return cleaned.replace("<|im_end|>", "").strip()
 
 def _extract_reward_code(raw_response: str) -> Optional[str]:
-    response_cur = _clean_response_text(raw_response)
-    patterns = [
-        r'```python(.*?)```',
-        r'```(.*?)```',
-        r'"""(.*?)"""',
-        r"'''\s*(.*?)\s*'''",
-        r'""(.*?)""',
-        r'"(.*?)"',
-    ]
+    content = _clean_response_text(raw_response)
+    patterns = [r'```python(.*?)```', r'```(.*?)```', r'"""(.*?)"""']
     code_string = None
     for pattern in patterns:
-        match = re.search(pattern, response_cur, re.DOTALL)
-        if match is not None:
+        match = re.search(pattern, content, re.DOTALL)
+        if match:
             code_string = match.group(1).strip()
             break
-    if code_string is None:
-        code_string = response_cur
+    
+    if not code_string:
+        code_string = content # Fallback
+
     lines = code_string.split("\n")
     for i, line in enumerate(lines):
         if line.strip().startswith("def "):
-            code_string = "\n".join(lines[i:])
-            break
-    if not code_string.strip():
-        return None
-    return code_string
+            return "\n".join(lines[i:])
+    
+    return code_string if "def compute_reward" in code_string else None
 
-def _inject_reward_signature(task_code_template: str, reward_signature: str) -> str:
-    indent = " " * 8
-    reward_block = "\n".join([indent + line for line in reward_signature.splitlines()])
-    if "def compute_reward(self):" in task_code_template:
-        needle = "def compute_reward(self):"
-        return task_code_template.replace(needle, f"{needle}\n{reward_block}", 1)
-    if "def compute_reward(self, actions):" in task_code_template:
-        needle = "def compute_reward(self, actions):"
-        return task_code_template.replace(needle, f"{needle}\n{reward_block}", 1)
-    if "def compute_reward(" in task_code_template:
-         pass
-    return task_code_template
-
-def _write_candidate_files(
-    *,
-    generation: int,
-    candidate_idx: int,
-    base_task_code: str,
-    reward_code: str,
-    reward_signature: str,
-    output_file: str,
-    workspace_dir: Path,
-) -> Dict[str, Path]:
-    task_code_string_iter = _inject_reward_signature(base_task_code, reward_signature)
-    if "@torch.jit.script" not in reward_code:
-        reward_code = "@torch.jit.script\n" + reward_code
-    task_code_string_iter = task_code_string_iter.replace(
-        "def compute_reward(self):", 
-        "def compute_reward(self, actions):" 
-    )
-
-    with open(output_file, "w") as file:
-        file.writelines(task_code_string_iter + "\n")
-        file.writelines("from typing import Tuple, Dict\n")
-        file.writelines("import math\n")
-        file.writelines("import torch\n")
-        file.writelines("from torch import Tensor\n")
-        file.writelines(reward_code + "\n")
-
-    env_file = workspace_dir / f"env_gen{generation}_cand{candidate_idx}.py"
-    reward_only_file = workspace_dir / f"env_gen{generation}_cand{candidate_idx}_rewardonly.py"
-    shutil.copy(output_file, env_file)
-    with open(reward_only_file, "w") as file:
-        file.writelines(reward_code + "\n")
-
-    return {
-        "env_file": env_file,
-        "reward_only_file": reward_only_file,
-    }
-
-def _find_line_value(log_text: str, prefix: str) -> Optional[str]:
-    for line in log_text.splitlines():
-        if line.startswith(prefix):
-            return line.split(":", 1)[-1].strip()
-    return None
-
-def _summarize_tensorboard_logs(
-    tensorboard_logs: Dict[str, List[float]],
-    policy_feedback_template: str,
+def generate_visual_rubric(
+    task_description: str,
+    env_code: str,
+    prompt_template: str,
+    client: OpenAI,
+    model: str,
+    temperature: float
 ) -> Dict[str, Any]:
-    summary: Dict[str, Any] = {
-        "stats_text": "",
-        "success_metric": float("-inf"),
-        "reward_correlation": float('-inf'),
-    }
-    if not tensorboard_logs:
-        return summary
-
-    metrics_text: List[str] = []
-    metric_lengths = [len(values) for values in tensorboard_logs.values() if values]
-    total_steps = max(metric_lengths) if metric_lengths else 1
-    epoch_freq = max(int(total_steps // 10), 1)
-    metrics_text.append(policy_feedback_template.format(epoch_freq=epoch_freq))
-
-    gt_reward = tensorboard_logs.get("gt_reward")
-    gpt_reward = tensorboard_logs.get("gpt_reward")
-    consecutive_successes = tensorboard_logs.get("consecutive_successes")
-    if consecutive_successes:
-        summary["success_metric"] = max(consecutive_successes)
-    elif gt_reward:
-        summary["success_metric"] = max(gt_reward)
-
-    if gt_reward and gpt_reward:
-        try:
-            summary["reward_correlation"] = float(np.corrcoef(np.array(gt_reward), np.array(gpt_reward))[0, 1])
-        except Exception:
-            summary["reward_correlation"] = float('-inf')
-
-    for metric, values in tensorboard_logs.items():
-        if not values:
-            continue
-        sampled = values[::epoch_freq]
-        metric_cur = [f"{x:.2f}" for x in sampled]
-        metric_max = max(values)
-        metric_mean = sum(values) / len(values)
-        metric_min = min(values)
-        metric_name = metric if metric != "consecutive_successes" else "task_score"
-        metrics_text.append(
-            f"{metric_name}: {metric_cur}, Max: {metric_max:.2f}, Mean: {metric_mean:.2f}, Min: {metric_min:.2f}"
+    prompt = (
+        prompt_template
+        .replace("{TASK_DESCRIPTION}", task_description)
+        .replace("{ENV_CODE}", env_code[:3000])
+    )
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "Output ONLY valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=temperature
         )
+        content = _clean_response_text(response.choices[0].message.content)
+        json_match = re.search(r"\{.*\}", content, re.DOTALL)
+        if json_match:
+            return json.loads(json_match.group(0))
+    except Exception as e:
+        logging.warning(f"Rubric generation failed: {e}")
+    
+    return {"overall_instruction": "Evaluate if the robot completes the task naturally."}
 
-    summary["stats_text"] = "\n".join(metrics_text)
-    return summary
+def construct_reward_reflection(training_results: Optional[Dict], error: Optional[str] = None) -> str:
+    if error:
+        return f"Execution Error:\n{error}\nFix the code logic."
+    
+    if not training_results:
+        return "Training Status: Failed (No Data)"
 
-def _locate_checkpoint(network_dir: Optional[str]) -> Optional[Path]:
-    if not network_dir:
-        return None
-    network_path = Path(network_dir)
-    if not network_path.exists():
-        return None
-    checkpoints = sorted(network_path.glob("*.pth"), key=lambda p: p.stat().st_mtime)
-    return checkpoints[-1] if checkpoints else None
+    success = training_results.get("success_metric", 0.0)
+    text = f"Training Status:\n- Main Task Metric (Success/Reward): {success:.4f}\n"
+    text += "- Reward Components Statistics:\n"
+    
+    components = training_results.get("metrics_summary", {}).get("reward_components", {})
+    if not components and "components" in training_results:
+        components = training_results["components"]
 
+    if components:
+        for name, stats in components.items():
+            if isinstance(stats, dict):
+                mean_val = stats.get('mean', 0)
+                max_val = stats.get('max', 0)
+                min_val = stats.get('min', 0)
+                text += f"  * {name}: Mean={mean_val:.2f}, Max={max_val:.2f}, Min={min_val:.2f}\n"
+            elif isinstance(stats, (list, np.ndarray)) and len(stats) > 0:
+                text += f"  * {name}: Mean={np.mean(stats):.2f}, Max={np.max(stats):.2f}\n"
+            else:
+                text += f"  * {name}: {stats}\n"
+    else:
+        text += "  (No component details available)\n"
+    
+    return text
+
+def _call_vlm_api(
+    model: str,
+    video_path: str,
+    rubric_json: Dict,
+    sample_fps: float = 1.0,  # New parameter for VLM sampling rate
+    retries: int = 3
+) -> VLMResult:
+    """
+    Uploads the ORIGINAL video but instructs the API to sample at `sample_fps`.
+    This prevents the "too many frames" error while using the original file.
+    """
+    critical_failures = rubric_json.get("critical_failures", ["Catastrophic failure visible in video"])
+    failures_list_str = "\n".join([f"- {item}" for item in critical_failures])
+    rubric_criteria = rubric_json.get("criteria", [])
+    rubric_str = json.dumps(rubric_criteria, indent=2)
+
+    prompt_text = f"""
+You are a strict robotics referee. 
+Analyze the video content.
+
+### STEP 1: CRITICAL FAILURE CHECK (The "Death" Check)
+Scan the video for ANY of the following specific failures defined for this task. 
+If ANY occur, the score is ZERO.
+
+{failures_list_str}
+
+### STEP 2: SCORING (Only if no failures)
+If and ONLY IF none of the above failures happened, score the performance (0-100) based on:
+
+{rubric_str}
+
+### OUTPUT FORMAT (JSON)
+{{
+    "critical_failure_detected": true/false,
+    "failure_reason": "Describe the failure if true, else null",
+    "fitness_score": float (0-100),
+    "qualitative_feedback": "Short summary of behavior",
+    "analysis_notes": {{"what_went_wrong": "...", "what_went_right": "..."}}
+}}
+""".strip()
+
+    abs_video_path = os.path.abspath(video_path)
+    file_url = f"file://{abs_video_path}"
+
+    # --- KEY FIX: Pass FPS to DashScope SDK ---
+    # According to DashScope docs, "fps" parameter controls frame sampling.
+    content_item = {
+        "video": file_url,
+        "fps": sample_fps  # Use the config value (e.g., 24 or 2.0)
+    }
+    
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {"text": prompt_text},
+                content_item
+            ]
+        }
+    ]
+
+    for attempt in range(retries):
+        try:
+            response = dashscope.MultiModalConversation.call(
+                model=model,
+                messages=messages,
+                result_format='message',
+            )
+
+            if response.status_code == HTTPStatus.OK:
+                content = response.output.choices[0].message.content
+                if isinstance(content, list):
+                    text_content = ""
+                    for item in content:
+                        if isinstance(item, dict) and 'text' in item:
+                            text_content += item['text']
+                    content = text_content
+
+                content = _clean_response_text(content)
+                json_match = re.search(r"\{.*\}", content, re.DOTALL)
+                if json_match:
+                    data = json.loads(json_match.group(0))
+                    if data.get("critical_failure_detected", False):
+                        data["fitness_score"] = 0.0
+                    return VLMResult(
+                        fitness_score=float(data.get("fitness_score", 0)),
+                        qualitative_feedback=data.get("qualitative_feedback", ""),
+                        analysis_notes=data.get("analysis_notes", {})
+                    )
+            else:
+                logging.warning(f"DashScope Error: {response.code} - {response.message}")
+                time.sleep(2)
+
+        except Exception as e:
+            logging.warning(f"VLM attempt {attempt+1} failed: {e}")
+            time.sleep(2)
+
+    return VLMResult(0, "Evaluation Failed", {})
+
+# ==========================================
+# 4. Training Management
+# ==========================================
 
 @dataclass
 class TrainingJob:
@@ -297,594 +312,529 @@ class TrainingJob:
     log_file: Path
     candidate_idx: int
     env_metadata: Dict[str, Path]
-    start_time: float
 
-def _launch_candidate_training(
-    *,
-    generation: int,
-    candidate_idx: int,
-    code_sample: CodeSample,
-    base_task_code: str,
-    output_file: str,
-    workspace_dir: Path,
-    isaac_root_dir: str,
-    task: str,
-    suffix: str,
-    cfg,
-) -> TrainingJob:
-    log_file = workspace_dir / f"env_gen{generation}_cand{candidate_idx}.txt"
+def _write_candidate_files(gen: int, idx: int, base_code: str, reward_code: str, workspace: Path) -> Dict:
+    if "@torch.jit.script" not in reward_code:
+        reward_code = "@torch.jit.script\n" + reward_code
+        
+    signature, _ = get_function_signature(reward_code)
+    signature_block = f"""
+        self.rew_buf[:], self.rew_dict = {signature}
+        self.extras['gpt_reward'] = self.rew_buf.mean()
+        for k, v in self.rew_dict.items(): self.extras[k] = v.mean()
+    """
     
-    try:
-        result = get_function_signature(code_sample.code)
-        if result is None:
-            raise ValueError("No function definition found in reward code")
-        reward_signature, _ = result
-    except Exception as exc:
-        raise ValueError(f"Failed to parse reward signature: {exc}") from exc
+    task_code = base_code
+    if "def compute_reward(self):" in task_code:
+        task_code = task_code.replace("def compute_reward(self):", f"def compute_reward(self):\n{signature_block}")
+    elif "def compute_reward(self, actions):" in task_code:
+        task_code = task_code.replace("def compute_reward(self, actions):", f"def compute_reward(self, actions):\n{signature_block}")
+    
+    env_filename = f"env_gen{gen}_cand{idx}.py"
+    with open(workspace / env_filename, 'w') as f:
+        f.write(task_code + "\n" + reward_code)
+        
+    reward_filename = f"env_gen{gen}_cand{idx}_rewardonly.py"
+    with open(workspace / reward_filename, 'w') as f:
+        f.write(reward_code)
+        
+    return {"env_file": workspace / env_filename, "reward_only_file": workspace / reward_filename}
 
-    env_metadata = _write_candidate_files(
-        generation=generation,
-        candidate_idx=candidate_idx,
-        base_task_code=base_task_code,
-        reward_code=code_sample.code,
-        reward_signature="\n".join(
-            [
-                f"self.rew_buf[:], self.rew_dict = {reward_signature}",
-                "self.extras['gpt_reward'] = self.rew_buf.mean()",
-                "for rew_state in self.rew_dict: self.extras[rew_state] = self.rew_dict[rew_state].mean()",
-            ]
-        ),
-        output_file=output_file,
-        workspace_dir=workspace_dir,
-    )
-
+def _launch_training(gen: int, idx: int, code: str, base_code: str, cfg, workspace: Path, isaac_dir: Path) -> TrainingJob:
+    metadata = _write_candidate_files(gen, idx, base_code, code, workspace)
+    log_file = workspace / f"env_gen{gen}_cand{idx}.txt"
+    
+    gpus = str(cfg.gpu_id).split(",")
+    gpu_id = gpus[idx % len(gpus)]
+    
     env_vars = get_env_with_python_lib()
-    env_vars["PYTHONUNBUFFERED"] = "1"
+    env_vars["CUDA_VISIBLE_DEVICES"] = gpu_id
+    env_vars.setdefault("MASTER_PORT", str(29500 + idx))
 
-    gpu_list = [g.strip() for g in str(cfg.gpu_id).split(",")]
-    num_gpus = len(gpu_list)
-    
-    # 为每个candidate分配单个GPU（轮询分配）
-    assigned_gpu_idx = candidate_idx % num_gpus
-    assigned_gpu_id = gpu_list[assigned_gpu_idx]
-    env_vars["CUDA_VISIBLE_DEVICES"] = assigned_gpu_id
-    
-    # 为每个candidate分配不同的端口，避免冲突
-    base_port = 29500
-    master_port = base_port + candidate_idx
-
-    base_args = [
-        f"{isaac_root_dir}/train.py",
+    cmd = [
+        "python", "-u", f"{isaac_dir}/train.py",
         "hydra/output=subprocess",
-        f"task={task}{suffix}",
+        f"task={cfg.env.task}{cfg.suffix}",
         f"wandb_activate={cfg.use_wandb}",
-        f"wandb_entity={cfg.wandb_username}",
-        f"wandb_project={cfg.wandb_project}",
-        "headless=True",
-        "capture_video=False",
-        "force_render=False",
-        f"max_iterations={cfg.max_iterations}",
-        "pipeline=gpu",
-        f"seed={candidate_idx}",
-        "graphics_device_id=0",
-        "sim_device=cuda:0",
-        "rl_device=cuda:0",
+        f"seed={idx}",
+        "headless=True", "capture_video=False", "force_render=False",
+        f"max_iterations={cfg.max_iterations}"
     ]
-
-    # 每个candidate使用单GPU训练
-    cmd = ["python", "-u"] + base_args
-    logging.info(f"Candidate {candidate_idx}: Using single GPU {assigned_gpu_id} (port {master_port})")
-
-    with open(log_file, "w") as f:
-        process = subprocess.Popen(cmd, stdout=f, stderr=f, env=env_vars)
-
-    block_until_training(str(log_file), log_status=False, iter_num=generation, response_id=candidate_idx)
     
-    logging.info(f"Launched training for Gen {generation} Candidate {candidate_idx}")
-    return TrainingJob(
-        process=process,
-        log_file=log_file,
-        candidate_idx=candidate_idx,
-        env_metadata=env_metadata,
-        start_time=time.time()
-    )
+    with open(log_file, 'w') as f:
+        proc = subprocess.Popen(cmd, stdout=f, stderr=f, env=env_vars)
+        
+    return TrainingJob(proc, log_file, idx, metadata)
 
-def _harvest_training_artifact(
-    *,
-    job: TrainingJob,
-    policy_feedback_template: str,
-    execution_error_feedback: str,
-) -> TrainingArtifact:
+def _process_training_result(job: TrainingJob, cfg) -> TrainingArtifact:
     job.process.wait()
-    stdout_str = job.log_file.read_text() if job.log_file.exists() else ""
-    traceback_msg = filter_traceback(stdout_str)
+    log_content = job.log_file.read_text() if job.log_file.exists() else ""
+    
+    traceback_msg = filter_traceback(log_content)
+    
+    tb_line = next((l for l in log_content.split('\n') if "Tensorboard Directory:" in l), None)
+    tb_dir = Path(tb_line.split(":")[-1].strip()) if tb_line else None
+    
+    metrics = {}
+    success = float('-inf')
+    correlation = float('-inf')
+    
+    if tb_dir and tb_dir.exists():
+        logs = load_tensorboard_logs(str(tb_dir))
+        metrics = logs
+        if "consecutive_successes" in logs:
+            success = max(logs["consecutive_successes"])
+        elif "gt_reward" in logs:
+            success = max(logs["gt_reward"])
+            
+        if "gt_reward" in logs and "gpt_reward" in logs:
+            try:
+                correlation = np.corrcoef(logs["gt_reward"], logs["gpt_reward"])[0, 1]
+            except: pass
+            
+    net_line = next((l for l in log_content.split('\n') if "Network Directory:" in l), None)
+    ckpt_path = None
+    if net_line:
+        net_dir = Path(net_line.split(":")[-1].strip())
+        ckpts = sorted(net_dir.glob("*.pth"), key=os.path.getmtime)
+        if ckpts: ckpt_path = ckpts[-1]
 
-    tensorboard_dir = _find_line_value(stdout_str, "Tensorboard Directory:")
-    network_dir = _find_line_value(stdout_str, "Network Directory:")
-    tensorboard_logs: Dict[str, List[float]] = {}
-    stats_text = ""
-    success_metric = float("-inf")
-    reward_correlation = float('-inf')
-
-    if traceback_msg:
-        stats_text = execution_error_feedback.format(traceback_msg=traceback_msg)
-        logging.warning(f"Candidate {job.candidate_idx} execution error.")
-    elif tensorboard_dir:
-        try:
-            tensorboard_logs = load_tensorboard_logs(tensorboard_dir)
-            summary = _summarize_tensorboard_logs(tensorboard_logs, policy_feedback_template)
-            stats_text = summary["stats_text"]
-            success_metric = summary["success_metric"]
-            reward_correlation = summary["reward_correlation"]
-            logging.info(f"Candidate {job.candidate_idx} training success. Metric: {success_metric}")
-        except Exception as exc:
-            logging.warning(f"Failed to load tensorboard logs for candidate {job.candidate_idx}: {exc}")
-            stats_text = f"Tensorboard parsing failed: {exc}"
+    if tb_dir and tb_dir.exists():
+        stats_text = ""
+    elif traceback_msg:
+        stats_text = f"Runtime Error Captured:\n{traceback_msg}"
+        logging.warning(f"Candidate {job.candidate_idx} failed with error.")
     else:
-        stats_text = "Training log missing Tensorboard Directory."
-
-    checkpoint_path = _locate_checkpoint(network_dir)
+        stats_text = "Training Failed: No metrics and no traceback found."
 
     return TrainingArtifact(
         env_file=job.env_metadata["env_file"],
         reward_only_file=job.env_metadata["reward_only_file"],
         log_file=job.log_file,
-        tensorboard_dir=Path(tensorboard_dir) if tensorboard_dir else None,
-        network_dir=Path(network_dir) if network_dir else None,
-        checkpoint_path=checkpoint_path,
-        metrics_summary=tensorboard_logs,
+        metrics_summary=metrics,
         stats_text=stats_text,
-        success_metric=success_metric,
-        reward_correlation=reward_correlation,
+        success_metric=success,
+        reward_correlation=correlation,
+        tensorboard_dir=tb_dir,
+        checkpoint_path=ckpt_path
     )
 
+# ==========================================
+# 5. Core Evaluation Logic
+# ==========================================
+
 def _evaluate_population(
-    *,
     generation: int,
     code_samples: List[CodeSample],
     base_task_code: str,
-    output_file: str,
-    workspace_dir: Path,
-    isaac_root_dir: str,
-    task: str,
-    suffix: str,
     cfg,
-    policy_feedback_template: str,
-    execution_error_feedback: str,
-    vlm_client: VLMClient,
-    ) -> List[PopulationMember]:
+    workspace_dir: Path,
+    isaac_root_dir: Path,
+    global_rubric: Dict
+) -> List[PopulationMember]:
     
-    logging.info(f"Starting parallel training for {len(code_samples)} candidates...")
-    running_jobs: List[Optional[TrainingJob]] = []
-    
-    for idx, sample in enumerate(code_samples):
+    # 1. Launch Training
+    logging.info(f"Gen {generation}: Training {len(code_samples)} candidates...")
+    jobs = []
+    for i, sample in enumerate(code_samples):
         try:
-            job = _launch_candidate_training(
-                generation=generation,
-                candidate_idx=idx,
-                code_sample=sample,
-                base_task_code=base_task_code,
-                output_file=output_file,
-                workspace_dir=workspace_dir,
-                isaac_root_dir=isaac_root_dir,
-                task=task,
-                suffix=suffix,
-                cfg=cfg,
-            )
-            running_jobs.append(job)
-        except Exception as exc:
-            logging.exception(f"Failed to launch training for candidate {idx}: {exc}")
-            running_jobs.append(None)
-
-    logging.info("Waiting for all training jobs to finish...")
-    artifacts: List[Optional[TrainingArtifact]] = []
+            job = _launch_training(generation, i, sample.code, base_task_code, cfg, workspace_dir, isaac_root_dir)
+            jobs.append(job)
+        except Exception as e:
+            logging.error(f"Launch failed for cand {i}: {e}")
+            jobs.append(None)
+            
+    # 2. Wait and Collect Results
+    logging.info("Waiting for training...")
+    artifacts = []
+    reflection_texts = {}
     
-    for i, job in enumerate(running_jobs):
-        if job is None:
+    for i, job in enumerate(jobs):
+        if not job:
             artifacts.append(None)
+            reflection_texts[i] = construct_reward_reflection(None, "Launch Failed")
             continue
         
-        try:
-            artifact = _harvest_training_artifact(
-                job=job,
-                policy_feedback_template=policy_feedback_template,
-                execution_error_feedback=execution_error_feedback
-            )
-            artifacts.append(artifact)
-        except Exception as exc:
-            logging.exception(f"Error collecting results for candidate {i}: {exc}")
-            artifacts.append(None)
+        block_until_training(str(job.log_file), log_status=False, iter_num=generation, response_id=i)
+        artifact = _process_training_result(job, cfg)
+        artifacts.append(artifact)
+        
+        if "Runtime Error" in artifact.stats_text:
+            reflection_texts[i] = artifact.stats_text
+        else:
+            res_dict = {"success_metric": artifact.success_metric, "metrics_summary": artifact.metrics_summary}
+            reflection_texts[i] = construct_reward_reflection(res_dict)
+        artifact.stats_text = reflection_texts[i]
 
-    logging.info("Training phase completed. Starting evaluation phase...")
-    for idx, artifact in enumerate(artifacts):
-        if artifact and artifact.checkpoint_path and cfg.capture_video:
+    # 3. Filtering
+    valid_indices = [i for i, a in enumerate(artifacts) if a and a.success_metric != float('-inf')]
+    valid_indices.sort(key=lambda i: artifacts[i].success_metric, reverse=True)
+    
+    cutoff = max(1, len(valid_indices) // 2)
+    survivor_indices = set(valid_indices[:cutoff])
+    skip_vlm_map = {i: (i not in survivor_indices) for i in range(len(code_samples))}
+    
+    logging.info(f"Filter Complete: {len(valid_indices) - len(survivor_indices)} pruned. {len(survivor_indices)} proceed to VLM.")
+
+    # 4. Record Videos
+    logging.info("Recording videos for survivors...")
+    for idx in survivor_indices:
+        artifact = artifacts[idx]
+        if artifact and artifact.checkpoint_path:
             try:
-                logging.info(f"[{idx+1}/{len(artifacts)}] Recording video for Candidate {idx}...")
-                video_path = record_policy_rollout(
-                    isaac_root_dir=Path(isaac_root_dir),
+                vid_path = record_policy_rollout(
+                    isaac_root_dir=isaac_root_dir,
                     workspace_dir=workspace_dir,
-                    task_name=task,
-                    suffix=suffix,
+                    task_name=cfg.env.task,
+                    suffix=cfg.suffix,
                     checkpoint_path=artifact.checkpoint_path,
                     wandb_username=cfg.wandb_username,
                     wandb_project=cfg.wandb_project,
                     env=get_env_with_python_lib(),
                     rollout_steps=cfg.video.rollout_len,
-                    headless=cfg.video.headless, 
-                    force_render=cfg.video.force_render,
-                    seed=idx,
-                    gpu_id=str(cfg.gpu_id),
+                    headless=True, force_render=False, seed=idx, gpu_id=str(cfg.gpu_id)
                 )
                 
-                if video_path and video_path.exists():
-                    artifact.video_path = video_path
-                else:
-                    logging.warning(f"Video recording failed for candidate {idx}")
-                    artifact.video_path = None
-            except Exception as exc:
-                logging.warning(f"Exception recording candidate {idx}: {exc}")
-                artifact.video_path = None
-        else:
-            if artifact:
-                artifact.video_path = None
+                if vid_path and vid_path.exists():
+                    cand_dir = workspace_dir / f"gen{generation}_cand{idx}"
+                    cand_dir.mkdir(exist_ok=True, parents=True)
+                    
+                    target_vid = cand_dir / vid_path.name
+                    if target_vid.exists(): target_vid.unlink()
+                    shutil.move(str(vid_path), target_vid)
+                    
+                    artifact.video_path = target_vid
+                    shutil.copy2(artifact.reward_only_file, cand_dir / artifact.reward_only_file.name)
+            except Exception as e:
+                logging.error(f"Recording error cand {idx}: {e}")
 
-    if cfg.capture_video:
-        logging.info("Video recording completed. Starting parallel VLM evaluation...")
+    # 5. VLM Evaluation
+    logging.info(f"Starting VLM Evaluation (DashScope sampling at {cfg.video.target_fps} FPS)...")
+    vlm_results = {}
     
-    vlm_results_map: Dict[int, VLMResult] = {}
-    
-    with concurrent.futures.ThreadPoolExecutor(max_workers=min(16, len(code_samples))) as executor:
-        future_to_idx = {}
-        for idx, artifact in enumerate(artifacts):
-            if artifact and artifact.video_path:
-                if not artifact.video_path.exists():
-                    logging.warning(f"Video file not found for candidate {idx} at saved path: {artifact.video_path}")
-                    continue
-                logging.info(f"Submitting video to VLM for candidate {idx}: {artifact.video_path}")
-                future = executor.submit(
-                    vlm_client.evaluate, 
-                    str(artifact.video_path),
-                    extra_prompt=artifact.stats_text,
-                    max_retries=cfg.vlm.max_retries
-                )
-                future_to_idx[future] = idx
+    def process_vlm_task(idx, vid_path):
+        try:
+            return idx, _call_vlm_api(
+                model=cfg.model_vlm,
+                video_path=str(vid_path),
+                rubric_json=global_rubric,
+                sample_fps=float(cfg.video.target_fps) # PASS CONFIG FPS HERE
+            )
+        except Exception as e:
+            return idx, VLMResult(0, f"Error: {e}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        futures = []
+        for idx in survivor_indices:
+            artifact = artifacts[idx]
+            if artifact and artifact.video_path and artifact.video_path.exists():
+                futures.append(executor.submit(process_vlm_task, idx, artifact.video_path))
             else:
-                logging.info(f"Skipping VLM for candidate {idx} (no video path saved).")
+                vlm_results[idx] = VLMResult(0, "No Video File")
+        
+        for f in concurrent.futures.as_completed(futures):
+            idx, res = f.result()
+            vlm_results[idx] = res
 
-        for future in concurrent.futures.as_completed(future_to_idx):
-            idx = future_to_idx[future]
-            try:
-                result = future.result()
-                vlm_results_map[idx] = result
-                logging.info(f"VLM evaluated candidate {idx}: Score {result.fitness_score}")
-            except Exception as exc:
-                error_msg = str(exc)
-                if len(error_msg) > 500:
-                    error_msg = error_msg[:500] + "..."
-                logging.error(f"VLM evaluation failed for candidate {idx}: {error_msg}")
-                logging.debug(f"Full exception for candidate {idx}:", exc_info=True)
+    # 6. Assemble Population
+    population = []
+    for i, sample in enumerate(code_samples):
+        is_skipped = skip_vlm_map.get(i, True)
+        vlm_res = vlm_results.get(i)
+        
+        base_ref = reflection_texts.get(i, "")
+        final_ref = base_ref
+        
+        if vlm_res and not is_skipped:
+            final_ref += f"\n\n[Visual Feedback]\n{vlm_res.qualitative_feedback}"
+            if vlm_res.analysis_notes:
+                final_ref += f"\nAnalysis: {vlm_res.analysis_notes}"
+        elif is_skipped:
+            final_ref += "\n\n[Visual Feedback]\nSkipped: Performance too low for visual evaluation."
 
-    population: List[PopulationMember] = []
-    for idx, sample in enumerate(code_samples):
         member = PopulationMember(
-            generation=generation,
-            index=idx,
-            code_sample=sample,
-            artifact=artifacts[idx] if idx < len(artifacts) else None,
-            vlm_result=vlm_results_map.get(idx)
+            generation=generation, index=i, code_sample=sample, artifact=artifacts[i],
+            vlm_result=vlm_res, skip_vlm=is_skipped,
+            visual_score=vlm_res.fitness_score if vlm_res else 0.0,
+            reflection_text=base_ref,
+            final_reflection=final_ref
         )
         population.append(member)
 
+    # Logging
+    logging.info("=" * 80)
+    logging.info(f"Generation {generation}: Training Results Ranking")
+    logging.info("-" * 80)
+    ranked = sorted(
+        population,
+        key=lambda m: (m.physical_metric if m.physical_metric != float('-inf') else float('-inf'), m.visual_score),
+        reverse=True,
+    )
+    for r, m in enumerate(ranked, 1):
+        phy = m.physical_metric if m.physical_metric != float('-inf') else 0.0
+        logging.info(f"Rank {r:2d}: Cand {m.index:2d} | Phy {phy:8.4f} | Vis {m.visual_score:5.1f} | SkipVLM={m.skip_vlm}")
     return population
 
-def _select_elites(population: List[PopulationMember], elite_count: int) -> List[PopulationMember]:
-    if elite_count <= 0:
-        return []
-    return sorted(population, key=lambda member: member.fitness, reverse=True)[:elite_count]
-
-def _tournament_select(population: List[PopulationMember], tournament_size: int) -> PopulationMember:
-    competitors = random.sample(population, k=min(tournament_size, len(population)))
-    return max(competitors, key=lambda member: member.fitness)
-
-def _spawn_mutation_child(
-    parent: PopulationMember,
-    *,
-    system_prompt: str,
-    llm_client: OpenAI,
-    model: str,
-    temperature: float,
-) -> CodeSample:
-    prompt = MUTATION_PROMPT_TEMPLATE.format(
-        Fitness_Score=f"{parent.fitness:.2f}",
-        Parent_Reward_Code=parent.code_sample.code,
-        VLM_Feedback_Text=parent.vlm_result.qualitative_feedback if parent.vlm_result else "No VLM feedback available.",
-        Component_Stats_Analysis=parent.artifact.stats_text if parent.artifact else "No stats available.",
+def _log_population_ranking(population: List[PopulationMember], generation: int):
+    logging.info("=" * 80)
+    logging.info(f"Generation {generation}: Population Ranking (all candidates)")
+    logging.info("-" * 80)
+    ranked = sorted(
+        population,
+        key=lambda m: (m.physical_metric if m.physical_metric != float('-inf') else float('-inf'), m.visual_score),
+        reverse=True,
     )
-    response = llm_client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=temperature,
-        n=1,
-    )
-    content = response.choices[0].message.content
-    code = _extract_reward_code(content) or ""
-    return CodeSample(code=code, raw_response=content, metadata={"prompt": "mutation"})
+    for r, m in enumerate(ranked, 1):
+        phy = m.physical_metric if m.physical_metric != float('-inf') else 0.0
+        logging.info(f"Rank {r:2d}: Cand {m.index:2d} | Phy {phy:8.4f} | Vis {m.visual_score:5.1f} | SkipVLM={m.skip_vlm}")
+    logging.info("-" * 80)
 
-def _spawn_crossover_child(
-    parent_a: PopulationMember,
-    parent_b: PopulationMember,
-    *,
-    system_prompt: str,
-    llm_client: OpenAI,
-    model: str,
-    temperature: float,
-) -> CodeSample:
-    prompt = CROSSOVER_PROMPT_TEMPLATE.format(
-        Score_A=f"{parent_a.fitness:.2f}",
-        Feedback_A=parent_a.vlm_result.qualitative_feedback if parent_a.vlm_result else "No feedback.",
-        Code_A=parent_a.code_sample.code,
-        Score_B=f"{parent_b.fitness:.2f}",
-        Feedback_B=parent_b.vlm_result.qualitative_feedback if parent_b.vlm_result else "No feedback.",
-        Code_B=parent_b.code_sample.code,
-    )
-    response = llm_client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=temperature,
-        n=1,
-    )
-    content = response.choices[0].message.content
-    code = _extract_reward_code(content) or ""
-    return CodeSample(code=code, raw_response=content, metadata={"prompt": "crossover"})
+# ==========================================
+# 6. Evolution Operators
+# ==========================================
 
-def _generate_llm_samples(
-    *,
-    client: OpenAI,
-    model: str,
-    messages: List[Dict[str, str]],
-    sample_count: int,
-    temperature: float,
-) -> List[CodeSample]:
-    responses = []
-    total_samples = 0
-   
-    chunk_size = sample_count if "gpt-3.5" in model else min(4, sample_count)
+def _select_elites(pop: List[PopulationMember], count: int) -> List[PopulationMember]:
+    if not pop: return []
+    phy_sorted = sorted(pop, key=lambda m: m.physical_metric, reverse=True)
+    cutoff = max(1, len(pop)//2)
+    candidates = phy_sorted[:cutoff]
+    vis_sorted = sorted(candidates, key=lambda m: m.visual_score, reverse=True)
+    return vis_sorted[:count]
 
-    while total_samples < sample_count:
-        batch_size = min(chunk_size, sample_count - total_samples)
-        for attempt in range(100):
-            try:
-                response = client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    temperature=temperature,
-                    n=batch_size,
-                )
-                responses.extend(response.choices)
-                total_samples += batch_size
-                break
-            except Exception as exc:
-                logging.warning("LLM sampling attempt %s failed: %s", attempt + 1, exc)
-                time.sleep(1)
-        else:
-            raise RuntimeError("Exceeded maximum retries while sampling from the LLM.")
+def _tournament_select(pop: List[PopulationMember], k: int = 2) -> PopulationMember:
+    phy_sorted = sorted(pop, key=lambda m: m.physical_metric, reverse=True)
+    cutoff = max(1, len(pop)//2)
+    pool = phy_sorted[:cutoff]
+    candidates = random.sample(pool, min(k, len(pool)))
+    return max(candidates, key=lambda m: m.visual_score)
 
-    code_samples: List[CodeSample] = []
-    for choice in responses[:sample_count]:
-        content = choice.message.content
-        code = _extract_reward_code(content) or ""
-        code_samples.append(CodeSample(code=code, raw_response=content, metadata={"prompt": "initial"}))
-    return code_samples
+def _spawn_mutation(parent: PopulationMember, sys_prompt: str, task_desc: str, env_code: str, client: OpenAI, model: str) -> Tuple[CodeSample, str]:
+    history_text = "\n".join(f"- {h}" for h in parent.lineage_history) if parent.lineage_history else "(empty)"
+    
+    user_block = f"""{task_desc}
 
+=== ENVIRONMENT CODE ===
+{env_code}
+=== EVOLUTION HISTORY ===
+{history_text}
+=== PARENT PERFORMANCE ===
+[Fitness: {parent.physical_metric:.2f} | Visual Score: {parent.visual_score:.1f}]
+
+=== PARENT CODE ===
+```python
+{parent.code_sample.code}
+=== FEEDBACK === {parent.final_reflection} === INSTRUCTION === Based on the history and feedback, improve the reward function.
+
+Provide a one-sentence SUMMARY of what you are changing and why.
+
+Provide the complete new python code.
+"""
+    messages = [
+        {"role": "system", "content": sys_prompt},
+        {"role": "user", "content": user_block},
+    ]
+
+    summary_text = "Modified based on feedback"
+    try:
+        resp = client.chat.completions.create(model=model, messages=messages, temperature=1.0)
+        content = _clean_response_text(resp.choices[0].message.content)
+
+        m_summary = re.search(r"SUMMARY:\\s*(.+)", content, flags=re.IGNORECASE)
+        if m_summary and m_summary.group(1).strip():
+            summary_text = m_summary.group(1).strip()
+
+        code = _extract_reward_code(content)
+        if not code:
+            raise ValueError("No code block found in mutation response")
+
+        return CodeSample(code=code, raw_response=content), summary_text
+    except Exception as e:
+        logging.error(f"Mutation failed: {e}")
+        return parent.code_sample, f"{summary_text} (fallback: mutation failed)"
+
+
+def _generate_initial(client: OpenAI, model: str, messages: List[Dict], count: int) -> List[CodeSample]:
+    samples: List[CodeSample] = []
+    while len(samples) < count:
+        try:
+            resp = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                n=min(4, count - len(samples)),
+            )
+            for c in resp.choices:
+                code = _extract_reward_code(c.message.content)
+                if code:
+                    samples.append(CodeSample(code, c.message.content))
+        except Exception as e:
+            logging.error(f"Init gen failed: {e}")
+            time.sleep(1)
+    return samples
+
+
+# ==========================================
+# 7. Main Loop
+# ==========================================
 @hydra.main(config_path="cfg", config_name="config", version_base="1.1")
 def main(cfg):
-    workspace_dir = Path.cwd()
-    logging.info(f"Workspace: {workspace_dir}")
+    workspace = Path.cwd()
+    logging.info(f"Workspace: {workspace}")
 
-    llm_client = OpenAI(
-        api_key=os.getenv("DASHSCOPE_API_KEY"),
-        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-        timeout=300.0,
-    )
-
-    vlm_api_client = OpenAI(
+    dashscope.api_key = os.getenv("DASHSCOPE_API_KEY")
+    llm = OpenAI(
         api_key=os.getenv("DASHSCOPE_API_KEY"),
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
     )
-
-    task = cfg.env.task
-    task_description = cfg.env.description
-    suffix = cfg.suffix
-    model = cfg.model
-    logging.info(f"Using LLM: {model}")
-    logging.info("Task: " + task)
-    logging.info("Task description: " + task_description)
 
     env_name = cfg.env.env_name.lower()
-    envs_isaac_dir = EUREKA_ROOT_DIR / "eureka" / "envs" / "isaac"
-    if envs_isaac_dir.exists() and f'{env_name}.py' in [f.name for f in envs_isaac_dir.iterdir() if f.is_file()]:
-        env_parent = 'isaac'
-    else:
-        env_parent = 'dexterity'
-    task_file = EUREKA_ROOT_DIR / "eureka" / "envs" / env_parent / f"{env_name}.py"
-    task_obs_file = EUREKA_ROOT_DIR / "eureka" / "envs" / env_parent / f"{env_name}_obs.py"
-    
-    if not task_file.exists():
-        raise FileNotFoundError(f"Task file not found: {task_file}")
-    if not task_obs_file.exists():
-        raise FileNotFoundError(f"Task observation file not found: {task_obs_file}")
-    
-    shutil.copy(str(task_obs_file), "env_init_obs.py")
-    task_code_string  = file_to_string(str(task_file))
-    task_obs_code_string  = file_to_string(str(task_obs_file))
-    output_file = str(ISAAC_ROOT_DIR / "tasks" / f"{env_name}{suffix.lower()}.py")
-
-    prompt_dir = EUREKA_ROOT_DIR / "eureka" / "utils" / "prompts"
-    if not prompt_dir.exists():
-        raise FileNotFoundError(f"Prompt directory not found: {prompt_dir}")
-    
-    initial_system = file_to_string(str(prompt_dir / "initial_system.txt"))
-    code_output_tip = file_to_string(str(prompt_dir / "code_output_tip.txt"))
-    initial_user = file_to_string(str(prompt_dir / "initial_user.txt"))
-    reward_signature = file_to_string(str(prompt_dir / "reward_signature.txt"))
-    policy_feedback = file_to_string(str(prompt_dir / "policy_feedback.txt"))
-    execution_error_feedback = file_to_string(str(prompt_dir / "execution_error_feedback.txt"))
-
-    initial_system = initial_system.format(task_reward_signature_string=reward_signature) + code_output_tip
-    initial_user = initial_user.format(task_obs_code_string=task_obs_code_string, task_description=task_description)
-    messages = [{"role": "system", "content": initial_system}, {"role": "user", "content": initial_user}]
-
-    task_code_template = task_code_string.replace(task, task + suffix)
-    create_task(str(ISAAC_ROOT_DIR), cfg.env.task, cfg.env.env_name, suffix)
-
-    evo_cfg = cfg.evolution
-    generations = max(1, int(evo_cfg.generations))
-    population_size = max(1, int(evo_cfg.population_size))
-    tournament_size = max(2, int(evo_cfg.tournament_size))
-    elite_fraction = float(evo_cfg.elite_fraction)
-    elite_count = max(1, int(round(population_size * elite_fraction)))
-
-    model_vlm = cfg.model_vlm if cfg.model_vlm is not None else "mock"
-    vlm_client = VLMClient(
-        model_name=model_vlm,
-        task_description=task_description,
-        prompt_dir=prompt_dir,
-        openai_client=None if model_vlm and str(model_vlm).lower() == "mock" else vlm_api_client,
-    )
-
-    logging.info("Generation 0: sampling %d candidates", population_size)
-    initial_samples = _generate_llm_samples(
-        client=llm_client,
-        model=model,
-        messages=messages,
-        sample_count=population_size,
-        temperature=cfg.temperature,
-    )
-    population = _evaluate_population(
-        generation=0,
-        code_samples=initial_samples,
-        base_task_code=task_code_template,
-        output_file=output_file,
-        workspace_dir=workspace_dir,
-        isaac_root_dir=str(ISAAC_ROOT_DIR),
-        task=task,
-        suffix=suffix,
-        cfg=cfg,
-        policy_feedback_template=policy_feedback,
-        execution_error_feedback=execution_error_feedback,
-        vlm_client=vlm_client,
-    )
-
-    best_member = max(population, key=lambda member: member.fitness, default=None)
-    if best_member:
-        logging.info(
-            "Generation 0 best fitness %.2f (score=%s)",
-            best_member.fitness,
-            best_member.vlm_result.fitness_score if best_member.vlm_result else "n/a",
+    task_file = (
+        EUREKA_ROOT_DIR
+        / "eureka/envs"
+        / (
+            "isaac"
+            if (EUREKA_ROOT_DIR / "eureka/envs/isaac" / f"{env_name}.py").exists()
+            else "dexterity"
         )
+        / f"{env_name}.py"
+    )
+    obs_file = task_file.parent / f"{env_name}_obs.py"
 
-    for gen in range(1, generations):
-        if not population:
-            break
+    task_code = file_to_string(str(task_file)).replace(cfg.env.task, cfg.env.task + cfg.suffix)
+    obs_code = file_to_string(str(obs_file))
+    shutil.copy(obs_file, "env_init_obs.py")
+    create_task(str(ISAAC_ROOT_DIR), cfg.env.task, cfg.env.env_name, cfg.suffix)
 
-        elites = _select_elites(population, min(elite_count, population_size))
-        children_needed = max(0, population_size - len(elites))
-        mutation_quota = min(children_needed, int(round(children_needed * evo_cfg.mutation_ratio)))
-        crossover_quota = max(0, children_needed - mutation_quota)
+    prompt_dir = EUREKA_ROOT_DIR / "eureka/utils/prompts"
+    sys_prompt = file_to_string(str(prompt_dir / "initial_system.txt")).format(
+        task_reward_signature_string=file_to_string(str(prompt_dir / "reward_signature.txt"))
+    ) + file_to_string(str(prompt_dir / "code_output_tip.txt"))
+    user_prompt = file_to_string(str(prompt_dir / "initial_user.txt")).format(
+        task_obs_code_string=obs_code, task_description=cfg.env.description
+    )
+    rubric_tmpl = file_to_string(str(prompt_dir / "visual_rubric.txt"))
 
-        children_samples: List[CodeSample] = []
-        for _ in range(mutation_quota):
-            parent = _tournament_select(population, tournament_size)
-            children_samples.append(
-                _spawn_mutation_child(
-                    parent,
-                    system_prompt=initial_system,
-                    llm_client=llm_client,
-                    model=model,
-                    temperature=cfg.temperature,
-                )
+    logging.info("Generating Visual Rubric...")
+    rubric = generate_visual_rubric(
+        cfg.env.description, task_code, rubric_tmpl, llm, cfg.model, cfg.temperature
+    )
+    logging.info(f"Rubric: {json.dumps(rubric, indent=2)}")
+
+    pop_size = int(cfg.evolution.population_size)
+    gens = int(cfg.evolution.generations)
+    best_phy_history: List[float] = []
+    best_vis_history: List[float] = []
+
+    logging.info("Generating Gen 0...")
+    samples = _generate_initial(
+        llm,
+        cfg.model,
+        [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        pop_size,
+    )
+
+    population = _evaluate_population(0, samples, task_code, cfg, workspace, ISAAC_ROOT_DIR, rubric)
+    _log_population_ranking(population, 0)
+    init_best = max(population, key=lambda m: (m.physical_metric, m.visual_score))
+    best_phy_history.append(
+        init_best.physical_metric if init_best.physical_metric != float("-inf") else 0.0
+    )
+    best_vis_history.append(init_best.visual_score)
+
+    best_ever = None
+
+    for g in range(1, gens):
+        raw_elite_count = int(pop_size * float(cfg.evolution.elite_fraction))
+        elite_count = max(1, min(raw_elite_count, pop_size - 1))
+
+        elites = _select_elites(population, elite_count)
+
+        children_codes = []
+        children_histories = []
+        while len(children_codes) < pop_size - len(elites):
+            parent = _tournament_select(population)
+            child_code, change_summary = _spawn_mutation(
+                parent, sys_prompt, cfg.env.description, task_code, llm, cfg.model
             )
-        for _ in range(crossover_quota):
-            parent_a = _tournament_select(population, tournament_size)
-            parent_b = parent_a
-            attempts = 0
-            while parent_b is parent_a and len(population) > 1 and attempts < 5:
-                parent_b = _tournament_select(population, tournament_size)
-                attempts += 1
-            children_samples.append(
-                _spawn_crossover_child(
-                    parent_a,
-                    parent_b,
-                    system_prompt=initial_system,
-                    llm_client=llm_client,
-                    model=model,
-                    temperature=cfg.temperature,
-                )
-            )
+            children_codes.append(child_code)
+            lineage = list(parent.lineage_history)
+            lineage.append(f"Gen {g}: {change_summary}")
+            children_histories.append(lineage)
 
-        new_population: List[PopulationMember] = []
-        for elite in elites:
-            new_population.append(
+        children_pop = _evaluate_population(
+            g, children_codes, task_code, cfg, workspace, ISAAC_ROOT_DIR, rubric
+        )
+        for i, child in enumerate(children_pop):
+            if i < len(children_histories):
+                child.lineage_history = children_histories[i]
+
+        new_pop = []
+        for e in elites:
+            new_pop.append(
                 PopulationMember(
-                    generation=gen,
-                    index=len(new_population),
-                    code_sample=elite.code_sample,
-                    artifact=elite.artifact,
-                    vlm_result=elite.vlm_result,
+                    generation=g,
+                    index=len(new_pop),
+                    code_sample=e.code_sample,
+                    artifact=e.artifact,
+                    vlm_result=e.vlm_result,
+                    skip_vlm=e.skip_vlm,
+                    visual_score=e.visual_score,
+                    reflection_text=e.reflection_text,
+                    final_reflection=e.final_reflection,
+                    lineage_history=list(e.lineage_history),
                 )
             )
 
-        if children_samples:
-            evaluated_children = _evaluate_population(
-                generation=gen,
-                code_samples=children_samples,
-                base_task_code=task_code_template,
-                output_file=output_file,
-                workspace_dir=workspace_dir,
-                isaac_root_dir=str(ISAAC_ROOT_DIR),
-                task=task,
-                suffix=suffix,
-                cfg=cfg,
-                policy_feedback_template=policy_feedback,
-                execution_error_feedback=execution_error_feedback,
-                vlm_client=vlm_client,
-            )
-            new_population.extend(evaluated_children)
+        new_pop.extend(children_pop)
+        population = new_pop
 
-        for idx, member in enumerate(new_population[:population_size]):
-            member.index = idx
-            member.generation = gen
-        population = new_population[:population_size]
+        _log_population_ranking(population, g)
 
-        generation_best = max(population, key=lambda member: member.fitness, default=None)
-        if generation_best:
-            if best_member is None or generation_best.fitness > best_member.fitness:
-                best_member = generation_best
+        curr_best = max(population, key=lambda m: (m.physical_metric, m.visual_score))
+        if not best_ever or curr_best.physical_metric > best_ever.physical_metric:
+            best_ever = curr_best
 
-    if best_member is None or best_member.artifact is None:
-        logging.error("Evolution finished without a valid champion.")
-        return
+        best_phy_history.append(
+            curr_best.physical_metric if curr_best.physical_metric != float("-inf") else 0.0
+        )
+        best_vis_history.append(curr_best.visual_score)
 
-    champion_report = {
-        "task": task,
-        "generation": best_member.generation,
-        "index": best_member.index,
-        "fitness": best_member.fitness,
-        "vlm_score": best_member.vlm_result.fitness_score if best_member.vlm_result else None,
-        "vlm_feedback": best_member.vlm_result.qualitative_feedback if best_member.vlm_result else "",
-        "stats_text": best_member.artifact.stats_text,
-        "video_path": str(best_member.artifact.video_path) if best_member.artifact.video_path else None,
-        "checkpoint": str(best_member.artifact.checkpoint_path) if best_member.artifact.checkpoint_path else None,
-    }
-    with open("champion.json", "w") as file:
-        json.dump(champion_report, file, indent=2)
-    logging.info("Champion summary: %s", champion_report)
+    try:
+        fig, axs = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
+        x_axis = list(range(len(best_phy_history)))
+        axs[0].plot(x_axis, best_phy_history, marker="o")
+        axs[0].set_title("Best Physical Metric per Generation")
+        axs[0].set_ylabel("Physical Metric")
+        axs[0].grid(True, linestyle="--", alpha=0.4)
+
+        axs[1].plot(x_axis, best_vis_history, marker="o", color="orange")
+        axs[1].set_title("Best Visual Score per Generation")
+        axs[1].set_xlabel("Generation")
+        axs[1].set_ylabel("Visual Score")
+        axs[1].grid(True, linestyle="--", alpha=0.4)
+
+        plt.tight_layout()
+        plt.savefig("gen_best_metrics.png")
+        plt.close(fig)
+        np.savez("gen_best_metrics.npz", best_phy=best_phy_history, best_vis=best_vis_history)
+        logging.info("Saved generation best metrics plot/gen_best_metrics.png and npz.")
+    except Exception as e:
+        logging.warning(f"Failed to save generation metrics plot: {e}")
+
+    if best_ever and best_ever.artifact:
+        res = {
+            "code": best_ever.code_sample.code,
+            "phy_score": best_ever.physical_metric,
+            "vis_score": best_ever.visual_score,
+            "feedback": best_ever.final_reflection,
+            "video": str(best_ever.artifact.video_path) if best_ever.artifact.video_path else None,
+        }
+        with open("champion.json", "w") as f:
+            json.dump(res, f, indent=2)
+        logging.info("Evolution Done. Champion Saved.")
+
 
 if __name__ == "__main__":
     main()

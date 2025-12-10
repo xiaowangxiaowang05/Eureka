@@ -8,43 +8,36 @@ hydra:
   job:
     chdir: True
 
-# LLM parameters
 model: qwen3-max  # LLM model (other options are gpt-4, gpt-4-0613, gpt-3.5-turbo-16k-0613)
 model_vlm: null  # VLM used for video-based evaluation. "mock" generates random scores.
 temperature: 1.0
 suffix: Qwen  # suffix for generated files (indicates LLM model)
 
-# Eureka parameters
-iteration: 1 # how many iterations of Eureka to run
-sample: 4 # population size / number of Eureka samples to generate per generation
-max_iterations: 3000 # RL Policy training iterations (decrease this to make the feedback loop faster)
-num_eval: 5 # number of evaluation episodes to run for the final reward
-capture_video: True # whether to capture policy rollout videos
+# Top-level knobs for hydra overrides (population_size and generations derive from these)
+sample: 4        # population_size
+iteration: 5     # generations
+
+max_iterations: 3000 # RL Policy training iterations
+gpu_id: "1,2,3"
+capture_video: True
+
+use_wandb: False
+wandb_username: ""
+wandb_project: ""
 
 evolution:
   generations: ${iteration}
   population_size: ${sample}
-  elite_fraction: 0.25
-  mutation_ratio: 0.5
-  crossover_ratio: 0.6
+  elite_fraction: 0.5
   tournament_size: 2
 
 video:
   rollout_len: 300
-  headless: True  # 在WSL2环境中必须使用headless=True，使用Xvfb虚拟显示来录制视频
-  force_render: True  # 在headless模式下需要force_render=True来确保渲染
-
-# GPU configuration
-# 指定用于训练的GPU ID（物理GPU编号）
-# 可以通过命令行覆盖，例如: python eureka.py gpu_id=1
-# 也可以指定多个GPU，例如: gpu_id="0,1"（训练时会使用所有指定的GPU）
-# 注意：视频录制使用默认GPU（GPU 0），不进行特殊配置
-gpu_id: "1,2"  # 默认使用GPU 1和2，可以通过命令行参数覆盖
+  headless: True          
+  force_render: False
+  target_fps: 10         # target fps for VLM frame sampling
 
 vlm:
   max_retries: 3
 
-# Weights and Biases
-use_wandb: False # whether to use wandb for logging
-wandb_username: "" # wandb username if logging with wandb
-wandb_project: "" # wandb project if logging with wandb
+

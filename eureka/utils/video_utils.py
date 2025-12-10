@@ -41,11 +41,11 @@ def record_policy_rollout(
 
     use_xvfb = headless
     gym_headless_arg = False if use_xvfb else headless
-
+    
     if use_xvfb and shutil.which("xvfb-run") is None:
         logging.error("xvfb-run not found! Please install: sudo apt-get install xvfb")
         use_xvfb = False
-        gym_headless_arg = True
+        gym_headless_arg = True 
 
     base_cmd = [
         "python",
@@ -77,7 +77,7 @@ def record_policy_rollout(
         base_cmd.append(f"wandb_entity={wandb_username}")
     if wandb_project:
         base_cmd.append(f"wandb_project={wandb_project}")
-
+    
     if env is None:
         env = os.environ.copy()
     else:
@@ -91,8 +91,8 @@ def record_policy_rollout(
     log_path = workspace_dir / f"vlm_eval_{int(start_time)}.txt"
     with open(log_path, "w") as log_file:
         process = subprocess.Popen(video_cmd, stdout=log_file, stderr=log_file, env=env)
-
-    max_wait_time = max(rollout_steps * 5 + 180, 400)
+    
+    max_wait_time = max(rollout_steps * 5 + 180, 400) 
     try:
         elapsed = 0
         check_interval = 5
@@ -123,7 +123,7 @@ def record_policy_rollout(
         for path, mtime in after.items()
         if (path not in before or mtime > before[path]) and mtime >= start_time
     }
-
+    
     if not new_videos:
         logging.warning(f"No new video file found. Check full log at {log_path}")
         return None
@@ -132,6 +132,6 @@ def record_policy_rollout(
     if latest_video.stat().st_size < 1000:
         logging.warning(f"Video file created but empty: {latest_video}")
         return None
-
+        
     logging.info(f"Video successfully recorded: {latest_video}")
     return latest_video

@@ -72,10 +72,25 @@ class VLMClient:
         self,
         video_path: str,
         extra_prompt: Optional[str] = None,
+        rubric_json: Optional[Dict[str, Any]] = None,
         max_retries: int = 3,
     ) -> "VLMResult":
-        """Evaluate a rollout video using a VLM or mock scorer."""
+        """Evaluate a rollout video using a VLM or mock scorer.
+        
+        Args:
+            video_path: Path to the video file
+            extra_prompt: Additional context for evaluation
+            rubric_json: Optional visual rubric JSON to inject into prompt
+            max_retries: Maximum number of retry attempts
+        """
         formatted_prompt = self.prompt_template.format(TASK_DESCRIPTION=self.task_description)
+        
+        # Inject rubric if provided
+        if rubric_json:
+            rubric_text = json.dumps(rubric_json, indent=2)
+            formatted_prompt += f"\n\nVisual Evaluation Rubric:\n{rubric_text}\n"
+            formatted_prompt += "\nUse the above rubric criteria to guide your evaluation. Consider each criterion's weight when scoring.\n"
+        
         if extra_prompt:
             formatted_prompt += f"\n\nAdditional Context:\n{extra_prompt}\n"
 
