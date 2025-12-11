@@ -29,7 +29,7 @@ env:
   forceScale: 0.0
   maxConsecutiveSuccesses: 0
   numEnvs: ${resolve_default:16384,${...num_envs}}
-  objectType: pen
+  objectType: block
   observationType: full_state
   printNumSuccesses: false
   reachGoalBonus: 250

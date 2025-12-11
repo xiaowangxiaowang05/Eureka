@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sysconfig
+import sys
 import time
 import concurrent.futures
 from http import HTTPStatus
@@ -53,15 +54,23 @@ def get_env_with_python_lib():
         if existing_list:
             env[env_key] = os.pathsep.join(existing_list)
     
-    # Python lib paths
+    # Python lib paths (PYTHONPATH)
     python_lib = sysconfig.get_paths().get("purelib")
     site_packages = sysconfig.get_paths().get("platlib")
     _append_path("PYTHONPATH", [python_lib, site_packages, str(EUREKA_ROOT_DIR)])
     
+    # === 关键修改开始 ===
+    # Conda / 当前解释器的 lib 路径
+    current_prefix = sys.prefix
+    conda_lib_path = os.path.join(current_prefix, "lib")
+
     # Torch/Isaac common dependency paths
     cuda_lib = "/usr/local/cuda/lib64"
     isaac_lib = str(ISAAC_ROOT_DIR / "bindings" / "python")
-    _append_path("LD_LIBRARY_PATH", [cuda_lib, isaac_lib])
+
+    # 加入 LD_LIBRARY_PATH，确保能找到 libpython 与 Isaac 依赖
+    _append_path("LD_LIBRARY_PATH", [conda_lib_path, cuda_lib, isaac_lib])
+    # === 关键修改结束 ===
     
     return env
 
@@ -147,7 +156,8 @@ def generate_visual_rubric(
     prompt_template: str,
     client: OpenAI,
     model: str,
-    temperature: float
+    temperature: float,
+    top_p: float = 1.0
 ) -> Dict[str, Any]:
     prompt = (
         prompt_template
@@ -161,7 +171,8 @@ def generate_visual_rubric(
                 {"role": "system", "content": "Output ONLY valid JSON."},
                 {"role": "user", "content": prompt}
             ],
-            temperature=temperature
+            temperature=temperature,
+            top_p=top_p
         )
         content = _clean_response_text(response.choices[0].message.content)
         json_match = re.search(r"\{.*\}", content, re.DOTALL)
@@ -172,36 +183,65 @@ def generate_visual_rubric(
     
     return {"overall_instruction": "Evaluate if the robot completes the task naturally."}
 
-def construct_reward_reflection(training_results: Optional[Dict], error: Optional[str] = None) -> str:
+def construct_reward_reflection(
+    training_results: Optional[Dict],
+    error: Optional[str] = None,
+    policy_feedback_text: str = "",
+    code_feedback_text: str = "",
+    execution_error_feedback_text: str = "",
+) -> str:
+    """
+    Constructs feedback string by merging Original Eureka logic (detailed stats) 
+    with Eureka_new's structure.
+    """
+    # 1. Handle Execution Errors
     if error:
-        return f"Execution Error:\n{error}\nFix the code logic."
+        return execution_error_feedback_text.format(traceback_msg=error)
     
     if not training_results:
-        return "Training Status: Failed (No Data)"
+        return execution_error_feedback_text.format(traceback_msg="No training results found.")
 
-    success = training_results.get("success_metric", 0.0)
-    text = f"Training Status:\n- Main Task Metric (Success/Reward): {success:.4f}\n"
-    text += "- Reward Components Statistics:\n"
+    # 2. Handle Success
+    metrics = training_results.get("metrics_summary", {})
     
-    components = training_results.get("metrics_summary", {}).get("reward_components", {})
-    if not components and "components" in training_results:
-        components = training_results["components"]
+    # Calculate Epoch Frequency
+    try:
+        if metrics:
+            sample_key = next(iter(metrics.keys()))
+            max_iterations = np.array(metrics[sample_key]).shape[0]
+            epoch_freq = max(int(max_iterations // 10), 1)
+        else:
+            epoch_freq = 1
+    except:
+        epoch_freq = 1
 
-    if components:
-        for name, stats in components.items():
-            if isinstance(stats, dict):
-                mean_val = stats.get('mean', 0)
-                max_val = stats.get('max', 0)
-                min_val = stats.get('min', 0)
-                text += f"  * {name}: Mean={mean_val:.2f}, Max={max_val:.2f}, Min={min_val:.2f}\n"
-            elif isinstance(stats, (list, np.ndarray)) and len(stats) > 0:
-                text += f"  * {name}: Mean={np.mean(stats):.2f}, Max={np.max(stats):.2f}\n"
+    # Start with the policy feedback template
+    content = policy_feedback_text.format(epoch_freq=epoch_freq)
+
+    # Add reward components log
+    for metric in metrics:
+        if "/" not in metric: 
+            data = metrics[metric]
+            if len(data) == 0: continue
+            
+            # Format list
+            metric_cur = ['{:.2f}'.format(x) for x in data[::epoch_freq]]
+            metric_cur_max = max(data)
+            metric_cur_mean = sum(data) / len(data)
+            metric_cur_min = min(data)
+            if metric != "gt_reward" and metric != "gpt_reward":
+                if metric != "consecutive_successes":
+                    metric_name = metric 
+                else:
+                    metric_name = "task_score"
+                content += f"{metric_name}: {metric_cur}, Max: {metric_cur_max:.2f}, Mean: {metric_cur_mean:.2f}, Min: {metric_cur_min:.2f} \n"                    
             else:
-                text += f"  * {name}: {stats}\n"
-    else:
-        text += "  (No component details available)\n"
-    
-    return text
+                if "consecutive_successes" not in metrics:
+                    content += f"ground-truth score: {metric_cur}, Max: {metric_cur_max:.2f}, Mean: {metric_cur_mean:.2f}, Min: {metric_cur_min:.2f} \n"
+
+    # Append the generic code feedback instruction
+    content += code_feedback_text
+    return content
 
 def _call_vlm_api(
     model: str,
@@ -430,7 +470,10 @@ def _evaluate_population(
     cfg,
     workspace_dir: Path,
     isaac_root_dir: Path,
-    global_rubric: Dict
+    global_rubric: Dict,
+    policy_feedback_text: str,
+    code_feedback_text: str,
+    execution_error_feedback_text: str
 ) -> List[PopulationMember]:
     
     # 1. Launch Training
@@ -452,29 +495,54 @@ def _evaluate_population(
     for i, job in enumerate(jobs):
         if not job:
             artifacts.append(None)
-            reflection_texts[i] = construct_reward_reflection(None, "Launch Failed")
+            reflection_texts[i] = construct_reward_reflection(
+                None, "Launch Failed",
+                policy_feedback_text, code_feedback_text, execution_error_feedback_text
+            )
             continue
-        
+
         block_until_training(str(job.log_file), log_status=False, iter_num=generation, response_id=i)
         artifact = _process_training_result(job, cfg)
         artifacts.append(artifact)
-        
+
         if "Runtime Error" in artifact.stats_text:
-            reflection_texts[i] = artifact.stats_text
+            reflection_texts[i] = construct_reward_reflection(
+                None, artifact.stats_text,
+                policy_feedback_text, code_feedback_text, execution_error_feedback_text
+            )
         else:
             res_dict = {"success_metric": artifact.success_metric, "metrics_summary": artifact.metrics_summary}
-            reflection_texts[i] = construct_reward_reflection(res_dict)
+            reflection_texts[i] = construct_reward_reflection(
+                res_dict, None,
+                policy_feedback_text, code_feedback_text, execution_error_feedback_text
+            )
         artifact.stats_text = reflection_texts[i]
 
     # 3. Filtering
-    valid_indices = [i for i, a in enumerate(artifacts) if a and a.success_metric != float('-inf')]
-    valid_indices.sort(key=lambda i: artifacts[i].success_metric, reverse=True)
-    
-    cutoff = max(1, len(valid_indices) // 2)
+    # 在早期世代保留更多候选，防止过早剪枝
+    keep_ratio = 0.75 if generation < 3 else 0.5
+
+    valid_indices = [i for i, a in enumerate(artifacts) if a]
+
+    def sort_key(idx):
+        art = artifacts[idx]
+        if art.success_metric != float("-inf"):
+            return art.success_metric
+        if "gpt_reward" in art.metrics_summary:
+            try:
+                return art.metrics_summary["gpt_reward"]["mean"]
+            except Exception:
+                return float("-inf")
+        return float("-inf")
+
+    valid_indices.sort(key=sort_key, reverse=True)
+
+    cutoff = max(1, int(len(valid_indices) * keep_ratio))
     survivor_indices = set(valid_indices[:cutoff])
+
     skip_vlm_map = {i: (i not in survivor_indices) for i in range(len(code_samples))}
-    
-    logging.info(f"Filter Complete: {len(valid_indices) - len(survivor_indices)} pruned. {len(survivor_indices)} proceed to VLM.")
+
+    logging.info(f"Filter Complete: Keeping Top {len(survivor_indices)}/{len(valid_indices)} (Ratio: {keep_ratio})")
 
     # 4. Record Videos
     logging.info("Recording videos for survivors...")
@@ -608,7 +676,16 @@ def _tournament_select(pop: List[PopulationMember], k: int = 2) -> PopulationMem
     candidates = random.sample(pool, min(k, len(pool)))
     return max(candidates, key=lambda m: m.visual_score)
 
-def _spawn_mutation(parent: PopulationMember, sys_prompt: str, task_desc: str, env_code: str, client: OpenAI, model: str) -> Tuple[CodeSample, str]:
+def _spawn_mutation(
+    parent: PopulationMember,
+    sys_prompt: str,
+    task_desc: str,
+    env_code: str,
+    client: OpenAI,
+    model: str,
+    temperature: float = 1.0,
+    top_p: float = 1.0,
+) -> Tuple[CodeSample, str]:
     history_text = "\n".join(f"- {h}" for h in parent.lineage_history) if parent.lineage_history else "(empty)"
     
     user_block = f"""{task_desc}
@@ -636,7 +713,12 @@ Provide the complete new python code.
 
     summary_text = "Modified based on feedback"
     try:
-        resp = client.chat.completions.create(model=model, messages=messages, temperature=1.0)
+        resp = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            top_p=top_p
+        )
         content = _clean_response_text(resp.choices[0].message.content)
 
         m_summary = re.search(r"SUMMARY:\\s*(.+)", content, flags=re.IGNORECASE)
@@ -653,7 +735,14 @@ Provide the complete new python code.
         return parent.code_sample, f"{summary_text} (fallback: mutation failed)"
 
 
-def _generate_initial(client: OpenAI, model: str, messages: List[Dict], count: int) -> List[CodeSample]:
+def _generate_initial(
+    client: OpenAI,
+    model: str,
+    messages: List[Dict],
+    count: int,
+    temperature: float = 1.0,
+    top_p: float = 1.0,
+) -> List[CodeSample]:
     samples: List[CodeSample] = []
     while len(samples) < count:
         try:
@@ -661,6 +750,8 @@ def _generate_initial(client: OpenAI, model: str, messages: List[Dict], count: i
                 model=model,
                 messages=messages,
                 n=min(4, count - len(samples)),
+                temperature=temperature,
+                top_p=top_p,
             )
             for c in resp.choices:
                 code = _extract_reward_code(c.message.content)
@@ -715,9 +806,24 @@ def main(cfg):
 
     logging.info("Generating Visual Rubric...")
     rubric = generate_visual_rubric(
-        cfg.env.description, task_code, rubric_tmpl, llm, cfg.model, cfg.temperature
+        cfg.env.description,
+        task_code,
+        rubric_tmpl,
+        llm,
+        cfg.model,
+        cfg.temperature,
+        top_p=getattr(cfg, "top_p", 1.0),
     )
     logging.info(f"Rubric: {json.dumps(rubric, indent=2)}")
+
+    # 加载原版 Eureka 的三个反馈模板
+    try:
+        policy_feedback_text = file_to_string(str(prompt_dir / "policy_feedback.txt"))
+        code_feedback_text = file_to_string(str(prompt_dir / "code_feedback.txt"))
+        execution_error_feedback_text = file_to_string(str(prompt_dir / "execution_error_feedback.txt"))
+    except Exception as e:
+        logging.error(f"Failed to load feedback prompts from {prompt_dir}: {e}")
+        raise e
 
     pop_size = int(cfg.evolution.population_size)
     gens = int(cfg.evolution.generations)
@@ -733,9 +839,22 @@ def main(cfg):
             {"role": "user", "content": user_prompt},
         ],
         pop_size,
+        temperature=cfg.temperature,
+        top_p=getattr(cfg, "top_p", 1.0),
     )
 
-    population = _evaluate_population(0, samples, task_code, cfg, workspace, ISAAC_ROOT_DIR, rubric)
+    population = _evaluate_population(
+        0,
+        samples,
+        task_code,
+        cfg,
+        workspace,
+        ISAAC_ROOT_DIR,
+        rubric,
+        policy_feedback_text,
+        code_feedback_text,
+        execution_error_feedback_text,
+    )
     _log_population_ranking(population, 0)
     init_best = max(population, key=lambda m: (m.physical_metric, m.visual_score))
     best_phy_history.append(
@@ -756,7 +875,14 @@ def main(cfg):
         while len(children_codes) < pop_size - len(elites):
             parent = _tournament_select(population)
             child_code, change_summary = _spawn_mutation(
-                parent, sys_prompt, cfg.env.description, task_code, llm, cfg.model
+                parent,
+                sys_prompt,
+                cfg.env.description,
+                task_code,
+                llm,
+                cfg.model,
+                temperature=cfg.temperature,
+                top_p=getattr(cfg, "top_p", 1.0),
             )
             children_codes.append(child_code)
             lineage = list(parent.lineage_history)
@@ -764,7 +890,16 @@ def main(cfg):
             children_histories.append(lineage)
 
         children_pop = _evaluate_population(
-            g, children_codes, task_code, cfg, workspace, ISAAC_ROOT_DIR, rubric
+            g,
+            children_codes,
+            task_code,
+            cfg,
+            workspace,
+            ISAAC_ROOT_DIR,
+            rubric,
+            policy_feedback_text,
+            code_feedback_text,
+            execution_error_feedback_text,
         )
         for i, child in enumerate(children_pop):
             if i < len(children_histories):

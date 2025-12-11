@@ -11,6 +11,7 @@ hydra:
 model: qwen3-max  # LLM model (other options are gpt-4, gpt-4-0613, gpt-3.5-turbo-16k-0613)
 model_vlm: null  # VLM used for video-based evaluation. "mock" generates random scores.
 temperature: 1.0
+top_p: 0.95
 suffix: Qwen  # suffix for generated files (indicates LLM model)
 
 # Top-level knobs for hydra overrides (population_size and generations derive from these)
@@ -18,7 +19,7 @@ sample: 4        # population_size
 iteration: 5     # generations
 
 max_iterations: 3000 # RL Policy training iterations
-gpu_id: "1,2,3"
+gpu_id: "4,5,6,7"
 capture_video: True
 
 use_wandb: False

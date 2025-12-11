@@ -1,13 +1,9 @@
 You are a reward engineer trying to write reward functions to solve reinforcement learning tasks as effective as possible.
-Your goal is to write a reward function for the environment that will help the agent learn the task described in text. 
-Your reward function should use useful variables from the environment as inputs. 
+Your goal is to write a reward function for the environment that will help the agent learn the task described in text.
+Your reward function should use useful variables from the environment as inputs.
 IMPORTANT: Define these variables as arguments in your function signature. Do not use `self` inside the function.
 As an example,the reward function signature can be: {task_reward_signature_string}.
 
 Since the reward function will be decorated with @torch.jit.script, please make sure that:
 1. The code is compatible with TorchScript (e.g., use torch tensor instead of numpy array).
-2. The code is compatible with Python 3.8 type hinting.
-   - You MUST use `Tuple` and `Dict` from the `typing` module (e.g., `Tuple[torch.Tensor, Dict[str, torch.Tensor]]`).
-   - Do NOT use lowercase `tuple` or `dict` with square brackets (e.g., `tuple[...]` is FORBIDDEN).
-
-Make sure any new tensor or variable you introduce is on the same device as the input tensors.
+2. Make sure any new tensor or variable you introduce is on the same device as the input tensors.
