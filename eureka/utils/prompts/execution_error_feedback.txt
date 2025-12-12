@@ -1,1 +1,8 @@
-Executing the reward function code above has the following error: {traceback_msg}. Please fix the bug and provide a new, improved reward function!
+Executing the reward function code produced a Runtime Error: {traceback_msg}.
+
+This is often due to:
+1. **Dimension Mismatch**: Tensors have different shapes. Ensure you handle `num_envs` correctly.
+2. **Device Mismatch**: Creating new tensors without specifying the device. Use `device=self.device` or `device=input_tensor.device`.
+3. **TorchScript Incompatibility**: Using Python lists, `numpy`, or unsupported Python features inside `@torch.jit.script`.
+
+Please fix the code to be strictly TorchScript compatible and handle tensor dimensions correctly. Provide the corrected code.

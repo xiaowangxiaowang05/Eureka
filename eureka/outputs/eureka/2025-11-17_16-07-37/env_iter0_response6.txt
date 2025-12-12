@@ -1,0 +1,32 @@
+Importing module 'gym_38' (/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/gym_38.so)
+Setting GYM_USD_PLUG_INFO_PATH to /home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/usd/plugInfo.json
+Traceback (most recent call last):
+  File "/home/wangyuhang/python/Eureka/eureka/../isaacgymenvs/isaacgymenvs/train.py", line 39, in <module>
+    from isaacgymenvs.tasks import isaacgym_task_map
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/__init__.py", line 29, in <module>
+    from .ant import Ant
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/ant.py", line 31, in <module>
+    import torch
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/__init__.py", line 1465, in <module>
+    from . import _meta_registrations
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/_meta_registrations.py", line 7, in <module>
+    from torch._decomp import _add_op_to_registry, global_decomposition_table, meta_table
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/_decomp/__init__.py", line 169, in <module>
+    import torch._decomp.decompositions
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/_decomp/decompositions.py", line 10, in <module>
+    import torch._prims as prims
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/_prims/__init__.py", line 33, in <module>
+    from torch._subclasses.fake_tensor import FakeTensor, FakeTensorMode
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/_subclasses/__init__.py", line 3, in <module>
+    from torch._subclasses.fake_tensor import (
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/_subclasses/fake_tensor.py", line 13, in <module>
+    from torch._guards import Source
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/_guards.py", line 14, in <module>
+    import sympy  # type: ignore[import]
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/sympy/__init__.py", line 30, in <module>
+    from sympy.core.cache import lazy_function
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/sympy/core/__init__.py", line 4, in <module>
+    from .sympify import sympify, SympifyError
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/sympy/core/sympify.py", line 4, in <module>
+    from typing import Any, Callable
+KeyboardInterrupt

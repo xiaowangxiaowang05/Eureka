@@ -1,1 +1,19 @@
-The Python environment is {task_obs_code_string}. Write a reward function for the following task: {task_description}.
+Here is the environment's observation code:
+{task_obs_code_string}
+
+Here is the task description: {task_description}
+
+YOUR TASK: Write a Reward Function
+
+1. **Analyze Available Variables**:
+   - Carefully read the `_obs.py` code above to identify available `self.` attributes (e.g., `self.root_states`, `self.dof_pos`, `self.object_pos`).
+   - You can also use standard variables if they are implied by the task type (e.g., `self.actions` for control cost).
+
+2. **Design Strategy**:
+   - **Shaped Rewards**: Since the task involves physics dynamics, you must provide feedback for "getting closer" to the goal.
+   - **Multi-Component**: Combine a "Main Goal" reward (e.g., reaching target, maintaining velocity) with "Regularization" penalties (e.g., energy efficiency, stability, preventing falling).
+   - **Safety/Stability**: For locomotion or manipulation, penalize jitter or extreme joint velocities, but keep these weights low to avoid freezing the agent.
+
+3. **Implementation**:
+   - Write the `compute_reward` function following the CRITICAL RULES defined previously.
+   - Ensure the code handles the `num_envs` dimension correctly (all operations must be batched).

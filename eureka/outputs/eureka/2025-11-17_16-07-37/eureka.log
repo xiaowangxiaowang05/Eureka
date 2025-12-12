@@ -1,0 +1,13 @@
+[2025-11-17 16:07:37,577][root][INFO] - Workspace: /home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-11-17_16-07-37
+[2025-11-17 16:07:37,577][root][INFO] - Project Root: /home/wangyuhang/python/Eureka/eureka
+[2025-11-17 16:07:37,578][root][INFO] - Using LLM: qwen3-max
+[2025-11-17 16:07:37,578][root][INFO] - Task: Humanoid
+[2025-11-17 16:07:37,578][root][INFO] - Task description: to make the humanoid run as fast as possible
+[2025-11-17 16:07:37,604][root][INFO] - Iteration 0: Generating 16 samples with qwen3-max
+[2025-11-17 16:09:02,594][root][INFO] - Iteration 0: Prompt Tokens: 2128, Completion Tokens: 26492, Total Tokens: 35004
+[2025-11-17 16:09:17,818][root][INFO] - Iteration 0: Code Run 0 execution error!
+[2025-11-17 16:09:27,109][root][INFO] - Iteration 0: Code Run 1 execution error!
+[2025-11-17 16:09:36,273][root][INFO] - Iteration 0: Code Run 2 execution error!
+[2025-11-17 16:09:47,538][root][INFO] - Iteration 0: Code Run 3 execution error!
+[2025-11-17 16:09:56,618][root][INFO] - Iteration 0: Code Run 4 execution error!
+[2025-11-17 16:10:05,851][root][INFO] - Iteration 0: Code Run 5 execution error!

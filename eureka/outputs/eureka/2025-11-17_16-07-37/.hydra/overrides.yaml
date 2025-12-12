@@ -1,0 +1,4 @@
+- env=humanoid
+- sample=16
+- iteration=5
+- model=qwen3-max

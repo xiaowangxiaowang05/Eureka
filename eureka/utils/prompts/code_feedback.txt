@@ -1,8 +1,27 @@
-Please carefully analyze the policy feedback and provide a new, improved reward function that can better solve the task. Some helpful tips for analyzing the policy feedback:
-    (1) If the success rates are always near zero, then you must rewrite the entire reward function
-    (2) If the values for a certain reward component are near identical throughout, then this means RL is not able to optimize this component as it is written. You may consider
-        (a) Changing its scale or the value of its temperature parameter
-        (b) Re-writing the reward component 
-        (c) Discarding the reward component
-    (3) If some reward components' magnitude is significantly larger, then you must re-scale its value to a proper range
-Please analyze each existing reward component in the suggested manner above first, and then write the reward function code. 
+You are an expert RL researcher. You have just completed an experiment with the reward function shown in the previous message.
+Below is the training feedback for that reward function.
+
+TRAINING FEEDBACK:{policy_feedback}
+
+Carefully analyze the feedback above using this logic:
+
+STEP 1: IS THE REWARD FUNCTION WORKING?
+- **Check Success Rate**: Look at `task_score` or `success_rate`.
+  - If it increases over time (e.g., `0.0 -> 0.5`), the reward is guiding learning. Keep tuning.
+  - If it stays at 0.0 or near 0 for the entire training: **The reward is likely too sparse or the task is too hard for the current gradient.**
+  - If `total_reward` increases but `success_rate` is 0: **Reward Hacking** (agent is collecting sub-rewards without solving the task).
+
+STEP 2: DIAGNOSE ISSUES
+- **Lazy Agent**: Is a penalty component (e.g., `action_penalty`, `dof_vel_penalty`, `energy_cost`) the dominant positive term (closest to 0, e.g. -0.01) while task rewards are large negative numbers? If so, the agent might be freezing to avoid costs.
+  -> FIX: Reduce penalty weights significantly (e.g., multiply by 0.1) or switch to a different penalty formulation.
+- **Sparse Reward Trap**: Did you use a binary reward (e.g., `1.0 if success else 0.0`)? 
+  -> FIX: You MUST switch to a dense, shaped reward (e.g., `torch.exp(-error)` or `1.0 / (1.0 + error)`).
+- **Scale Imbalance**: Is one component's magnitude much larger (>10x) than others?
+  -> FIX: Apply `torch.log` or scaling factors to balance components.
+
+STEP 3: PROPOSE A NEW FUNCTION
+- Based on your analysis, write a new, improved reward function.
+- **CRITICAL**: Do NOT change the function signature (input arguments).
+- Ensure strict TorchScript compatibility.
+
+Please provide ONLY the Python code string:

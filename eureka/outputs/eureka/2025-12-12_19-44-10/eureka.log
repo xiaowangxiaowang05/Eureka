@@ -1,0 +1,27 @@
+[2025-12-12 19:44:10,793][root][INFO] - Workspace: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-12_19-44-10
+[2025-12-12 19:44:10,854][root][INFO] - Generating Visual Rubric...
+[2025-12-12 19:44:20,306][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-12 19:44:20,319][root][INFO] - Rubric: {
+  "task_type": "Manipulation",
+  "critical_failures": [
+    "The object is dropped from the Shadow Hand and falls out of reach.",
+    "The robot hand freezes or exhibits no meaningful motion for a significant portion of the episode.",
+    "Simulation instability causes the robot or object to explode, fly apart, or behave non-physically."
+  ],
+  "criteria": [
+    {
+      "name": "primary_goal_progress",
+      "category": "Functional",
+      "description": "Assess how closely the object's final orientation matches the target orientation. Consider intermediate progress: does the hand actively rotate the object toward the goal? Partial credit for approaching the correct orientation even if not perfect.",
+      "weight": 0.6
+    },
+    {
+      "name": "motion_quality",
+      "category": "Quality",
+      "description": "Evaluate the smoothness, coordination, and stability of finger movements during manipulation. Penalize excessive jitter, oscillation, or unstable grasping that risks dropping the object. Reward fluid, dexterous reorientation without unnecessary flailing or strain.",
+      "weight": 0.4
+    }
+  ],
+  "overall_instruction": "Judge whether the Shadow Hand successfully and smoothly rotates the object to the target orientation without dropping it or exhibiting unstable behavior."
+}
+[2025-12-12 19:44:20,321][root][INFO] - Generating Gen 0...

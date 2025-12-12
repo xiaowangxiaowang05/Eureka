@@ -10,7 +10,7 @@ def paraphrase(string, num=1):
         {"role": "user", "content": string}
     ]
     responses = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-16k-0613",
+        model="qwen3-max",
         messages=messages,
         temperature=0.7,
         n=num,
