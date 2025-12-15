@@ -1,0 +1,23 @@
+[2025-12-16 06:11:03,628][root][INFO] - Workspace: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka_old/2025-12-16_06-11-03
+[2025-12-16 06:11:03,628][root][INFO] - Project Root: /ssd/home/wangyuhang/python/Eureka/eureka
+[2025-12-16 06:11:03,663][root][INFO] - Using LLM: qwen3-max
+[2025-12-16 06:11:03,664][root][INFO] - Task: ShadowHand
+[2025-12-16 06:11:03,664][root][INFO] - Task description: to make the shadow hand spin the object to a target orientation
+[2025-12-16 06:11:03,693][root][INFO] - Iteration 0: Generating 2 samples with qwen3-max
+[2025-12-16 06:11:16,521][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-16 06:11:16,536][root][INFO] - Iteration 0: Prompt Tokens: 1765, Completion Tokens: 1024, Total Tokens: 2789
+[2025-12-16 06:11:16,536][root][INFO] - Iteration 0: Processing Code Run 0
+[2025-12-16 06:11:22,640][root][INFO] - Iteration 0: Code Run 0 execution error!
+[2025-12-16 06:11:22,640][root][INFO] - Iteration 0: Processing Code Run 1
+[2025-12-16 06:11:28,749][root][INFO] - Iteration 0: Code Run 1 execution error!
+[2025-12-16 06:11:28,836][root][INFO] - All code generation failed! Repeat this iteration from the current message checkpoint!
+[2025-12-16 06:11:28,836][root][INFO] - Iteration 1: Generating 2 samples with qwen3-max
+[2025-12-16 06:11:39,687][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-16 06:11:39,689][root][INFO] - Iteration 1: Prompt Tokens: 1765, Completion Tokens: 968, Total Tokens: 2733
+[2025-12-16 06:11:39,689][root][INFO] - Iteration 1: Processing Code Run 0
+[2025-12-16 06:11:45,760][root][INFO] - Iteration 1: Code Run 0 execution error!
+[2025-12-16 06:11:45,760][root][INFO] - Iteration 1: Processing Code Run 1
+[2025-12-16 06:11:51,884][root][INFO] - Iteration 1: Code Run 1 execution error!
+[2025-12-16 06:11:52,032][root][INFO] - All code generation failed! Repeat this iteration from the current message checkpoint!
+[2025-12-16 06:11:52,032][root][INFO] - All iterations of code generation failed, aborting...
+[2025-12-16 06:11:52,032][root][INFO] - Please double check the output env_iter*_response*.txt files for repeating errors!

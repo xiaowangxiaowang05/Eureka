@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 from openai import OpenAI
 import dashscope
 
@@ -59,21 +59,31 @@ def get_env_with_python_lib():
     site_packages = sysconfig.get_paths().get("platlib")
     _append_path("PYTHONPATH", [python_lib, site_packages, str(EUREKA_ROOT_DIR)])
     
-    # === 关键修改开始 ===
-    # Conda / 当前解释器的 lib 路径
+    # Conda / current interpreter lib paths
     current_prefix = sys.prefix
     conda_lib_path = os.path.join(current_prefix, "lib")
-
-    # Torch/Isaac common dependency paths
     cuda_lib = "/usr/local/cuda/lib64"
     isaac_lib = str(ISAAC_ROOT_DIR / "bindings" / "python")
-
-    # 加入 LD_LIBRARY_PATH，确保能找到 libpython 与 Isaac 依赖
     _append_path("LD_LIBRARY_PATH", [conda_lib_path, cuda_lib, isaac_lib])
-    # === 关键修改结束 ===
     
     return env
 
+def extract_env_metadata(env_code: str, client: OpenAI, model: str) -> str:
+    """
+    Extract high-level metadata (robot type, joints, observables) from environment code.
+    """
+    prompt_path = EUREKA_ROOT_DIR / "eureka/utils/prompts/env_metadata.txt"
+    prompt_template = file_to_string(str(prompt_path))
+    prompt = prompt_template.replace("{ENV_CODE}", env_code[:6000])
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+        )
+        return response.choices[0].message.content.strip()
+    except Exception:
+        return "ROBOT: Unknown\nJOINTS: Unknown\nOBSERVABLES: Unknown"
 # ==========================================
 # 2. Data Structures
 # ==========================================
@@ -99,7 +109,7 @@ class TrainingArtifact:
 
 @dataclass
 class VLMResult:
-    fitness_score: float
+    visual_score: float
     qualitative_feedback: str
     analysis_notes: Dict[str, str] = field(default_factory=dict)
 
@@ -121,6 +131,19 @@ class PopulationMember:
         if self.artifact is not None and self.artifact.success_metric != float('-inf'):
             return float(self.artifact.success_metric)
         return float('-inf')
+
+    @property
+    def combined_score(self) -> float:
+        """
+        Multiplicative blend of physical and visual scores:
+        final = phy * (1 + vis/100). If phy <= 0, return phy to avoid
+        negative * boost flipping sign.
+        """
+        phy = self.physical_metric if self.physical_metric != float('-inf') else -100.0
+        vis = self.visual_score
+        if phy <= 0:
+            return phy
+        return phy * (1.0 + vis / 100.0)
 
 # ==========================================
 # 3. LLM/VLM Interaction
@@ -153,6 +176,7 @@ def _extract_reward_code(raw_response: str) -> Optional[str]:
 def generate_visual_rubric(
     task_description: str,
     env_code: str,
+    env_metadata: str,
     prompt_template: str,
     client: OpenAI,
     model: str,
@@ -162,7 +186,8 @@ def generate_visual_rubric(
     prompt = (
         prompt_template
         .replace("{TASK_DESCRIPTION}", task_description)
-        .replace("{ENV_CODE}", env_code[:3000])
+        .replace("{ENV_CODE}", env_code)  # Pass full environment code instead of truncating
+        .replace("{ENV_METADATA}", env_metadata)
     )
     try:
         response = client.chat.completions.create(
@@ -178,8 +203,8 @@ def generate_visual_rubric(
         json_match = re.search(r"\{.*\}", content, re.DOTALL)
         if json_match:
             return json.loads(json_match.group(0))
-    except Exception as e:
-        logging.warning(f"Rubric generation failed: {e}")
+    except Exception:
+        pass
     
     return {"overall_instruction": "Evaluate if the robot completes the task naturally."}
 
@@ -205,15 +230,14 @@ def construct_reward_reflection(
     metrics = training_results.get("metrics_summary", {})
     
     # Calculate Epoch Frequency
-    try:
-        if metrics:
+    epoch_freq = 1
+    if metrics:
+        try:
             sample_key = next(iter(metrics.keys()))
             max_iterations = np.array(metrics[sample_key]).shape[0]
             epoch_freq = max(int(max_iterations // 10), 1)
-        else:
+        except Exception:
             epoch_freq = 1
-    except:
-        epoch_freq = 1
 
     # Start with the policy feedback template
     content = policy_feedback_text.format(epoch_freq=epoch_freq)
@@ -247,42 +271,46 @@ def _call_vlm_api(
     model: str,
     video_path: str,
     rubric_json: Dict,
+    env_metadata: str,
     sample_fps: float = 1.0,  # New parameter for VLM sampling rate
-    retries: int = 3
+    retries: int = 3,
+    prompt_template: Optional[str] = None,
+    gen_id: int = 0,
+    cand_id: int = 0,
+    task_description: str = "",
+    robot_morphology: str = ""
 ) -> VLMResult:
     """
     Uploads the ORIGINAL video but instructs the API to sample at `sample_fps`.
     This prevents the "too many frames" error while using the original file.
     """
+    log_prefix = f"[Gen {gen_id} Cand {cand_id} VLM]"
+    # Check if model is valid
+    if not model or model.lower() in ["null", "none", ""]:
+        return VLMResult(0, f"{log_prefix} VLM model not configured", {})
+    
+    # Load VLM evaluation prompt template
+    if prompt_template is None:
+        prompt_dir = EUREKA_ROOT_DIR / "eureka/utils/prompts"
+        prompt_template = file_to_string(str(prompt_dir / "vlm_evaluation.txt"))
+    
+    # Extract components from rubric
     critical_failures = rubric_json.get("critical_failures", ["Catastrophic failure visible in video"])
     failures_list_str = "\n".join([f"- {item}" for item in critical_failures])
     rubric_criteria = rubric_json.get("criteria", [])
-    rubric_str = json.dumps(rubric_criteria, indent=2)
+    rubric_criteria_str = json.dumps(rubric_criteria, indent=2)
+    rubric_json_str = json.dumps(rubric_json, indent=2)
 
-    prompt_text = f"""
-You are a strict robotics referee. 
-Analyze the video content.
-
-### STEP 1: CRITICAL FAILURE CHECK (The "Death" Check)
-Scan the video for ANY of the following specific failures defined for this task. 
-If ANY occur, the score is ZERO.
-
-{failures_list_str}
-
-### STEP 2: SCORING (Only if no failures)
-If and ONLY IF none of the above failures happened, score the performance (0-100) based on:
-
-{rubric_str}
-
-### OUTPUT FORMAT (JSON)
-{{
-    "critical_failure_detected": true/false,
-    "failure_reason": "Describe the failure if true, else null",
-    "fitness_score": float (0-100),
-    "qualitative_feedback": "Short summary of behavior",
-    "analysis_notes": {{"what_went_wrong": "...", "what_went_right": "..."}}
-}}
-""".strip()
+    # Format the prompt template with actual values
+    prompt_text = (
+        prompt_template
+        .replace("{TASK_DESCRIPTION}", task_description)
+        .replace("{ROBOT_MORPHOLOGY}", robot_morphology)
+        .replace("{CRITICAL_FAILURES}", failures_list_str)
+        .replace("{EVALUATION_CRITERIA}", rubric_criteria_str)
+        .replace("{RUBRIC_JSON}", rubric_json_str)
+        .replace("{ENV_METADATA}", env_metadata)
+    )
 
     abs_video_path = os.path.abspath(video_path)
     file_url = f"file://{abs_video_path}"
@@ -325,22 +353,76 @@ If and ONLY IF none of the above failures happened, score the performance (0-100
                 json_match = re.search(r"\{.*\}", content, re.DOTALL)
                 if json_match:
                     data = json.loads(json_match.group(0))
-                    if data.get("critical_failure_detected", False):
-                        data["fitness_score"] = 0.0
-                    return VLMResult(
-                        fitness_score=float(data.get("fitness_score", 0)),
-                        qualitative_feedback=data.get("qualitative_feedback", ""),
-                        analysis_notes=data.get("analysis_notes", {})
+                    
+                    # Extract all fields from VLM response (new schema)
+                    functional_score = data.get("functional_score", 0.0)
+                    motion_quality_score = data.get("motion_quality_score", 0.0)
+                    success_detected = data.get("success_detected", False)
+                    ugly_behaviors = data.get("ugly_behaviors", [])
+                    reward_suggestion = data.get("reward_engineering_suggestion", "")
+                    qualitative_feedback = data.get("qualitative_feedback", "")
+
+                    # Use motion_quality_score as visual_score proxy
+                    visual_score = float(motion_quality_score if motion_quality_score is not None else 0.0)
+                    
+                    # Build comprehensive feedback string
+                    feedback_str = f"Visual Feedback: {qualitative_feedback}\n"
+                    feedback_str += f"Functional Score: {functional_score:.2f}/100\n"
+                    feedback_str += f"Motion Quality Score: {motion_quality_score:.2f}/100\n"
+                    if success_detected:
+                        feedback_str += f"Success Detected: Yes\n"
+                    if ugly_behaviors:
+                        feedback_str += f"Detected Motion Issues: {', '.join(ugly_behaviors)}\n"
+                    if reward_suggestion:
+                        feedback_str += f"Suggestion for Improvement: {reward_suggestion}\n"
+                    
+                    result = VLMResult(
+                        visual_score=visual_score,
+                        qualitative_feedback=feedback_str.strip(),
+                        analysis_notes={
+                            "functional_score": functional_score,
+                            "motion_quality_score": motion_quality_score,
+                            "success_detected": success_detected,
+                            "ugly_behaviors": ugly_behaviors,
+                            "reward_suggestion": reward_suggestion
+                        }
                     )
+                    
+                    # Log all VLM evaluation scores and data
+                    logging.info("=" * 80)
+                    logging.info(f"{log_prefix} Video: {os.path.basename(video_path)}")
+                    logging.info(f"{log_prefix} ========== SCORES ==========")
+                    logging.info(f"{log_prefix} Visual Score (Weighted): {visual_score:.2f}/100")
+                    if functional_score is not None:
+                        logging.info(f"{log_prefix} Functional Score: {functional_score:.2f}/100")
+                    if motion_quality_score is not None:
+                        logging.info(f"{log_prefix} Motion Quality Score: {motion_quality_score:.2f}/100")
+                    logging.info(f"{log_prefix} Success Detected: {success_detected}")
+                    logging.info(f"{log_prefix} ========== DETAILS ==========")
+                    if ugly_behaviors:
+                        logging.info(f"{log_prefix} Ugly Behaviors: {', '.join(ugly_behaviors)}")
+                    if reward_suggestion:
+                        logging.info(f"{log_prefix} Reward Suggestion: {reward_suggestion}")
+                    logging.info(f"{log_prefix} Qualitative Feedback: {qualitative_feedback}")
+                    logging.info(f"{log_prefix} ========== FULL JSON DATA ==========")
+                    logging.info(f"{log_prefix} Complete VLM Response JSON:")
+                    logging.info(json.dumps(data, indent=2, ensure_ascii=False))
+                    logging.info(f"{log_prefix} ========== RAW RESPONSE ==========")
+                    # Print full raw VLM response
+                    max_line_length = 2000
+                    for i in range(0, len(content), max_line_length):
+                        chunk = content[i:i+max_line_length]
+                        logging.info(f"{log_prefix} Raw Response [part {i//max_line_length + 1}]: {chunk}")
+                    logging.info("=" * 80)
+                    
+                    return result
             else:
-                logging.warning(f"DashScope Error: {response.code} - {response.message}")
                 time.sleep(2)
 
-        except Exception as e:
-            logging.warning(f"VLM attempt {attempt+1} failed: {e}")
+        except Exception:
             time.sleep(2)
 
-    return VLMResult(0, "Evaluation Failed", {})
+    return VLMResult(0, f"{log_prefix} Evaluation Failed", {})
 
 # ==========================================
 # 4. Training Management
@@ -365,14 +447,19 @@ def _write_candidate_files(gen: int, idx: int, base_code: str, reward_code: str,
     """
     
     task_code = base_code
-    if "def compute_reward(self):" in task_code:
-        task_code = task_code.replace("def compute_reward(self):", f"def compute_reward(self):\n{signature_block}")
-    elif "def compute_reward(self, actions):" in task_code:
-        task_code = task_code.replace("def compute_reward(self, actions):", f"def compute_reward(self, actions):\n{signature_block}")
+    for pattern in ["def compute_reward(self):", "def compute_reward(self, actions):"]:
+        if pattern in task_code:
+            task_code = task_code.replace(pattern, f"{pattern}\n{signature_block}")
+            break
     
     env_filename = f"env_gen{gen}_cand{idx}.py"
     with open(workspace / env_filename, 'w') as f:
-        f.write(task_code + "\n" + reward_code)
+        f.write(task_code + "\n")
+        f.write("from typing import Tuple, Dict\n")
+        f.write("import math\n")
+        f.write("import torch\n")
+        f.write("from torch import Tensor\n")
+        f.write(reward_code)
         
     reward_filename = f"env_gen{gen}_cand{idx}_rewardonly.py"
     with open(workspace / reward_filename, 'w') as f:
@@ -384,12 +471,17 @@ def _launch_training(gen: int, idx: int, code: str, base_code: str, cfg, workspa
     metadata = _write_candidate_files(gen, idx, base_code, code, workspace)
     log_file = workspace / f"env_gen{gen}_cand{idx}.txt"
     
+    # Copy generated code to Isaac Gym task file
+    target_task_filename = f"{cfg.env.env_name.lower()}{cfg.suffix.lower()}.py"
+    target_task_path = isaac_dir / "tasks" / target_task_filename
+    shutil.copy(metadata["env_file"], target_task_path)
+    
     gpus = str(cfg.gpu_id).split(",")
     gpu_id = gpus[idx % len(gpus)]
     
     env_vars = get_env_with_python_lib()
     env_vars["CUDA_VISIBLE_DEVICES"] = gpu_id
-    env_vars.setdefault("MASTER_PORT", str(29500 + idx))
+    env_vars.setdefault("MASTER_PORT", str(29500 + idx + (gen * 100)))
 
     cmd = [
         "python", "-u", f"{isaac_dir}/train.py",
@@ -403,6 +495,11 @@ def _launch_training(gen: int, idx: int, code: str, base_code: str, cfg, workspa
     
     with open(log_file, 'w') as f:
         proc = subprocess.Popen(cmd, stdout=f, stderr=f, env=env_vars)
+        
+    # Wait for environment build to prevent race condition
+    logging.info(f"Gen {gen} Cand {idx}: Waiting for environment build...")
+    block_until_training(str(log_file), log_status=False, iter_num=gen, response_id=idx)
+    time.sleep(2)  # Buffer to ensure file handle release
         
     return TrainingJob(proc, log_file, idx, metadata)
 
@@ -430,7 +527,8 @@ def _process_training_result(job: TrainingJob, cfg) -> TrainingArtifact:
         if "gt_reward" in logs and "gpt_reward" in logs:
             try:
                 correlation = np.corrcoef(logs["gt_reward"], logs["gpt_reward"])[0, 1]
-            except: pass
+            except Exception:
+                pass
             
     net_line = next((l for l in log_content.split('\n') if "Network Directory:" in l), None)
     ckpt_path = None
@@ -443,7 +541,6 @@ def _process_training_result(job: TrainingJob, cfg) -> TrainingArtifact:
         stats_text = ""
     elif traceback_msg:
         stats_text = f"Runtime Error Captured:\n{traceback_msg}"
-        logging.warning(f"Candidate {job.candidate_idx} failed with error.")
     else:
         stats_text = "Training Failed: No metrics and no traceback found."
 
@@ -473,8 +570,9 @@ def _evaluate_population(
     global_rubric: Dict,
     policy_feedback_text: str,
     code_feedback_text: str,
-    execution_error_feedback_text: str
-) -> List[PopulationMember]:
+    execution_error_feedback_text: str,
+    env_metadata: str,
+) -> Tuple[List[PopulationMember], float]:
     
     # 1. Launch Training
     logging.info(f"Gen {generation}: Training {len(code_samples)} candidates...")
@@ -483,8 +581,7 @@ def _evaluate_population(
         try:
             job = _launch_training(generation, i, sample.code, base_task_code, cfg, workspace_dir, isaac_root_dir)
             jobs.append(job)
-        except Exception as e:
-            logging.error(f"Launch failed for cand {i}: {e}")
+        except Exception:
             jobs.append(None)
             
     # 2. Wait and Collect Results
@@ -501,7 +598,6 @@ def _evaluate_population(
             )
             continue
 
-        block_until_training(str(job.log_file), log_status=False, iter_num=generation, response_id=i)
         artifact = _process_training_result(job, cfg)
         artifacts.append(artifact)
 
@@ -518,8 +614,7 @@ def _evaluate_population(
             )
         artifact.stats_text = reflection_texts[i]
 
-    # 3. Filtering
-    # 在早期世代保留更多候选，防止过早剪枝
+    # 3. Filtering - keep more candidates in early generations
     keep_ratio = 0.75 if generation < 3 else 0.5
 
     valid_indices = [i for i, a in enumerate(artifacts) if a]
@@ -529,10 +624,7 @@ def _evaluate_population(
         if art.success_metric != float("-inf"):
             return art.success_metric
         if "gpt_reward" in art.metrics_summary:
-            try:
-                return art.metrics_summary["gpt_reward"]["mean"]
-            except Exception:
-                return float("-inf")
+            return art.metrics_summary.get("gpt_reward", {}).get("mean", float("-inf"))
         return float("-inf")
 
     valid_indices.sort(key=sort_key, reverse=True)
@@ -573,36 +665,70 @@ def _evaluate_population(
                     
                     artifact.video_path = target_vid
                     shutil.copy2(artifact.reward_only_file, cand_dir / artifact.reward_only_file.name)
-            except Exception as e:
-                logging.error(f"Recording error cand {idx}: {e}")
+            except Exception:
+                pass
 
     # 5. VLM Evaluation
-    logging.info(f"Starting VLM Evaluation (DashScope sampling at {cfg.video.target_fps} FPS)...")
-    vlm_results = {}
-    
-    def process_vlm_task(idx, vid_path):
-        try:
-            return idx, _call_vlm_api(
-                model=cfg.model_vlm,
-                video_path=str(vid_path),
-                rubric_json=global_rubric,
-                sample_fps=float(cfg.video.target_fps) # PASS CONFIG FPS HERE
-            )
-        except Exception as e:
-            return idx, VLMResult(0, f"Error: {e}")
+    # Check if VLM model is configured
+    if not cfg.model_vlm or cfg.model_vlm.lower() == "null" or cfg.model_vlm.strip() == "":
+        vlm_results = {idx: VLMResult(0, "VLM not configured", {}) for idx in survivor_indices}
+    else:
+        logging.info(f"Starting VLM Evaluation (DashScope sampling at {cfg.video.target_fps} FPS)...")
+        vlm_results = {}
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-        futures = []
-        for idx in survivor_indices:
-            artifact = artifacts[idx]
-            if artifact and artifact.video_path and artifact.video_path.exists():
-                futures.append(executor.submit(process_vlm_task, idx, artifact.video_path))
+        # Load VLM evaluation prompt template
+        prompt_dir = EUREKA_ROOT_DIR / "eureka/utils/prompts"
+        vlm_prompt_template = file_to_string(str(prompt_dir / "vlm_evaluation.txt"))
+
+        def process_vlm_task(idx, vid_path):
+            try:
+                result = _call_vlm_api(
+                    model=cfg.model_vlm,
+                    video_path=str(vid_path),
+                    rubric_json=global_rubric,
+                    env_metadata=env_metadata,
+                    sample_fps=float(cfg.video.target_fps),
+                    prompt_template=vlm_prompt_template,
+                    gen_id=generation,
+                    cand_id=idx,
+                    task_description=cfg.env.description,
+                    robot_morphology=cfg.env.env_name
+                )
+                logging.info(f"[VLM Evaluation #{idx}] Completed - Visual Score: {result.visual_score:.2f}")
+                return idx, result
+            except Exception:
+                return idx, VLMResult(0, "Evaluation Failed", {})
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            futures = []
+            for idx in survivor_indices:
+                artifact = artifacts[idx]
+                if artifact and artifact.video_path and artifact.video_path.exists():
+                    futures.append(executor.submit(process_vlm_task, idx, artifact.video_path))
+                else:
+                    vlm_results[idx] = VLMResult(0, "No Video File", {})
+
+            for f in concurrent.futures.as_completed(futures):
+                idx, res = f.result()
+                vlm_results[idx] = res
+
+        # Summary of all VLM evaluations with complete scores
+        logging.info("=" * 80)
+        logging.info("VLM Evaluation Summary (All Scores):")
+        logging.info("-" * 80)
+        for idx in sorted(survivor_indices):
+            if idx in vlm_results:
+                res = vlm_results[idx]
+                func_score = res.analysis_notes.get("functional_score") if isinstance(res.analysis_notes, dict) else None
+                qual_score = res.analysis_notes.get("motion_quality_score") if isinstance(res.analysis_notes, dict) else None
+                if func_score is not None and qual_score is not None:
+                    logging.info(f"Candidate #{idx:2d}: Visual={res.visual_score:6.2f} | Functional={func_score:6.2f} | Quality={qual_score:6.2f}")
+                else:
+                    logging.info(f"Candidate #{idx:2d}: Visual={res.visual_score:6.2f}")
+                logging.info(f"  Feedback: {res.qualitative_feedback[:200] if res.qualitative_feedback else 'N/A'}...")
             else:
-                vlm_results[idx] = VLMResult(0, "No Video File")
-        
-        for f in concurrent.futures.as_completed(futures):
-            idx, res = f.result()
-            vlm_results[idx] = res
+                logging.info(f"Candidate #{idx:2d}: No result")
+        logging.info("=" * 80)
 
     # 6. Assemble Population
     population = []
@@ -615,15 +741,16 @@ def _evaluate_population(
         
         if vlm_res and not is_skipped:
             final_ref += f"\n\n[Visual Feedback]\n{vlm_res.qualitative_feedback}"
-            if vlm_res.analysis_notes:
-                final_ref += f"\nAnalysis: {vlm_res.analysis_notes}"
+            reward_suggestion = vlm_res.analysis_notes.get("reward_suggestion") if isinstance(vlm_res.analysis_notes, dict) else None
+            if reward_suggestion:
+                final_ref += f"\n\n[Reward Function Suggestion]\n{reward_suggestion}"
         elif is_skipped:
             final_ref += "\n\n[Visual Feedback]\nSkipped: Performance too low for visual evaluation."
 
         member = PopulationMember(
             generation=generation, index=i, code_sample=sample, artifact=artifacts[i],
             vlm_result=vlm_res, skip_vlm=is_skipped,
-            visual_score=vlm_res.fitness_score if vlm_res else 0.0,
+            visual_score=vlm_res.visual_score if vlm_res else 0.0,
             reflection_text=base_ref,
             final_reflection=final_ref
         )
@@ -633,28 +760,32 @@ def _evaluate_population(
     logging.info("=" * 80)
     logging.info(f"Generation {generation}: Training Results Ranking")
     logging.info("-" * 80)
-    ranked = sorted(
-        population,
-        key=lambda m: (m.physical_metric if m.physical_metric != float('-inf') else float('-inf'), m.visual_score),
-        reverse=True,
-    )
+    ranked = sorted(population, key=lambda m: m.combined_score, reverse=True)
     for r, m in enumerate(ranked, 1):
         phy = m.physical_metric if m.physical_metric != float('-inf') else 0.0
-        logging.info(f"Rank {r:2d}: Cand {m.index:2d} | Phy {phy:8.4f} | Vis {m.visual_score:5.1f} | SkipVLM={m.skip_vlm}")
-    return population
+        logging.info(
+            f"Rank {r:2d}: Cand {m.index:2d} | Score {m.combined_score:8.4f} "
+            f"(Phy {phy:8.4f}) | Vis {m.visual_score:5.1f} | SkipVLM={m.skip_vlm}"
+        )
+    
+    # Calculate execution rate (percentage of candidates that executed successfully)
+    successful_count = sum(1 for m in population if m.physical_metric != float('-inf'))
+    execute_rate = successful_count / len(population) if population else 0.0
+    logging.info(f"Generation {generation}: Execution Rate: {execute_rate:.2%} ({successful_count}/{len(population)})")
+    
+    return population, execute_rate
 
 def _log_population_ranking(population: List[PopulationMember], generation: int):
     logging.info("=" * 80)
     logging.info(f"Generation {generation}: Population Ranking (all candidates)")
     logging.info("-" * 80)
-    ranked = sorted(
-        population,
-        key=lambda m: (m.physical_metric if m.physical_metric != float('-inf') else float('-inf'), m.visual_score),
-        reverse=True,
-    )
+    ranked = sorted(population, key=lambda m: m.combined_score, reverse=True)
     for r, m in enumerate(ranked, 1):
         phy = m.physical_metric if m.physical_metric != float('-inf') else 0.0
-        logging.info(f"Rank {r:2d}: Cand {m.index:2d} | Phy {phy:8.4f} | Vis {m.visual_score:5.1f} | SkipVLM={m.skip_vlm}")
+        logging.info(
+            f"Rank {r:2d}: Cand {m.index:2d} | Score {m.combined_score:8.4f} "
+            f"(Phy {phy:8.4f}) | Vis {m.visual_score:5.1f} | SkipVLM={m.skip_vlm}"
+        )
     logging.info("-" * 80)
 
 # ==========================================
@@ -663,18 +794,18 @@ def _log_population_ranking(population: List[PopulationMember], generation: int)
 
 def _select_elites(pop: List[PopulationMember], count: int) -> List[PopulationMember]:
     if not pop: return []
-    phy_sorted = sorted(pop, key=lambda m: m.physical_metric, reverse=True)
+    # Select by combined score
+    combined_sorted = sorted(pop, key=lambda m: m.combined_score, reverse=True)
     cutoff = max(1, len(pop)//2)
-    candidates = phy_sorted[:cutoff]
-    vis_sorted = sorted(candidates, key=lambda m: m.visual_score, reverse=True)
-    return vis_sorted[:count]
+    candidates = combined_sorted[:cutoff]
+    return candidates[:count]
 
 def _tournament_select(pop: List[PopulationMember], k: int = 2) -> PopulationMember:
-    phy_sorted = sorted(pop, key=lambda m: m.physical_metric, reverse=True)
+    combined_sorted = sorted(pop, key=lambda m: m.combined_score, reverse=True)
     cutoff = max(1, len(pop)//2)
-    pool = phy_sorted[:cutoff]
+    pool = combined_sorted[:cutoff]
     candidates = random.sample(pool, min(k, len(pool)))
-    return max(candidates, key=lambda m: m.visual_score)
+    return max(candidates, key=lambda m: m.combined_score)
 
 def _spawn_mutation(
     parent: PopulationMember,
@@ -730,8 +861,7 @@ Provide the complete new python code.
             raise ValueError("No code block found in mutation response")
 
         return CodeSample(code=code, raw_response=content), summary_text
-    except Exception as e:
-        logging.error(f"Mutation failed: {e}")
+    except Exception:
         return parent.code_sample, f"{summary_text} (fallback: mutation failed)"
 
 
@@ -757,8 +887,7 @@ def _generate_initial(
                 code = _extract_reward_code(c.message.content)
                 if code:
                     samples.append(CodeSample(code, c.message.content))
-        except Exception as e:
-            logging.error(f"Init gen failed: {e}")
+        except Exception:
             time.sleep(1)
     return samples
 
@@ -794,6 +923,13 @@ def main(cfg):
     obs_code = file_to_string(str(obs_file))
     shutil.copy(obs_file, "env_init_obs.py")
     create_task(str(ISAAC_ROOT_DIR), cfg.env.task, cfg.env.env_name, cfg.suffix)
+    
+    # Create the base task Python file that train.py expects to find
+    task_python_file = ISAAC_ROOT_DIR / "tasks" / f"{env_name}{cfg.suffix.lower()}.py"
+    task_python_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(task_python_file, 'w') as f:
+        f.write(task_code)
+    logging.info(f"Created base task file: {task_python_file}")
 
     prompt_dir = EUREKA_ROOT_DIR / "eureka/utils/prompts"
     sys_prompt = file_to_string(str(prompt_dir / "initial_system.txt")).format(
@@ -804,10 +940,15 @@ def main(cfg):
     )
     rubric_tmpl = file_to_string(str(prompt_dir / "visual_rubric.txt"))
 
+    logging.info("Extracting Environment Metadata for Generalization...")
+    env_metadata = extract_env_metadata(task_code, llm, cfg.model)
+    logging.info(f"Environment Metadata:\n{env_metadata}")
+
     logging.info("Generating Visual Rubric...")
     rubric = generate_visual_rubric(
         cfg.env.description,
         task_code,
+        env_metadata,
         rubric_tmpl,
         llm,
         cfg.model,
@@ -816,19 +957,16 @@ def main(cfg):
     )
     logging.info(f"Rubric: {json.dumps(rubric, indent=2)}")
 
-    # 加载原版 Eureka 的三个反馈模板
-    try:
-        policy_feedback_text = file_to_string(str(prompt_dir / "policy_feedback.txt"))
-        code_feedback_text = file_to_string(str(prompt_dir / "code_feedback.txt"))
-        execution_error_feedback_text = file_to_string(str(prompt_dir / "execution_error_feedback.txt"))
-    except Exception as e:
-        logging.error(f"Failed to load feedback prompts from {prompt_dir}: {e}")
-        raise e
+    # Load feedback templates
+    policy_feedback_text = file_to_string(str(prompt_dir / "policy_feedback.txt"))
+    code_feedback_text = file_to_string(str(prompt_dir / "code_feedback.txt"))
+    execution_error_feedback_text = file_to_string(str(prompt_dir / "execution_error_feedback.txt"))
 
     pop_size = int(cfg.evolution.population_size)
     gens = int(cfg.evolution.generations)
     best_phy_history: List[float] = []
     best_vis_history: List[float] = []
+    execute_rates: List[float] = []
 
     logging.info("Generating Gen 0...")
     samples = _generate_initial(
@@ -843,7 +981,7 @@ def main(cfg):
         top_p=getattr(cfg, "top_p", 1.0),
     )
 
-    population = _evaluate_population(
+    population, execute_rate = _evaluate_population(
         0,
         samples,
         task_code,
@@ -854,13 +992,15 @@ def main(cfg):
         policy_feedback_text,
         code_feedback_text,
         execution_error_feedback_text,
+        env_metadata,
     )
     _log_population_ranking(population, 0)
-    init_best = max(population, key=lambda m: (m.physical_metric, m.visual_score))
+    init_best = max(population, key=lambda m: m.combined_score)
     best_phy_history.append(
         init_best.physical_metric if init_best.physical_metric != float("-inf") else 0.0
     )
     best_vis_history.append(init_best.visual_score)
+    execute_rates.append(execute_rate)
 
     best_ever = None
 
@@ -889,7 +1029,7 @@ def main(cfg):
             lineage.append(f"Gen {g}: {change_summary}")
             children_histories.append(lineage)
 
-        children_pop = _evaluate_population(
+        children_pop, execute_rate = _evaluate_population(
             g,
             children_codes,
             task_code,
@@ -900,10 +1040,13 @@ def main(cfg):
             policy_feedback_text,
             code_feedback_text,
             execution_error_feedback_text,
+            env_metadata,
         )
         for i, child in enumerate(children_pop):
             if i < len(children_histories):
                 child.lineage_history = children_histories[i]
+        
+        execute_rates.append(execute_rate)
 
         new_pop = []
         for e in elites:
@@ -927,8 +1070,8 @@ def main(cfg):
 
         _log_population_ranking(population, g)
 
-        curr_best = max(population, key=lambda m: (m.physical_metric, m.visual_score))
-        if not best_ever or curr_best.physical_metric > best_ever.physical_metric:
+        curr_best = max(population, key=lambda m: m.combined_score)
+        if not best_ever or curr_best.combined_score > best_ever.combined_score:
             best_ever = curr_best
 
         best_phy_history.append(
@@ -936,9 +1079,46 @@ def main(cfg):
         )
         best_vis_history.append(curr_best.visual_score)
 
+        # Plot metrics after each generation (similar to old code)
+        try:
+            fig, axs = plt.subplots(3, 1, figsize=(8, 9), sharex=True)
+            x_axis = list(range(len(best_phy_history)))
+
+            axs[0].plot(x_axis, best_phy_history, marker="o")
+            axs[0].set_title("Best Physical Metric per Generation")
+            axs[0].set_ylabel("Physical Metric")
+            axs[0].grid(True, linestyle="--", alpha=0.4)
+
+            axs[1].plot(x_axis, best_vis_history, marker="o", color="orange")
+            axs[1].set_title("Best Visual Score per Generation")
+            axs[1].set_ylabel("Visual Score")
+            axs[1].grid(True, linestyle="--", alpha=0.4)
+
+            axs[2].plot(x_axis, execute_rates, marker="o", color="green")
+            axs[2].set_title("Execution Rate per Generation")
+            axs[2].set_xlabel("Generation")
+            axs[2].set_ylabel("Execution Rate")
+            axs[2].set_ylim([0, 1.1])
+            axs[2].grid(True, linestyle="--", alpha=0.4)
+
+            plt.tight_layout()
+            plt.savefig("summary.png")
+            plt.close(fig)
+            np.savez(
+                "summary.npz",
+                max_successes=best_phy_history,
+                execute_rates=execute_rates,
+                best_vis_history=best_vis_history,
+            )
+            logging.info(f"Generation {g}: Saved summary plot (summary.png) and data (summary.npz)")
+        except Exception:
+            pass
+
+    # Final summary plot (includes execution rate)
     try:
-        fig, axs = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
+        fig, axs = plt.subplots(3, 1, figsize=(8, 9), sharex=True)
         x_axis = list(range(len(best_phy_history)))
+        
         axs[0].plot(x_axis, best_phy_history, marker="o")
         axs[0].set_title("Best Physical Metric per Generation")
         axs[0].set_ylabel("Physical Metric")
@@ -946,17 +1126,26 @@ def main(cfg):
 
         axs[1].plot(x_axis, best_vis_history, marker="o", color="orange")
         axs[1].set_title("Best Visual Score per Generation")
-        axs[1].set_xlabel("Generation")
         axs[1].set_ylabel("Visual Score")
         axs[1].grid(True, linestyle="--", alpha=0.4)
+        
+        axs[2].plot(x_axis, execute_rates, marker="o", color="green")
+        axs[2].set_title("Execution Rate per Generation")
+        axs[2].set_xlabel("Generation")
+        axs[2].set_ylabel("Execution Rate")
+        axs[2].set_ylim([0, 1.1])
+        axs[2].grid(True, linestyle="--", alpha=0.4)
 
         plt.tight_layout()
         plt.savefig("gen_best_metrics.png")
         plt.close(fig)
-        np.savez("gen_best_metrics.npz", best_phy=best_phy_history, best_vis=best_vis_history)
-        logging.info("Saved generation best metrics plot/gen_best_metrics.png and npz.")
-    except Exception as e:
-        logging.warning(f"Failed to save generation metrics plot: {e}")
+        np.savez("gen_best_metrics.npz", 
+                best_phy=best_phy_history, 
+                best_vis=best_vis_history,
+                execute_rates=execute_rates)
+        logging.info("Saved final generation metrics plot (gen_best_metrics.png) and data (gen_best_metrics.npz).")
+    except Exception:
+        pass
 
     if best_ever and best_ever.artifact:
         res = {

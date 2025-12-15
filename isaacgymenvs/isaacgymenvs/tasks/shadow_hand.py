@@ -193,6 +193,12 @@ class ShadowHand(VecTask):
         self.total_successes = 0
         self.total_resets = 0
 
+        # Stagnation detection parameters
+        self.stagnation_threshold = self.cfg["env"].get("stagnationAngVelThreshold", 0.1)
+        # Default window ~1 second assuming 60Hz sim
+        self.stagnation_limit_steps = self.cfg["env"].get("stagnationLimitSteps", 60)
+        self.stagnation_counter = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+
         # object apply random forces parameters
         self.force_decay = to_torch(self.force_decay, dtype=torch.float, device=self.device)
         self.force_prob_range = to_torch(self.force_prob_range, dtype=torch.float, device=self.device)
@@ -671,6 +677,7 @@ class ShadowHand(VecTask):
         self.progress_buf[env_ids] = 0
         self.reset_buf[env_ids] = 0
         self.successes[env_ids] = 0
+        self.stagnation_counter[env_ids] = 0
 
     def pre_physics_step(self, actions):
         env_ids = self.reset_buf.nonzero(as_tuple=False).squeeze(-1)
@@ -717,6 +724,7 @@ class ShadowHand(VecTask):
         self.randomize_buf += 1
 
         self.compute_observations()
+        self._detect_stagnation()
         self.compute_reward(self.actions)
 
         if self.viewer and self.debug_viz:
@@ -742,6 +750,20 @@ class ShadowHand(VecTask):
                 self.gym.add_lines(self.viewer, self.envs[i], 1, [p0[0], p0[1], p0[2], objectx[0], objectx[1], objectx[2]], [0.85, 0.1, 0.1])
                 self.gym.add_lines(self.viewer, self.envs[i], 1, [p0[0], p0[1], p0[2], objecty[0], objecty[1], objecty[2]], [0.1, 0.85, 0.1])
                 self.gym.add_lines(self.viewer, self.envs[i], 1, [p0[0], p0[1], p0[2], objectz[0], objectz[1], objectz[2]], [0.1, 0.1, 0.85])
+
+    def _detect_stagnation(self):
+        """Detect objects that have stopped rotating and trigger resets."""
+        ang_vel_norm = torch.norm(self.object_angvel, p=2, dim=-1)
+        is_stagnating = ang_vel_norm < self.stagnation_threshold
+
+        self.stagnation_counter[is_stagnating] += 1
+        self.stagnation_counter[~is_stagnating] = 0
+
+        stalled_envs = self.stagnation_counter > self.stagnation_limit_steps
+        if torch.any(stalled_envs):
+            env_ids = torch.nonzero(stalled_envs, as_tuple=False).squeeze(-1)
+            print(f"TERMINATION_SIGNAL: STAGNATION_DETECTED in env {env_ids}")
+            self.reset_buf[stalled_envs] = 1
 
 @torch.jit.script
 def randomize_rotation(rand0, rand1, x_unit_tensor, y_unit_tensor):

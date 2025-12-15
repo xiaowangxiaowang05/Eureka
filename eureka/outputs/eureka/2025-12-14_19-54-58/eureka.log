@@ -1,0 +1,1631 @@
+[2025-12-14 19:54:58,717][root][INFO] - Workspace: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58
+[2025-12-14 19:54:58,780][root][INFO] - Created base task file: /ssd/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/shadow_handqwen.py
+[2025-12-14 19:54:58,781][root][INFO] - Generating Visual Rubric...
+[2025-12-14 19:55:13,272][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 19:55:13,285][root][INFO] - Rubric: {
+  "task_type": "Manipulation",
+  "robot_morphology": "5-fingered anthropomorphic Shadow Hand",
+  "success_criteria": [
+    {
+      "score_range": [
+        0,
+        20
+      ],
+      "description": "Robot fails to grasp the object or drops it immediately; no meaningful rotation toward target orientation occurs."
+    },
+    {
+      "score_range": [
+        21,
+        60
+      ],
+      "description": "Robot grasps the object and initiates rotation but does not achieve the target orientation within tolerance; may drop the object late or oscillate near goal without convergence."
+    },
+    {
+      "score_range": [
+        61,
+        100
+      ],
+      "description": "Robot stably grasps the object and rotates it to match the target orientation within the success tolerance (as defined by rot_dist <= success_tolerance), maintaining control until episode end or reset condition."
+    }
+  ],
+  "style_penalties": [
+    "High-frequency jitter or vibration in fingers or wrist during manipulation",
+    "Erratic or uncoordinated finger movements (e.g., individual fingers twitching independently without purpose)",
+    "Excessive or violent closing/opening of the hand not correlated with task progress",
+    "Stiff or frozen fingers while others move unnaturally to compensate",
+    "Unnatural joint configurations (e.g., hyperextension or collision-induced deformations visible in simulation)"
+  ],
+  "overall_instruction": "Judge the video by prioritizing functional success in rotating the object to the target orientation, but significantly penalize unnatural, high-frequency, or uncoordinated motions that indicate reward hacking or poor sim-to-real transfer potential. A perfect score requires both precise orientation achievement and smooth, human-like dexterity."
+}
+[2025-12-14 19:55:13,286][root][INFO] - Generating Gen 0...
+[2025-12-14 19:55:40,070][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 19:56:13,205][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 19:56:39,829][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 19:57:04,001][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 19:57:04,002][root][INFO] - Gen 0: Training 16 candidates...
+[2025-12-14 19:57:04,012][root][INFO] - Gen 0 Cand 0: Waiting for environment build...
+[2025-12-14 19:57:19,868][root][INFO] - Gen 0 Cand 1: Waiting for environment build...
+[2025-12-14 19:57:36,886][root][INFO] - Gen 0 Cand 2: Waiting for environment build...
+[2025-12-14 19:57:54,433][root][INFO] - Gen 0 Cand 3: Waiting for environment build...
+[2025-12-14 19:58:11,739][root][INFO] - Gen 0 Cand 4: Waiting for environment build...
+[2025-12-14 19:58:29,727][root][INFO] - Gen 0 Cand 6: Waiting for environment build...
+[2025-12-14 19:58:49,351][root][INFO] - Gen 0 Cand 7: Waiting for environment build...
+[2025-12-14 19:59:09,522][root][INFO] - Gen 0 Cand 8: Waiting for environment build...
+[2025-12-14 19:59:28,908][root][INFO] - Gen 0 Cand 9: Waiting for environment build...
+[2025-12-14 19:59:49,130][root][INFO] - Gen 0 Cand 10: Waiting for environment build...
+[2025-12-14 20:00:10,791][root][INFO] - Gen 0 Cand 11: Waiting for environment build...
+[2025-12-14 20:00:33,607][root][INFO] - Gen 0 Cand 12: Waiting for environment build...
+[2025-12-14 20:00:56,500][root][INFO] - Gen 0 Cand 13: Waiting for environment build...
+[2025-12-14 20:01:17,025][root][INFO] - Gen 0 Cand 14: Waiting for environment build...
+[2025-12-14 20:01:41,778][root][INFO] - Gen 0 Cand 15: Waiting for environment build...
+[2025-12-14 20:02:06,268][root][INFO] - Waiting for training...
+[2025-12-14 20:02:06,270][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-57-06/runs/ShadowHandQwen-2025-12-14_19-57-07/summaries/events.out.tfevents.1765713435.g0101
+[2025-12-14 21:11:23,613][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-57-22/runs/ShadowHandQwen-2025-12-14_19-57-23/summaries/events.out.tfevents.1765713451.g0101
+[2025-12-14 22:16:52,540][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-57-40/runs/ShadowHandQwen-2025-12-14_19-57-40/summaries/events.out.tfevents.1765713468.g0101
+[2025-12-14 22:16:54,910][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-57-57/runs/ShadowHandQwen-2025-12-14_19-57-57/summaries/events.out.tfevents.1765713486.g0101
+[2025-12-14 22:16:57,365][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-58-15/runs/ShadowHandQwen-2025-12-14_19-58-15/summaries/events.out.tfevents.1765713503.g0101
+[2025-12-14 22:18:58,668][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-58-32/runs/ShadowHandQwen-2025-12-14_19-58-33/summaries/events.out.tfevents.1765713522.g0101
+[2025-12-14 22:20:25,512][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-58-52/runs/ShadowHandQwen-2025-12-14_19-58-52/summaries/events.out.tfevents.1765713541.g0101
+[2025-12-14 22:20:27,887][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-59-12/runs/ShadowHandQwen-2025-12-14_19-59-13/summaries/events.out.tfevents.1765713561.g0101
+[2025-12-14 22:20:30,280][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-59-32/runs/ShadowHandQwen-2025-12-14_19-59-32/summaries/events.out.tfevents.1765713581.g0101
+[2025-12-14 22:20:32,826][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-59-52/runs/ShadowHandQwen-2025-12-14_19-59-52/summaries/events.out.tfevents.1765713602.g0101
+[2025-12-14 22:20:35,159][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-00-13/runs/ShadowHandQwen-2025-12-14_20-00-14/summaries/events.out.tfevents.1765713624.g0101
+[2025-12-14 22:20:37,568][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-00-36/runs/ShadowHandQwen-2025-12-14_20-00-37/summaries/events.out.tfevents.1765713647.g0101
+[2025-12-14 22:20:37,603][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-00-59/runs/ShadowHandQwen-2025-12-14_20-01-00/summaries/events.out.tfevents.1765713670.g0101
+[2025-12-14 22:21:05,311][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-01-20/runs/ShadowHandQwen-2025-12-14_20-01-20/summaries/events.out.tfevents.1765713691.g0101
+[2025-12-14 22:21:40,280][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-01-45/runs/ShadowHandQwen-2025-12-14_20-01-45/summaries/events.out.tfevents.1765713715.g0101
+[2025-12-14 22:21:40,310][root][INFO] - Filter Complete: Keeping Top 11/15 (Ratio: 0.75)
+[2025-12-14 22:21:40,310][root][INFO] - Recording videos for survivors...
+[2025-12-14 22:21:40,311][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-57-22/runs/ShadowHandQwen-2025-12-14_19-57-23/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:22:05,348][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-21-43/videos/ShadowHandQwen_2025-12-14_22-21-43/rl-video-step-0.mp4
+[2025-12-14 22:22:05,349][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-57-40/runs/ShadowHandQwen-2025-12-14_19-57-40/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:23:00,407][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-22-08/videos/ShadowHandQwen_2025-12-14_22-22-08/rl-video-step-0.mp4
+[2025-12-14 22:23:00,409][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-57-57/runs/ShadowHandQwen-2025-12-14_19-57-57/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:23:55,471][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-23-03/videos/ShadowHandQwen_2025-12-14_22-23-03/rl-video-step-0.mp4
+[2025-12-14 22:23:55,472][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-58-15/runs/ShadowHandQwen-2025-12-14_19-58-15/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:24:20,509][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-23-58/videos/ShadowHandQwen_2025-12-14_22-23-58/rl-video-step-0.mp4
+[2025-12-14 22:24:20,510][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-58-32/runs/ShadowHandQwen-2025-12-14_19-58-33/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:25:15,573][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-24-23/videos/ShadowHandQwen_2025-12-14_22-24-23/rl-video-step-0.mp4
+[2025-12-14 22:25:15,575][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-58-52/runs/ShadowHandQwen-2025-12-14_19-58-52/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:26:10,643][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-25-18/videos/ShadowHandQwen_2025-12-14_22-25-18/rl-video-step-0.mp4
+[2025-12-14 22:26:10,644][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-59-12/runs/ShadowHandQwen-2025-12-14_19-59-13/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:27:05,705][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-26-13/videos/ShadowHandQwen_2025-12-14_22-26-13/rl-video-step-0.mp4
+[2025-12-14 22:27:05,706][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_19-59-32/runs/ShadowHandQwen-2025-12-14_19-59-32/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:28:00,763][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-27-08/videos/ShadowHandQwen_2025-12-14_22-27-08/rl-video-step-0.mp4
+[2025-12-14 22:28:00,764][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-00-36/runs/ShadowHandQwen-2025-12-14_20-00-37/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:28:55,832][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-28-03/videos/ShadowHandQwen_2025-12-14_22-28-04/rl-video-step-0.mp4
+[2025-12-14 22:28:55,834][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-01-20/runs/ShadowHandQwen-2025-12-14_20-01-20/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:29:50,897][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-28-58/videos/ShadowHandQwen_2025-12-14_22-28-59/rl-video-step-0.mp4
+[2025-12-14 22:29:50,898][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_20-01-45/runs/ShadowHandQwen-2025-12-14_20-01-45/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 22:30:45,960][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-29-53/videos/ShadowHandQwen_2025-12-14_22-29-54/rl-video-step-0.mp4
+[2025-12-14 22:30:45,960][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-14 22:30:54,163][root][INFO] - ================================================================================
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Motion Quality Score: 100.00/100
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Reward Suggestion: The robot did not attempt manipulation or grasp the object. Ensure the agent is initialized with a task goal and reward signal for object interaction. No motion quality issues detected.
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains completely static throughout the episode, showing no attempt to grasp or rotate the object. While no unnatural motions are present (perfect motion quality), functional success is zero as no task was attempted. This suggests a potential issue with policy initialization or task specification.
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:30:54,164][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 100.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [],
+  "reward_suggestion": "The robot did not attempt manipulation or grasp the object. Ensure the agent is initialized with a task goal and reward signal for object interaction. No motion quality issues detected.",
+  "qualitative_feedback": "The robot remains completely static throughout the episode, showing no attempt to grasp or rotate the object. While no unnatural motions are present (perfect motion quality), functional success is zero as no task was attempted. This suggests a potential issue with policy initialization or task specification."
+}
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 100.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [],
+    "reward_suggestion": "The robot did not attempt manipulation or grasp the object. Ensure the agent is initialized with a task goal and reward signal for object interaction. No motion quality issues detected.",
+    "qualitative_feedback": "The robot remains completely static throughout the episode, showing no attempt to grasp or rotate the object. While no unnatural motions are present (perfect motion quality), functional success is zero as no task was attempted. This suggests a potential issue with policy initialization or task specification."
+}
+[2025-12-14 22:30:54,164][root][INFO] - ================================================================================
+[2025-12-14 22:30:54,164][root][INFO] - [VLM Evaluation #7] Completed - Visual Score: 0.00
+[2025-12-14 22:30:54,981][root][INFO] - ================================================================================
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] Motion Quality Score: 100.00/100
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] Reward Suggestion: The robot has not initiated any manipulation task. Ensure the agent is receiving valid goal states and action commands. If this is a reset state, ignore; otherwise, debug task initialization or policy execution.
+[2025-12-14 22:30:54,981][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains in a static initial pose with no object interaction or motion observed. No functional progress toward the manipulation goal has been made. Motion quality is perfect by default due to zero movement, but this reflects inaction rather than skill.
+[2025-12-14 22:30:54,982][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:30:54,982][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:30:54,982][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 100.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [],
+  "reward_suggestion": "The robot has not initiated any manipulation task. Ensure the agent is receiving valid goal states and action commands. If this is a reset state, ignore; otherwise, debug task initialization or policy execution.",
+  "qualitative_feedback": "The robot remains in a static initial pose with no object interaction or motion observed. No functional progress toward the manipulation goal has been made. Motion quality is perfect by default due to zero movement, but this reflects inaction rather than skill."
+}
+[2025-12-14 22:30:54,982][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:30:54,982][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 100.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [],
+    "reward_suggestion": "The robot has not initiated any manipulation task. Ensure the agent is receiving valid goal states and action commands. If this is a reset state, ignore; otherwise, debug task initialization or policy execution.",
+    "qualitative_feedback": "The robot remains in a static initial pose with no object interaction or motion observed. No functional progress toward the manipulation goal has been made. Motion quality is perfect by default due to zero movement, but this reflects inaction rather than skill."
+}
+[2025-12-14 22:30:54,982][root][INFO] - ================================================================================
+[2025-12-14 22:30:54,982][root][INFO] - [VLM Evaluation #3] Completed - Visual Score: 0.00
+[2025-12-14 22:30:55,095][root][INFO] - ================================================================================
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Abnormalities Detected: Robot hand is not grasping or interacting with the object; fingers remain static and open., No meaningful motion toward task goal observed; object remains untouched and stationary.
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is not attempting to grasp or manipulate the object. Add a reward for proximity to the object, contact force, or finger closure to encourage initial interaction.
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot failed to initiate any manipulation. No grasp attempt was made, and the object remained untouched throughout the clip. This indicates a fundamental failure in task engagement, not just poor motion quality. The policy needs to be guided toward basic object interaction before dexterity can be assessed.
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:30:55,095][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Robot hand is not grasping or interacting with the object; fingers remain static and open.",
+    "No meaningful motion toward task goal observed; object remains untouched and stationary."
+  ],
+  "reward_suggestion": "The agent is not attempting to grasp or manipulate the object. Add a reward for proximity to the object, contact force, or finger closure to encourage initial interaction.",
+  "qualitative_feedback": "The robot failed to initiate any manipulation. No grasp attempt was made, and the object remained untouched throughout the clip. This indicates a fundamental failure in task engagement, not just poor motion quality. The policy needs to be guided toward basic object interaction before dexterity can be assessed."
+}
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:30:55,095][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Robot hand is not grasping or interacting with the object; fingers remain static and open.",
+        "No meaningful motion toward task goal observed; object remains untouched and stationary."
+    ],
+    "reward_suggestion": "The agent is not attempting to grasp or manipulate the object. Add a reward for proximity to the object, contact force, or finger closure to encourage initial interaction.",
+    "qualitative_feedback": "The robot failed to initiate any manipulation. No grasp attempt was made, and the object remained untouched throughout the clip. This indicates a fundamental failure in task engagement, not just poor motion quality. The policy needs to be guided toward basic object interaction before dexterity can be assessed."
+}
+[2025-12-14 22:30:55,096][root][INFO] - ================================================================================
+[2025-12-14 22:30:55,096][root][INFO] - [VLM Evaluation #6] Completed - Visual Score: 0.00
+[2025-12-14 22:30:55,557][root][INFO] - ================================================================================
+[2025-12-14 22:30:55,557][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:30:55,557][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:30:55,557][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:30:55,557][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:30:55,557][root][INFO] - [VLM Evaluation] Motion Quality Score: 100.00/100
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] Reward Suggestion: The robot did not attempt or initiate any manipulation task. Ensure the agent is receiving correct task goals and has an active policy. No motion quality penalties needed yet — first, enable task engagement.
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains idle throughout the clip with no grasp attempt or object interaction. While its posture is stable and natural, it has not engaged in the required manipulation task. Functional success is zero; this appears to be a setup or initialization phase rather than an active episode.
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:30:55,558][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 100.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [],
+  "reward_suggestion": "The robot did not attempt or initiate any manipulation task. Ensure the agent is receiving correct task goals and has an active policy. No motion quality penalties needed yet — first, enable task engagement.",
+  "qualitative_feedback": "The robot remains idle throughout the clip with no grasp attempt or object interaction. While its posture is stable and natural, it has not engaged in the required manipulation task. Functional success is zero; this appears to be a setup or initialization phase rather than an active episode."
+}
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 100.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [],
+    "reward_suggestion": "The robot did not attempt or initiate any manipulation task. Ensure the agent is receiving correct task goals and has an active policy. No motion quality penalties needed yet — first, enable task engagement.",
+    "qualitative_feedback": "The robot remains idle throughout the clip with no grasp attempt or object interaction. While its posture is stable and natural, it has not engaged in the required manipulation task. Functional success is zero; this appears to be a setup or initialization phase rather than an active episode."
+}
+[2025-12-14 22:30:55,558][root][INFO] - ================================================================================
+[2025-12-14 22:30:55,558][root][INFO] - [VLM Evaluation #8] Completed - Visual Score: 0.00
+[2025-12-14 22:30:55,801][root][INFO] - ================================================================================
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Abnormalities Detected: Robot hand fails to grasp the object; fingers remain open and do not engage with the cylinder., No meaningful rotation or manipulation of the object occurs throughout the sequence., Hand remains largely static after initial minor finger adjustments, indicating no task progression.
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is not attempting to grasp or rotate the object. Reinforce the reward function to prioritize contact establishment and orientation change. Add a dense reward for finger-object proximity and successful grasp initiation before rewarding rotation.
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot fails to initiate any meaningful manipulation. It does not grasp the object, nor does it attempt to rotate it toward the target orientation. The motion is non-functional and stagnant, indicating a fundamental failure in task engagement. No style penalties apply as there is no active manipulation to assess.
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:30:55,801][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Robot hand fails to grasp the object; fingers remain open and do not engage with the cylinder.",
+    "No meaningful rotation or manipulation of the object occurs throughout the sequence.",
+    "Hand remains largely static after initial minor finger adjustments, indicating no task progression."
+  ],
+  "reward_suggestion": "The agent is not attempting to grasp or rotate the object. Reinforce the reward function to prioritize contact establishment and orientation change. Add a dense reward for finger-object proximity and successful grasp initiation before rewarding rotation.",
+  "qualitative_feedback": "The robot fails to initiate any meaningful manipulation. It does not grasp the object, nor does it attempt to rotate it toward the target orientation. The motion is non-functional and stagnant, indicating a fundamental failure in task engagement. No style penalties apply as there is no active manipulation to assess."
+}
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:30:55,801][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Robot hand fails to grasp the object; fingers remain open and do not engage with the cylinder.",
+        "No meaningful rotation or manipulation of the object occurs throughout the sequence.",
+        "Hand remains largely static after initial minor finger adjustments, indicating no task progression."
+    ],
+    "reward_suggestion": "The agent is not attempting to grasp or rotate the object. Reinforce the reward function to prioritize contact establishment and orientation change. Add a dense reward for finger-object proximity and successful grasp initiation before rewarding rotation.",
+    "qualitative_feedback": "The robot fails to initiate any meaningful manipulation. It does not grasp the object, nor does it attempt to rotate it toward the target orientation. The motion is non-functional and stagnant, indicating a fundamental failure in task engagement. No style penalties apply as there is no active manipulation to assess."
+}
+[2025-12-14 22:30:55,802][root][INFO] - ================================================================================
+[2025-12-14 22:30:55,802][root][INFO] - [VLM Evaluation #2] Completed - Visual Score: 0.00
+[2025-12-14 22:30:58,826][root][INFO] - ================================================================================
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 31.00/100
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Functional Score: 25.00/100
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Motion Quality Score: 40.00/100
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Abnormalities Detected: Fingers exhibit erratic, uncoordinated movements without stable grasp, Object slips and rotates uncontrollably in hand, No consistent rotational progress toward target orientation, Wrist and finger joints show stiff, jerky motions during manipulation
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent fails to achieve stable grasp or controlled rotation. Add penalties for object slip velocity and joint acceleration to discourage jittery, uncoordinated motions. Consider rewarding contact stability and smooth trajectory progression.
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot attempts to manipulate the cylindrical object but fails to establish a stable grasp. The fingers move erratically, causing the object to slip and tumble rather than rotate toward the target. While there is some motion, it lacks coordination and control, indicating poor policy learning or reward shaping. Motion quality is low due to high-frequency jitter and unnatural joint behavior.
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:30:58,826][root][INFO] - {
+  "functional_score": 25.0,
+  "motion_quality_score": 40.0,
+  "visual_score": 31.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Fingers exhibit erratic, uncoordinated movements without stable grasp",
+    "Object slips and rotates uncontrollably in hand",
+    "No consistent rotational progress toward target orientation",
+    "Wrist and finger joints show stiff, jerky motions during manipulation"
+  ],
+  "reward_suggestion": "The agent fails to achieve stable grasp or controlled rotation. Add penalties for object slip velocity and joint acceleration to discourage jittery, uncoordinated motions. Consider rewarding contact stability and smooth trajectory progression.",
+  "qualitative_feedback": "The robot attempts to manipulate the cylindrical object but fails to establish a stable grasp. The fingers move erratically, causing the object to slip and tumble rather than rotate toward the target. While there is some motion, it lacks coordination and control, indicating poor policy learning or reward shaping. Motion quality is low due to high-frequency jitter and unnatural joint behavior."
+}
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 25.0,
+    "motion_quality_score": 40.0,
+    "visual_score": 31.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Fingers exhibit erratic, uncoordinated movements without stable grasp",
+        "Object slips and rotates uncontrollably in hand",
+        "No consistent rotational progress toward target orientation",
+        "Wrist and finger joints show stiff, jerky motions during manipulation"
+    ],
+    "reward_suggestion": "The agent fails to achieve stable grasp or controlled rotation. Add penalties for object slip velocity and joint acceleration to discourage jittery, uncoordinated motions. Consider rewarding contact stability and smooth trajectory progression.",
+    "qualitative_feedback": "The robot attempts to manipulate the cylindrical object but fails to establish a stable grasp. The fingers move erratically, causing the object to slip and tumble rather than rotate toward the target. While there is some motion, it lacks coordination and control, indicating poor policy learning or reward shaping. Motion quality is low due to high-frequency jitter and unnatural joint behavior."
+}
+[2025-12-14 22:30:58,826][root][INFO] - ================================================================================
+[2025-12-14 22:30:58,826][root][INFO] - [VLM Evaluation #1] Completed - Visual Score: 31.00
+[2025-12-14 22:31:01,468][root][INFO] - ================================================================================
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 67.00/100
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Motion Quality Score: 40.00/100
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in index and middle fingers during grasp stabilization, Thumb appears overly stiff while other fingers compensate with erratic motion, Wrist exhibits unnatural twisting under load, suggesting joint limit violation
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent achieves the rotation goal but with poor dexterity. Add penalties for: (1) joint acceleration to reduce finger jitter, (2) deviation from default hand pose to prevent hyperextension, and (3) torque magnitude to discourage violent compensatory motions.
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully rotates the object to target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers vibrate excessively, the thumb remains frozen while others flail, and wrist articulation shows signs of collision-induced deformation. This indicates reward hacking — the policy prioritizes goal completion over natural movement, which would fail in real-world deployment due to wear, noise sensitivity, or safety constraints.
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:31:01,468][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 40.0,
+  "visual_score": 67.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in index and middle fingers during grasp stabilization",
+    "Thumb appears overly stiff while other fingers compensate with erratic motion",
+    "Wrist exhibits unnatural twisting under load, suggesting joint limit violation"
+  ],
+  "reward_suggestion": "The agent achieves the rotation goal but with poor dexterity. Add penalties for: (1) joint acceleration to reduce finger jitter, (2) deviation from default hand pose to prevent hyperextension, and (3) torque magnitude to discourage violent compensatory motions.",
+  "qualitative_feedback": "The robot successfully rotates the object to target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers vibrate excessively, the thumb remains frozen while others flail, and wrist articulation shows signs of collision-induced deformation. This indicates reward hacking — the policy prioritizes goal completion over natural movement, which would fail in real-world deployment due to wear, noise sensitivity, or safety constraints."
+}
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 40.0,
+    "visual_score": 67.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in index and middle fingers during grasp stabilization",
+        "Thumb appears overly stiff while other fingers compensate with erratic motion",
+        "Wrist exhibits unnatural twisting under load, suggesting joint limit violation"
+    ],
+    "reward_suggestion": "The agent achieves the rotation goal but with poor dexterity. Add penalties for: (1) joint acceleration to reduce finger jitter, (2) deviation from default hand pose to prevent hyperextension, and (3) torque magnitude to discourage violent compensatory motions.",
+    "qualitative_feedback": "The robot successfully rotates the object to target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers vibrate excessively, the thumb remains frozen while others flail, and wrist articulation shows signs of collision-induced deformation. This indicates reward hacking — the policy prioritizes goal completion over natural movement, which would fail in real-world deployment due to wear, noise sensitivity, or safety constraints."
+}
+[2025-12-14 22:31:01,468][root][INFO] - ================================================================================
+[2025-12-14 22:31:01,468][root][INFO] - [VLM Evaluation #4] Completed - Visual Score: 67.00
+[2025-12-14 22:31:02,622][root][INFO] - ================================================================================
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Abnormalities Detected: Robot hand is not interacting with any object; no manipulation task is being performed., Fingers are mostly static or moving without purpose, indicating no goal-directed behavior.
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is not attempting the task. Ensure the reward function provides a clear incentive for grasping and rotating an object. Add a sparse reward for contact and a dense reward for orientation progress toward target.
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot is idle and not engaging in any meaningful manipulation. No object is being grasped or rotated, so the task has not been attempted, let alone completed. Motion quality is irrelevant as there is no functional behavior to evaluate.
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:31:02,622][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:31:02,622][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Robot hand is not interacting with any object; no manipulation task is being performed.",
+    "Fingers are mostly static or moving without purpose, indicating no goal-directed behavior."
+  ],
+  "reward_suggestion": "The agent is not attempting the task. Ensure the reward function provides a clear incentive for grasping and rotating an object. Add a sparse reward for contact and a dense reward for orientation progress toward target.",
+  "qualitative_feedback": "The robot is idle and not engaging in any meaningful manipulation. No object is being grasped or rotated, so the task has not been attempted, let alone completed. Motion quality is irrelevant as there is no functional behavior to evaluate."
+}
+[2025-12-14 22:31:02,623][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:31:02,623][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Robot hand is not interacting with any object; no manipulation task is being performed.",
+        "Fingers are mostly static or moving without purpose, indicating no goal-directed behavior."
+    ],
+    "reward_suggestion": "The agent is not attempting the task. Ensure the reward function provides a clear incentive for grasping and rotating an object. Add a sparse reward for contact and a dense reward for orientation progress toward target.",
+    "qualitative_feedback": "The robot is idle and not engaging in any meaningful manipulation. No object is being grasped or rotated, so the task has not been attempted, let alone completed. Motion quality is irrelevant as there is no functional behavior to evaluate."
+}
+[2025-12-14 22:31:02,623][root][INFO] - ================================================================================
+[2025-12-14 22:31:02,623][root][INFO] - [VLM Evaluation #12] Completed - Visual Score: 0.00
+[2025-12-14 22:31:04,381][root][INFO] - ================================================================================
+[2025-12-14 22:31:04,381][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:31:04,381][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:31:04,381][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:31:04,381][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:31:04,381][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] Abnormalities Detected: Robot hand fails to grasp the object; object remains uncontrolled and floating., No meaningful rotation or manipulation occurs during the entire sequence., Fingers remain open and static, showing no coordinated motion toward task completion.
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is not attempting to grasp or manipulate the object at all. Add a strong positive reward for contact establishment and sustained grip force. Penalize zero finger closure and lack of object interaction to encourage basic grasping behavior.
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot hand remains completely passive throughout the video. It does not attempt to grasp, rotate, or control the blue cylindrical object. This indicates a fundamental failure in policy learning — the agent has not discovered even the most basic motor primitive required for manipulation. No functional success or motion quality can be assessed. Immediate intervention is needed to bootstrap grasping behavior before any refinement can occur.
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:31:04,382][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Robot hand fails to grasp the object; object remains uncontrolled and floating.",
+    "No meaningful rotation or manipulation occurs during the entire sequence.",
+    "Fingers remain open and static, showing no coordinated motion toward task completion."
+  ],
+  "reward_suggestion": "The agent is not attempting to grasp or manipulate the object at all. Add a strong positive reward for contact establishment and sustained grip force. Penalize zero finger closure and lack of object interaction to encourage basic grasping behavior.",
+  "qualitative_feedback": "The robot hand remains completely passive throughout the video. It does not attempt to grasp, rotate, or control the blue cylindrical object. This indicates a fundamental failure in policy learning — the agent has not discovered even the most basic motor primitive required for manipulation. No functional success or motion quality can be assessed. Immediate intervention is needed to bootstrap grasping behavior before any refinement can occur."
+}
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Robot hand fails to grasp the object; object remains uncontrolled and floating.",
+        "No meaningful rotation or manipulation occurs during the entire sequence.",
+        "Fingers remain open and static, showing no coordinated motion toward task completion."
+    ],
+    "reward_suggestion": "The agent is not attempting to grasp or manipulate the object at all. Add a strong positive reward for contact establishment and sustained grip force. Penalize zero finger closure and lack of object interaction to encourage basic grasping behavior.",
+    "qualitative_feedback": "The robot hand remains completely passive throughout the video. It does not attempt to grasp, rotate, or control the blue cylindrical object. This indicates a fundamental failure in policy learning — the agent has not discovered even the most basic motor primitive required for manipulation. No functional success or motion quality can be assessed. Immediate intervention is needed to bootstrap grasping behavior before any refinement can occur."
+}
+[2025-12-14 22:31:04,382][root][INFO] - ================================================================================
+[2025-12-14 22:31:04,382][root][INFO] - [VLM Evaluation #9] Completed - Visual Score: 0.00
+[2025-12-14 22:31:07,646][root][INFO] - ================================================================================
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Motion Quality Score: 100.00/100
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Reward Suggestion: The robot has not initiated any manipulation. Ensure the agent is receiving correct task signals and that its action space is properly mapped to finger control. Consider adding a small exploratory reward or curiosity bonus to encourage initial contact.
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is technically perfect (no jitter or unnatural poses), functional success is zero. This suggests either a policy failure, initialization issue, or missing reward signal to trigger action.
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:31:07,646][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 100.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [],
+  "reward_suggestion": "The robot has not initiated any manipulation. Ensure the agent is receiving correct task signals and that its action space is properly mapped to finger control. Consider adding a small exploratory reward or curiosity bonus to encourage initial contact.",
+  "qualitative_feedback": "The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is technically perfect (no jitter or unnatural poses), functional success is zero. This suggests either a policy failure, initialization issue, or missing reward signal to trigger action."
+}
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 100.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [],
+    "reward_suggestion": "The robot has not initiated any manipulation. Ensure the agent is receiving correct task signals and that its action space is properly mapped to finger control. Consider adding a small exploratory reward or curiosity bonus to encourage initial contact.",
+    "qualitative_feedback": "The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is technically perfect (no jitter or unnatural poses), functional success is zero. This suggests either a policy failure, initialization issue, or missing reward signal to trigger action."
+}
+[2025-12-14 22:31:07,646][root][INFO] - ================================================================================
+[2025-12-14 22:31:07,646][root][INFO] - [VLM Evaluation #15] Completed - Visual Score: 0.00
+[2025-12-14 22:31:11,471][root][INFO] - ================================================================================
+[2025-12-14 22:31:11,471][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 22:31:11,471][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 22:31:11,471][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 69.00/100
+[2025-12-14 22:31:11,471][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] Motion Quality Score: 45.00/100
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in index and middle fingers during manipulation, Thumb remains overly stiff while other fingers compensate with erratic motion, Excessive finger opening/closing cycles not correlated with object rotation progress, Fingers occasionally hyperextend during re-grasping attempts
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent achieves the goal but exhibits reward hacking through high-frequency finger jitter and unnatural compensation patterns. Add penalties for joint acceleration (to reduce vibration), action smoothness (to discourage rapid open/close cycles), and deviation from default finger pose (to prevent hyperextension). Consider adding a penalty for torque to reduce excessive energy expenditure.
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violently, the thumb freezes while others flail, and there are multiple uncontrolled open/close cycles. This suggests the policy is exploiting simulation dynamics rather than learning dexterous control. While task-successful, this behavior would fail catastrophically in the real world due to mechanical wear and lack of coordination.
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 22:31:11,472][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 45.0,
+  "visual_score": 69.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in index and middle fingers during manipulation",
+    "Thumb remains overly stiff while other fingers compensate with erratic motion",
+    "Excessive finger opening/closing cycles not correlated with object rotation progress",
+    "Fingers occasionally hyperextend during re-grasping attempts"
+  ],
+  "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency finger jitter and unnatural compensation patterns. Add penalties for joint acceleration (to reduce vibration), action smoothness (to discourage rapid open/close cycles), and deviation from default finger pose (to prevent hyperextension). Consider adding a penalty for torque to reduce excessive energy expenditure.",
+  "qualitative_feedback": "The robot successfully rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violently, the thumb freezes while others flail, and there are multiple uncontrolled open/close cycles. This suggests the policy is exploiting simulation dynamics rather than learning dexterous control. While task-successful, this behavior would fail catastrophically in the real world due to mechanical wear and lack of coordination."
+}
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 45.0,
+    "visual_score": 69.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in index and middle fingers during manipulation",
+        "Thumb remains overly stiff while other fingers compensate with erratic motion",
+        "Excessive finger opening/closing cycles not correlated with object rotation progress",
+        "Fingers occasionally hyperextend during re-grasping attempts"
+    ],
+    "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency finger jitter and unnatural compensation patterns. Add penalties for joint acceleration (to reduce vibration), action smoothness (to discourage rapid open/close cycles), and deviation from default finger pose (to prevent hyperextension). Consider adding a penalty for torque to reduce excessive energy expenditure.",
+    "qualitative_feedback": "The robot successfully rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violently, the thumb freezes while others flail, and there are multiple uncontrolled open/close cycles. This suggests the policy is exploiting simulation dynamics rather than learning dexterous control. While task-successful, this behavior would fail catastrophically in the real world due to mechanical wear and lack of coordination."
+}
+[2025-12-14 22:31:11,472][root][INFO] - ================================================================================
+[2025-12-14 22:31:11,472][root][INFO] - [VLM Evaluation #14] Completed - Visual Score: 69.00
+[2025-12-14 22:31:11,472][root][INFO] - ================================================================================
+[2025-12-14 22:31:11,473][root][INFO] - VLM Evaluation Summary (All Scores):
+[2025-12-14 22:31:11,473][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 1: Visual= 31.00 | Functional= 25.00 | Quality= 40.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot attempts to manipulate the cylindrical object but fails to establish a stable grasp. The fingers move erratically, causing the object to slip and tumble rather than rotate t...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 2: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot fails to initiate any meaningful manipulation. It does not grasp the object, nor does it attempt to rotate it toward the target orientation. The motion is non-functional and...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 3: Visual=  0.00 | Functional=  0.00 | Quality=100.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot remains in a static initial pose with no object interaction or motion observed. No functional progress toward the manipulation goal has been made. Motion quality is perfect ...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 4: Visual= 67.00 | Functional= 85.00 | Quality= 40.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot successfully rotates the object to target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers vibrate excessively, ...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 6: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot failed to initiate any manipulation. No grasp attempt was made, and the object remained untouched throughout the clip. This indicates a fundamental failure in task engagemen...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 7: Visual=  0.00 | Functional=  0.00 | Quality=100.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot remains completely static throughout the episode, showing no attempt to grasp or rotate the object. While no unnatural motions are present (perfect motion quality), function...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 8: Visual=  0.00 | Functional=  0.00 | Quality=100.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot remains idle throughout the clip with no grasp attempt or object interaction. While its posture is stable and natural, it has not engaged in the required manipulation task. ...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate # 9: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot hand remains completely passive throughout the video. It does not attempt to grasp, rotate, or control the blue cylindrical object. This indicates a fundamental failure in p...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate #12: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot is idle and not engaging in any meaningful manipulation. No object is being grasped or rotated, so the task has not been attempted, let alone completed. Motion quality is ir...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate #14: Visual= 69.00 | Functional= 85.00 | Quality= 45.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot successfully rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violently, the thum...
+[2025-12-14 22:31:11,473][root][INFO] - Candidate #15: Visual=  0.00 | Functional=  0.00 | Quality=100.00
+[2025-12-14 22:31:11,473][root][INFO] -   Feedback: Visual Feedback: The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is technically perfect (no jitter or unnatural poses), ...
+[2025-12-14 22:31:11,473][root][INFO] - ================================================================================
+[2025-12-14 22:31:11,473][root][INFO] - ================================================================================
+[2025-12-14 22:31:11,473][root][INFO] - Generation 0: Training Results Ranking
+[2025-12-14 22:31:11,473][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 22:31:11,474][root][INFO] - Rank  1: Cand  8 | Phy   6.0854 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  2: Cand 14 | Phy   5.5645 | Vis  69.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  3: Cand  6 | Phy   3.0996 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  4: Cand  7 | Phy   2.9623 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  5: Cand  2 | Phy   2.8812 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  6: Cand 12 | Phy   2.8519 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  7: Cand 15 | Phy   2.5104 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  8: Cand  4 | Phy   2.2457 | Vis  67.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  9: Cand  9 | Phy   1.6376 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank 10: Cand  1 | Phy   1.1479 | Vis  31.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank 11: Cand  3 | Phy   0.1219 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank 12: Cand 10 | Phy   0.0887 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,474][root][INFO] - Rank 13: Cand 11 | Phy   0.0523 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,474][root][INFO] - Rank 14: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,474][root][INFO] - Rank 15: Cand  5 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,474][root][INFO] - Rank 16: Cand 13 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,474][root][INFO] - Generation 0: Execution Rate: 81.25% (13/16)
+[2025-12-14 22:31:11,474][root][INFO] - ================================================================================
+[2025-12-14 22:31:11,474][root][INFO] - Generation 0: Population Ranking (all candidates)
+[2025-12-14 22:31:11,474][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 22:31:11,474][root][INFO] - Rank  1: Cand  8 | Phy   6.0854 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  2: Cand 14 | Phy   5.5645 | Vis  69.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  3: Cand  6 | Phy   3.0996 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  4: Cand  7 | Phy   2.9623 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,474][root][INFO] - Rank  5: Cand  2 | Phy   2.8812 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,475][root][INFO] - Rank  6: Cand 12 | Phy   2.8519 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,475][root][INFO] - Rank  7: Cand 15 | Phy   2.5104 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,475][root][INFO] - Rank  8: Cand  4 | Phy   2.2457 | Vis  67.0 | SkipVLM=False
+[2025-12-14 22:31:11,475][root][INFO] - Rank  9: Cand  9 | Phy   1.6376 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,475][root][INFO] - Rank 10: Cand  1 | Phy   1.1479 | Vis  31.0 | SkipVLM=False
+[2025-12-14 22:31:11,475][root][INFO] - Rank 11: Cand  3 | Phy   0.1219 | Vis   0.0 | SkipVLM=False
+[2025-12-14 22:31:11,475][root][INFO] - Rank 12: Cand 10 | Phy   0.0887 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,475][root][INFO] - Rank 13: Cand 11 | Phy   0.0523 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,475][root][INFO] - Rank 14: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,475][root][INFO] - Rank 15: Cand  5 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,475][root][INFO] - Rank 16: Cand 13 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 22:31:11,475][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 22:31:33,848][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:32:01,586][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:32:25,705][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:32:45,793][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:33:09,247][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:33:28,443][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:33:52,573][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:34:19,713][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 22:34:19,714][root][INFO] - Gen 1: Training 8 candidates...
+[2025-12-14 22:34:19,724][root][INFO] - Gen 1 Cand 0: Waiting for environment build...
+[2025-12-14 22:34:25,213][root][INFO] - Gen 1 Cand 1: Waiting for environment build...
+[2025-12-14 22:34:42,232][root][INFO] - Gen 1 Cand 2: Waiting for environment build...
+[2025-12-14 22:35:01,254][root][INFO] - Gen 1 Cand 3: Waiting for environment build...
+[2025-12-14 22:35:18,690][root][INFO] - Gen 1 Cand 4: Waiting for environment build...
+[2025-12-14 22:35:36,773][root][INFO] - Gen 1 Cand 5: Waiting for environment build...
+[2025-12-14 22:35:53,842][root][INFO] - Gen 1 Cand 6: Waiting for environment build...
+[2025-12-14 22:36:13,713][root][INFO] - Gen 1 Cand 7: Waiting for environment build...
+[2025-12-14 22:36:33,036][root][INFO] - Waiting for training...
+[2025-12-14 23:16:03,189][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-34-28/runs/ShadowHandQwen-2025-12-14_22-34-28/summaries/events.out.tfevents.1765722876.g0101
+[2025-12-14 23:47:05,071][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-34-46/runs/ShadowHandQwen-2025-12-14_22-34-47/summaries/events.out.tfevents.1765722895.g0101
+[2025-12-14 23:50:28,356][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-35-04/runs/ShadowHandQwen-2025-12-14_22-35-04/summaries/events.out.tfevents.1765722912.g0101
+[2025-12-14 23:50:31,028][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-35-21/runs/ShadowHandQwen-2025-12-14_22-35-22/summaries/events.out.tfevents.1765722930.g0101
+[2025-12-14 23:50:31,064][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-35-39/runs/ShadowHandQwen-2025-12-14_22-35-40/summaries/events.out.tfevents.1765722948.g0101
+[2025-12-14 23:50:33,322][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-35-56/runs/ShadowHandQwen-2025-12-14_22-35-57/summaries/events.out.tfevents.1765722966.g0101
+[2025-12-14 23:51:32,595][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-36-16/runs/ShadowHandQwen-2025-12-14_22-36-17/summaries/events.out.tfevents.1765722986.g0101
+[2025-12-14 23:51:32,626][root][INFO] - Filter Complete: Keeping Top 6/8 (Ratio: 0.75)
+[2025-12-14 23:51:32,626][root][INFO] - Recording videos for survivors...
+[2025-12-14 23:51:32,627][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-34-28/runs/ShadowHandQwen-2025-12-14_22-34-28/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 23:52:37,706][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_23-51-35/videos/ShadowHandQwen_2025-12-14_23-51-35/rl-video-step-0.mp4
+[2025-12-14 23:52:37,707][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-34-46/runs/ShadowHandQwen-2025-12-14_22-34-47/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 23:53:42,778][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_23-52-40/videos/ShadowHandQwen_2025-12-14_23-52-40/rl-video-step-0.mp4
+[2025-12-14 23:53:42,779][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-35-04/runs/ShadowHandQwen-2025-12-14_22-35-04/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 23:54:07,821][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_23-53-45/videos/ShadowHandQwen_2025-12-14_23-53-46/rl-video-step-0.mp4
+[2025-12-14 23:54:07,822][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-35-21/runs/ShadowHandQwen-2025-12-14_22-35-22/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 23:55:12,897][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_23-54-10/videos/ShadowHandQwen_2025-12-14_23-54-11/rl-video-step-0.mp4
+[2025-12-14 23:55:12,899][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-35-56/runs/ShadowHandQwen-2025-12-14_22-35-57/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 23:56:12,977][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_23-55-15/videos/ShadowHandQwen_2025-12-14_23-55-16/rl-video-step-0.mp4
+[2025-12-14 23:56:12,978][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_22-36-16/runs/ShadowHandQwen-2025-12-14_22-36-17/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 23:57:18,055][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-14_23-56-15/videos/ShadowHandQwen_2025-12-14_23-56-16/rl-video-step-0.mp4
+[2025-12-14 23:57:18,056][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-14 23:57:26,111][root][INFO] - ================================================================================
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Motion Quality Score: 100.00/100
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Reward Suggestion: The robot has not initiated any manipulation. Ensure the agent is receiving correct task signals and that the reward function incentivizes initial contact and grasp formation.
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter or unnatural poses), functional success is zero as no task progress occurs. This suggests a policy initialization failure or misconfigured reward signal.
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 23:57:26,111][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 100.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [],
+  "reward_suggestion": "The robot has not initiated any manipulation. Ensure the agent is receiving correct task signals and that the reward function incentivizes initial contact and grasp formation.",
+  "qualitative_feedback": "The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter or unnatural poses), functional success is zero as no task progress occurs. This suggests a policy initialization failure or misconfigured reward signal."
+}
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 100.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [],
+    "reward_suggestion": "The robot has not initiated any manipulation. Ensure the agent is receiving correct task signals and that the reward function incentivizes initial contact and grasp formation.",
+    "qualitative_feedback": "The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter or unnatural poses), functional success is zero as no task progress occurs. This suggests a policy initialization failure or misconfigured reward signal."
+}
+[2025-12-14 23:57:26,111][root][INFO] - ================================================================================
+[2025-12-14 23:57:26,111][root][INFO] - [VLM Evaluation #4] Completed - Visual Score: 0.00
+[2025-12-14 23:57:26,241][root][INFO] - ================================================================================
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Motion Quality Score: 100.00/100
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Reward Suggestion: The robot has not initiated any meaningful manipulation. Ensure the policy is exploring the action space to grasp and rotate the object. Consider adding exploration bonuses or curriculum learning to bootstrap initial contact.
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains completely static throughout the episode, failing to engage with the object. No grasping, rotation, or task progression occurs. While motion quality is technically perfect (no jitter or unnatural poses), functional success is zero. This indicates a failure in policy initialization or exploration, not a control issue.
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 23:57:26,241][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 100.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [],
+  "reward_suggestion": "The robot has not initiated any meaningful manipulation. Ensure the policy is exploring the action space to grasp and rotate the object. Consider adding exploration bonuses or curriculum learning to bootstrap initial contact.",
+  "qualitative_feedback": "The robot remains completely static throughout the episode, failing to engage with the object. No grasping, rotation, or task progression occurs. While motion quality is technically perfect (no jitter or unnatural poses), functional success is zero. This indicates a failure in policy initialization or exploration, not a control issue."
+}
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 100.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [],
+    "reward_suggestion": "The robot has not initiated any meaningful manipulation. Ensure the policy is exploring the action space to grasp and rotate the object. Consider adding exploration bonuses or curriculum learning to bootstrap initial contact.",
+    "qualitative_feedback": "The robot remains completely static throughout the episode, failing to engage with the object. No grasping, rotation, or task progression occurs. While motion quality is technically perfect (no jitter or unnatural poses), functional success is zero. This indicates a failure in policy initialization or exploration, not a control issue."
+}
+[2025-12-14 23:57:26,241][root][INFO] - ================================================================================
+[2025-12-14 23:57:26,241][root][INFO] - [VLM Evaluation #6] Completed - Visual Score: 0.00
+[2025-12-14 23:57:27,748][root][INFO] - ================================================================================
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Abnormalities Detected: Fingers exhibit high-frequency jitter and uncoordinated twitching, Hand fails to stably grasp the object; object is never secured, No meaningful rotation toward target orientation occurs, Fingers move erratically without purpose, indicating reward hacking or poor policy
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is failing to grasp and rotate the object. Add penalties for joint acceleration and action rate of change to suppress jitter. Introduce a contact-based reward to encourage stable grasping before attempting rotation.
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot fails to achieve the task goal entirely. The hand exhibits chaotic, uncoordinated finger movements with no stable grasp formed. This suggests the policy is not learning meaningful manipulation but instead exploring random, high-energy actions. Significant improvements in reward shaping are needed to promote stable grasping and controlled rotation.
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 23:57:27,748][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 23:57:27,749][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Fingers exhibit high-frequency jitter and uncoordinated twitching",
+    "Hand fails to stably grasp the object; object is never secured",
+    "No meaningful rotation toward target orientation occurs",
+    "Fingers move erratically without purpose, indicating reward hacking or poor policy"
+  ],
+  "reward_suggestion": "The agent is failing to grasp and rotate the object. Add penalties for joint acceleration and action rate of change to suppress jitter. Introduce a contact-based reward to encourage stable grasping before attempting rotation.",
+  "qualitative_feedback": "The robot fails to achieve the task goal entirely. The hand exhibits chaotic, uncoordinated finger movements with no stable grasp formed. This suggests the policy is not learning meaningful manipulation but instead exploring random, high-energy actions. Significant improvements in reward shaping are needed to promote stable grasping and controlled rotation."
+}
+[2025-12-14 23:57:27,749][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 23:57:27,749][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Fingers exhibit high-frequency jitter and uncoordinated twitching",
+        "Hand fails to stably grasp the object; object is never secured",
+        "No meaningful rotation toward target orientation occurs",
+        "Fingers move erratically without purpose, indicating reward hacking or poor policy"
+    ],
+    "reward_suggestion": "The agent is failing to grasp and rotate the object. Add penalties for joint acceleration and action rate of change to suppress jitter. Introduce a contact-based reward to encourage stable grasping before attempting rotation.",
+    "qualitative_feedback": "The robot fails to achieve the task goal entirely. The hand exhibits chaotic, uncoordinated finger movements with no stable grasp formed. This suggests the policy is not learning meaningful manipulation but instead exploring random, high-energy actions. Significant improvements in reward shaping are needed to promote stable grasping and controlled rotation."
+}
+[2025-12-14 23:57:27,749][root][INFO] - ================================================================================
+[2025-12-14 23:57:27,749][root][INFO] - [VLM Evaluation #7] Completed - Visual Score: 0.00
+[2025-12-14 23:57:28,910][root][INFO] - ================================================================================
+[2025-12-14 23:57:28,910][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 23:57:28,910][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 23:57:28,910][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 69.00/100
+[2025-12-14 23:57:28,910][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] Motion Quality Score: 45.00/100
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in index and middle fingers during grasp stabilization, Thumb remains overly stiff while other fingers overcompensate with erratic motion, Excessive finger closing/opening cycles not correlated with object rotation progress, Finger joints exhibit unnatural hyperextension during re-grasping attempts
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is achieving the goal but with poor dexterity. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent flailing), and deviation from default hand pose (to avoid hyperextension). Also consider penalizing excessive torque to encourage energy-efficient control.
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully grasps and rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violently, the thumb locks rigidly while others twitch independently, and joint configurations frequently violate biomechanical plausibility. This suggests reward hacking—prioritizing task completion over smooth, human-like motion—which will hinder sim-to-real transfer. The behavior indicates a need for stronger regularization in the reward function to promote natural, coordinated manipulation.
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 23:57:28,911][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 45.0,
+  "visual_score": 69.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in index and middle fingers during grasp stabilization",
+    "Thumb remains overly stiff while other fingers overcompensate with erratic motion",
+    "Excessive finger closing/opening cycles not correlated with object rotation progress",
+    "Finger joints exhibit unnatural hyperextension during re-grasping attempts"
+  ],
+  "reward_suggestion": "The agent is achieving the goal but with poor dexterity. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent flailing), and deviation from default hand pose (to avoid hyperextension). Also consider penalizing excessive torque to encourage energy-efficient control.",
+  "qualitative_feedback": "The robot successfully grasps and rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violently, the thumb locks rigidly while others twitch independently, and joint configurations frequently violate biomechanical plausibility. This suggests reward hacking—prioritizing task completion over smooth, human-like motion—which will hinder sim-to-real transfer. The behavior indicates a need for stronger regularization in the reward function to promote natural, coordinated manipulation."
+}
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 45.0,
+    "visual_score": 69.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in index and middle fingers during grasp stabilization",
+        "Thumb remains overly stiff while other fingers overcompensate with erratic motion",
+        "Excessive finger closing/opening cycles not correlated with object rotation progress",
+        "Finger joints exhibit unnatural hyperextension during re-grasping attempts"
+    ],
+    "reward_suggestion": "The agent is achieving the goal but with poor dexterity. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent flailing), and deviation from default hand pose (to avoid hyperextension). Also consider penalizing excessive torque to encourage energy-efficient control.",
+    "qualitative_feedback": "The robot successfully grasps and rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violently, the thumb locks rigidly while others twitch independently, and joint configurations frequently violate biomechanical plausibility. This suggests reward hacking—prioritizing task completion over smooth, human-like motion—which will hinder sim-to-real transfer. The behavior indicates a need for stronger regularization in the reward function to promote natural, coordinated manipulation."
+}
+[2025-12-14 23:57:28,911][root][INFO] - ================================================================================
+[2025-12-14 23:57:28,911][root][INFO] - [VLM Evaluation #2] Completed - Visual Score: 69.00
+[2025-12-14 23:57:29,294][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 67.00/100
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Motion Quality Score: 40.00/100
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in index and middle fingers during rotation, Thumb remains overly stiff while other fingers compensate with erratic motion, Unnatural finger hyperextension observed at peak rotation angle, Wrist exhibits abrupt, discontinuous reorientations instead of smooth torque application
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent achieves the goal but exhibits reward hacking through high-frequency finger oscillations. Add a penalty term for joint acceleration (especially finger MCP/IP joints) and penalize deviation from a neutral hand pose to discourage hyperextension. Consider adding action smoothness regularization via L2 norm of action deltas.
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Qualitative Feedback: The Shadow Hand successfully rotates the blue cylinder to the target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers twitch independently, the thumb locks rigidly, and wrist movements are jerky rather than fluid. This suggests the policy exploits simulation dynamics rather than learning human-like dexterity, which would hinder real-world transfer. Smoothing the control policy and enforcing kinematic constraints would improve both aesthetics and robustness.
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 23:57:29,294][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 23:57:29,294][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 40.0,
+  "visual_score": 67.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in index and middle fingers during rotation",
+    "Thumb remains overly stiff while other fingers compensate with erratic motion",
+    "Unnatural finger hyperextension observed at peak rotation angle",
+    "Wrist exhibits abrupt, discontinuous reorientations instead of smooth torque application"
+  ],
+  "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency finger oscillations. Add a penalty term for joint acceleration (especially finger MCP/IP joints) and penalize deviation from a neutral hand pose to discourage hyperextension. Consider adding action smoothness regularization via L2 norm of action deltas.",
+  "qualitative_feedback": "The Shadow Hand successfully rotates the blue cylinder to the target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers twitch independently, the thumb locks rigidly, and wrist movements are jerky rather than fluid. This suggests the policy exploits simulation dynamics rather than learning human-like dexterity, which would hinder real-world transfer. Smoothing the control policy and enforcing kinematic constraints would improve both aesthetics and robustness."
+}
+[2025-12-14 23:57:29,295][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 23:57:29,295][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 40.0,
+    "visual_score": 67.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in index and middle fingers during rotation",
+        "Thumb remains overly stiff while other fingers compensate with erratic motion",
+        "Unnatural finger hyperextension observed at peak rotation angle",
+        "Wrist exhibits abrupt, discontinuous reorientations instead of smooth torque application"
+    ],
+    "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency finger oscillations. Add a penalty term for joint acceleration (especially finger MCP/IP joints) and penalize deviation from a neutral hand pose to discourage hyperextension. Consider adding action smoothness regularization via L2 norm of action deltas.",
+    "qualitative_feedback": "The Shadow Hand successfully rotates the blue cylinder to the target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers twitch independently, the thumb locks rigidly, and wrist movements are jerky rather than fluid. This suggests the policy exploits simulation dynamics rather than learning human-like dexterity, which would hinder real-world transfer. Smoothing the control policy and enforcing kinematic constraints would improve both aesthetics and robustness."
+}
+[2025-12-14 23:57:29,295][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,295][root][INFO] - [VLM Evaluation #3] Completed - Visual Score: 67.00
+[2025-12-14 23:57:29,433][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,433][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 23:57:29,433][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-14 23:57:29,433][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 67.00/100
+[2025-12-14 23:57:29,433][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-14 23:57:29,433][root][INFO] - [VLM Evaluation] Motion Quality Score: 40.00/100
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in finger joints during grasp stabilization, Thumb and index finger exhibit erratic, uncoordinated twitching while other fingers remain relatively static, Excessive, non-smooth closing/opening cycles of the hand not correlated with object rotation progress, Wrist joint appears overly stiff, forcing fingers to overcompensate with unnatural angles
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent achieves the goal but exhibits reward hacking via high-frequency jitter and uncoordinated finger motion. Add penalties for joint acceleration (to reduce vibration), action rate-of-change (to smooth control), and deviation from a default anthropomorphic pose (to prevent hyperextension). Also penalize torque magnitude to discourage violent movements.
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate and twitch independently, wrist remains rigid, and grip adjustments are jerky rather than fluid. This indicates poor sim-to-real transfer potential due to reward hacking. While the task is completed, the biomechanical quality is low, suggesting the policy is exploiting simulation dynamics rather than learning dexterous, human-like manipulation.
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-14 23:57:29,434][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 40.0,
+  "visual_score": 67.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in finger joints during grasp stabilization",
+    "Thumb and index finger exhibit erratic, uncoordinated twitching while other fingers remain relatively static",
+    "Excessive, non-smooth closing/opening cycles of the hand not correlated with object rotation progress",
+    "Wrist joint appears overly stiff, forcing fingers to overcompensate with unnatural angles"
+  ],
+  "reward_suggestion": "The agent achieves the goal but exhibits reward hacking via high-frequency jitter and uncoordinated finger motion. Add penalties for joint acceleration (to reduce vibration), action rate-of-change (to smooth control), and deviation from a default anthropomorphic pose (to prevent hyperextension). Also penalize torque magnitude to discourage violent movements.",
+  "qualitative_feedback": "The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate and twitch independently, wrist remains rigid, and grip adjustments are jerky rather than fluid. This indicates poor sim-to-real transfer potential due to reward hacking. While the task is completed, the biomechanical quality is low, suggesting the policy is exploiting simulation dynamics rather than learning dexterous, human-like manipulation."
+}
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 40.0,
+    "visual_score": 67.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in finger joints during grasp stabilization",
+        "Thumb and index finger exhibit erratic, uncoordinated twitching while other fingers remain relatively static",
+        "Excessive, non-smooth closing/opening cycles of the hand not correlated with object rotation progress",
+        "Wrist joint appears overly stiff, forcing fingers to overcompensate with unnatural angles"
+    ],
+    "reward_suggestion": "The agent achieves the goal but exhibits reward hacking via high-frequency jitter and uncoordinated finger motion. Add penalties for joint acceleration (to reduce vibration), action rate-of-change (to smooth control), and deviation from a default anthropomorphic pose (to prevent hyperextension). Also penalize torque magnitude to discourage violent movements.",
+    "qualitative_feedback": "The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate and twitch independently, wrist remains rigid, and grip adjustments are jerky rather than fluid. This indicates poor sim-to-real transfer potential due to reward hacking. While the task is completed, the biomechanical quality is low, suggesting the policy is exploiting simulation dynamics rather than learning dexterous, human-like manipulation."
+}
+[2025-12-14 23:57:29,434][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,434][root][INFO] - [VLM Evaluation #1] Completed - Visual Score: 67.00
+[2025-12-14 23:57:29,434][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,434][root][INFO] - VLM Evaluation Summary (All Scores):
+[2025-12-14 23:57:29,434][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 23:57:29,434][root][INFO] - Candidate # 1: Visual= 67.00 | Functional= 85.00 | Quality= 40.00
+[2025-12-14 23:57:29,435][root][INFO] -   Feedback: Visual Feedback: The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate and twitch independe...
+[2025-12-14 23:57:29,435][root][INFO] - Candidate # 2: Visual= 69.00 | Functional= 85.00 | Quality= 45.00
+[2025-12-14 23:57:29,435][root][INFO] -   Feedback: Visual Feedback: The robot successfully grasps and rotates the object to near-target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers vibrate violentl...
+[2025-12-14 23:57:29,435][root][INFO] - Candidate # 3: Visual= 67.00 | Functional= 85.00 | Quality= 40.00
+[2025-12-14 23:57:29,435][root][INFO] -   Feedback: Visual Feedback: The Shadow Hand successfully rotates the blue cylinder to the target orientation, demonstrating functional competence. However, the motion is biomechanically implausible: fingers twit...
+[2025-12-14 23:57:29,435][root][INFO] - Candidate # 4: Visual=  0.00 | Functional=  0.00 | Quality=100.00
+[2025-12-14 23:57:29,435][root][INFO] -   Feedback: Visual Feedback: The robot remains completely static throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter or unnatural poses), functional s...
+[2025-12-14 23:57:29,435][root][INFO] - Candidate # 6: Visual=  0.00 | Functional=  0.00 | Quality=100.00
+[2025-12-14 23:57:29,435][root][INFO] -   Feedback: Visual Feedback: The robot remains completely static throughout the episode, failing to engage with the object. No grasping, rotation, or task progression occurs. While motion quality is technically p...
+[2025-12-14 23:57:29,435][root][INFO] - Candidate # 7: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-14 23:57:29,435][root][INFO] -   Feedback: Visual Feedback: The robot fails to achieve the task goal entirely. The hand exhibits chaotic, uncoordinated finger movements with no stable grasp formed. This suggests the policy is not learning mean...
+[2025-12-14 23:57:29,435][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,435][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,435][root][INFO] - Generation 1: Training Results Ranking
+[2025-12-14 23:57:29,435][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 23:57:29,435][root][INFO] - Rank  1: Cand  7 | Phy   6.9528 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,435][root][INFO] - Rank  2: Cand  1 | Phy   5.2167 | Vis  67.0 | SkipVLM=False
+[2025-12-14 23:57:29,435][root][INFO] - Rank  3: Cand  6 | Phy   5.1125 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,435][root][INFO] - Rank  4: Cand  3 | Phy   4.9173 | Vis  67.0 | SkipVLM=False
+[2025-12-14 23:57:29,435][root][INFO] - Rank  5: Cand  2 | Phy   2.5149 | Vis  69.0 | SkipVLM=False
+[2025-12-14 23:57:29,435][root][INFO] - Rank  6: Cand  4 | Phy   1.1169 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,435][root][INFO] - Rank  7: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 23:57:29,435][root][INFO] - Rank  8: Cand  5 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 23:57:29,435][root][INFO] - Generation 1: Execution Rate: 75.00% (6/8)
+[2025-12-14 23:57:29,453][root][INFO] - ================================================================================
+[2025-12-14 23:57:29,453][root][INFO] - Generation 1: Population Ranking (all candidates)
+[2025-12-14 23:57:29,453][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 23:57:29,453][root][INFO] - Rank  1: Cand  7 | Phy   6.9528 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  2: Cand  2 | Phy   6.0854 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  3: Cand  0 | Phy   5.5645 | Vis  69.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  4: Cand  1 | Phy   5.2167 | Vis  67.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  5: Cand  6 | Phy   5.1125 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  6: Cand  3 | Phy   4.9173 | Vis  67.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  7: Cand  3 | Phy   3.0996 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  8: Cand  4 | Phy   2.9623 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank  9: Cand  5 | Phy   2.8812 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank 10: Cand  6 | Phy   2.8519 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank 11: Cand  2 | Phy   2.5149 | Vis  69.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank 12: Cand  7 | Phy   2.5104 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank 13: Cand  1 | Phy   2.2457 | Vis  67.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank 14: Cand  4 | Phy   1.1169 | Vis   0.0 | SkipVLM=False
+[2025-12-14 23:57:29,453][root][INFO] - Rank 15: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 23:57:29,453][root][INFO] - Rank 16: Cand  5 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 23:57:29,453][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 23:57:29,850][root][INFO] - Generation 1: Saved summary plot (summary.png) and data (summary.npz)
+[2025-12-14 23:58:17,344][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 23:58:53,376][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 23:59:18,393][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 23:59:33,509][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 23:59:54,147][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 00:00:12,106][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 00:00:33,866][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 00:01:01,508][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 00:01:01,509][root][INFO] - Gen 2: Training 8 candidates...
+[2025-12-15 00:01:01,521][root][INFO] - Gen 2 Cand 1: Waiting for environment build...
+[2025-12-15 00:01:18,578][root][INFO] - Gen 2 Cand 2: Waiting for environment build...
+[2025-12-15 00:01:36,209][root][INFO] - Gen 2 Cand 3: Waiting for environment build...
+[2025-12-15 00:01:53,645][root][INFO] - Gen 2 Cand 4: Waiting for environment build...
+[2025-12-15 00:02:11,300][root][INFO] - Gen 2 Cand 5: Waiting for environment build...
+[2025-12-15 00:02:30,776][root][INFO] - Gen 2 Cand 6: Waiting for environment build...
+[2025-12-15 00:02:48,154][root][INFO] - Gen 2 Cand 7: Waiting for environment build...
+[2025-12-15 00:03:08,668][root][INFO] - Waiting for training...
+[2025-12-15 01:15:23,686][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-04/runs/ShadowHandQwen-2025-12-15_00-01-04/summaries/events.out.tfevents.1765728072.g0101
+[2025-12-15 01:15:26,466][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-21/runs/ShadowHandQwen-2025-12-15_00-01-21/summaries/events.out.tfevents.1765728090.g0101
+[2025-12-15 01:17:17,157][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-39/runs/ShadowHandQwen-2025-12-15_00-01-39/summaries/events.out.tfevents.1765728107.g0101
+[2025-12-15 01:17:19,905][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-56/runs/ShadowHandQwen-2025-12-15_00-01-57/summaries/events.out.tfevents.1765728125.g0101
+[2025-12-15 01:17:22,458][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-02-14/runs/ShadowHandQwen-2025-12-15_00-02-14/summaries/events.out.tfevents.1765728143.g0101
+[2025-12-15 01:17:22,491][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-02-33/runs/ShadowHandQwen-2025-12-15_00-02-34/summaries/events.out.tfevents.1765728163.g0101
+[2025-12-15 01:17:24,940][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-02-51/runs/ShadowHandQwen-2025-12-15_00-02-51/summaries/events.out.tfevents.1765728181.g0101
+[2025-12-15 01:17:24,974][root][INFO] - Filter Complete: Keeping Top 5/7 (Ratio: 0.75)
+[2025-12-15 01:17:24,974][root][INFO] - Recording videos for survivors...
+[2025-12-15 01:17:24,974][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-04/runs/ShadowHandQwen-2025-12-15_00-01-04/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 01:17:45,010][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-17-28/videos/ShadowHandQwen_2025-12-15_01-17-28/rl-video-step-0.mp4
+[2025-12-15 01:17:45,011][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-21/runs/ShadowHandQwen-2025-12-15_00-01-21/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 01:18:45,086][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-17-48/videos/ShadowHandQwen_2025-12-15_01-17-48/rl-video-step-0.mp4
+[2025-12-15 01:18:45,087][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-39/runs/ShadowHandQwen-2025-12-15_00-01-39/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 01:19:20,134][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-18-48/videos/ShadowHandQwen_2025-12-15_01-18-48/rl-video-step-0.mp4
+[2025-12-15 01:19:20,136][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-01-56/runs/ShadowHandQwen-2025-12-15_00-01-57/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 01:20:15,203][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-19-23/videos/ShadowHandQwen_2025-12-15_01-19-23/rl-video-step-0.mp4
+[2025-12-15 01:20:15,205][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_00-02-14/runs/ShadowHandQwen-2025-12-15_00-02-14/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 01:21:00,263][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-20-18/videos/ShadowHandQwen_2025-12-15_01-20-18/rl-video-step-0.mp4
+[2025-12-15 01:21:00,264][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-15 01:21:09,232][root][INFO] - [VLM Evaluation #1] Completed - Visual Score: 0.00
+[2025-12-15 01:21:10,006][root][INFO] - ================================================================================
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] Abnormalities Detected: Object is not grasped — it is being pushed or flicked by individual fingers, Fingers move erratically and independently without coordinated prehension, No stable grasp is ever formed; object is never controlled during rotation, High-frequency finger twitching observed, especially index and middle fingers
+[2025-12-15 01:21:10,006][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is failing to form a stable grasp and instead flailing at the object. Add a reward penalty for lack of contact force symmetry across fingers and penalize high-frequency joint accelerations to discourage twitching. Introduce a bonus for sustained multi-finger contact before attempting rotation.
+[2025-12-15 01:21:10,007][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot fails to perform the core manipulation task: forming a stable grasp. Instead, it exhibits uncoordinated, twitchy finger movements that push the object away rather than control it. This indicates a fundamental failure in learning dexterous manipulation — the policy has not discovered synergistic finger coordination. Motion quality is poor due to erratic kinematics and absence of grasp stability.
+[2025-12-15 01:21:10,007][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 01:21:10,007][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 01:21:10,007][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Object is not grasped — it is being pushed or flicked by individual fingers",
+    "Fingers move erratically and independently without coordinated prehension",
+    "No stable grasp is ever formed; object is never controlled during rotation",
+    "High-frequency finger twitching observed, especially index and middle fingers"
+  ],
+  "reward_suggestion": "The agent is failing to form a stable grasp and instead flailing at the object. Add a reward penalty for lack of contact force symmetry across fingers and penalize high-frequency joint accelerations to discourage twitching. Introduce a bonus for sustained multi-finger contact before attempting rotation.",
+  "qualitative_feedback": "The robot fails to perform the core manipulation task: forming a stable grasp. Instead, it exhibits uncoordinated, twitchy finger movements that push the object away rather than control it. This indicates a fundamental failure in learning dexterous manipulation — the policy has not discovered synergistic finger coordination. Motion quality is poor due to erratic kinematics and absence of grasp stability."
+}
+[2025-12-15 01:21:10,007][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 01:21:10,007][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Object is not grasped — it is being pushed or flicked by individual fingers",
+        "Fingers move erratically and independently without coordinated prehension",
+        "No stable grasp is ever formed; object is never controlled during rotation",
+        "High-frequency finger twitching observed, especially index and middle fingers"
+    ],
+    "reward_suggestion": "The agent is failing to form a stable grasp and instead flailing at the object. Add a reward penalty for lack of contact force symmetry across fingers and penalize high-frequency joint accelerations to discourage twitching. Introduce a bonus for sustained multi-finger contact before attempting rotation.",
+    "qualitative_feedback": "The robot fails to perform the core manipulation task: forming a stable grasp. Instead, it exhibits uncoordinated, twitchy finger movements that push the object away rather than control it. This indicates a fundamental failure in learning dexterous manipulation — the policy has not discovered synergistic finger coordination. Motion quality is poor due to erratic kinematics and absence of grasp stability."
+}
+[2025-12-15 01:21:10,007][root][INFO] - ================================================================================
+[2025-12-15 01:21:10,007][root][INFO] - [VLM Evaluation #5] Completed - Visual Score: 0.00
+[2025-12-15 01:21:10,378][root][INFO] - ================================================================================
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 49.00/100
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Functional Score: 25.00/100
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Motion Quality Score: 85.00/100
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Abnormalities Detected: Object slips and falls after initial grasp attempt, Fingers close aggressively but fail to maintain grip, Wrist rotates without coordinated finger adjustment
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent initiates grasp but fails to stabilize the object. Add a penalty for object linear velocity after contact and reward for sustained contact force. Also penalize wrist torque when fingers are not actively adjusting grip.
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully initiates contact and attempts rotation, but lacks fine motor control to maintain grasp. The motion is mostly smooth with no jitter or unnatural poses, indicating good simulation fidelity but poor task policy. Focus on improving grip stability rather than motion smoothness.
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 01:21:10,379][root][INFO] - {
+  "functional_score": 25.0,
+  "motion_quality_score": 85.0,
+  "visual_score": 49.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Object slips and falls after initial grasp attempt",
+    "Fingers close aggressively but fail to maintain grip",
+    "Wrist rotates without coordinated finger adjustment"
+  ],
+  "reward_suggestion": "The agent initiates grasp but fails to stabilize the object. Add a penalty for object linear velocity after contact and reward for sustained contact force. Also penalize wrist torque when fingers are not actively adjusting grip.",
+  "qualitative_feedback": "The robot successfully initiates contact and attempts rotation, but lacks fine motor control to maintain grasp. The motion is mostly smooth with no jitter or unnatural poses, indicating good simulation fidelity but poor task policy. Focus on improving grip stability rather than motion smoothness."
+}
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 25.0,
+    "motion_quality_score": 85.0,
+    "visual_score": 49.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Object slips and falls after initial grasp attempt",
+        "Fingers close aggressively but fail to maintain grip",
+        "Wrist rotates without coordinated finger adjustment"
+    ],
+    "reward_suggestion": "The agent initiates grasp but fails to stabilize the object. Add a penalty for object linear velocity after contact and reward for sustained contact force. Also penalize wrist torque when fingers are not actively adjusting grip.",
+    "qualitative_feedback": "The robot successfully initiates contact and attempts rotation, but lacks fine motor control to maintain grasp. The motion is mostly smooth with no jitter or unnatural poses, indicating good simulation fidelity but poor task policy. Focus on improving grip stability rather than motion smoothness."
+}
+[2025-12-15 01:21:10,379][root][INFO] - ================================================================================
+[2025-12-15 01:21:10,379][root][INFO] - [VLM Evaluation #3] Completed - Visual Score: 49.00
+[2025-12-15 01:21:10,611][root][INFO] - ================================================================================
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 69.00/100
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Motion Quality Score: 45.00/100
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in index and middle fingers during object rotation, Thumb remains stiff and unresponsive while other fingers overcompensate, Erratic finger repositioning with no clear coordination between proximal and distal joints, Unnatural hyperextension of the ring finger observed at multiple time points
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent achieves task success but exhibits reward hacking through high-frequency joint oscillations and frozen degrees of freedom. Add penalties for joint acceleration (to reduce jitter) and penalize deviation from a neutral hand pose to encourage natural finger coordination. Consider adding a penalty for excessive torque on individual fingers to prevent overcompensation.
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers jitter violently, the thumb remains inactive, and some joints hyperextend. This suggests the policy has found a solution that works in simulation but would fail or damage hardware in reality. Smoothing the control policy and enforcing anatomical plausibility are critical for sim-to-real transfer.
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 01:21:10,611][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 45.0,
+  "visual_score": 69.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in index and middle fingers during object rotation",
+    "Thumb remains stiff and unresponsive while other fingers overcompensate",
+    "Erratic finger repositioning with no clear coordination between proximal and distal joints",
+    "Unnatural hyperextension of the ring finger observed at multiple time points"
+  ],
+  "reward_suggestion": "The agent achieves task success but exhibits reward hacking through high-frequency joint oscillations and frozen degrees of freedom. Add penalties for joint acceleration (to reduce jitter) and penalize deviation from a neutral hand pose to encourage natural finger coordination. Consider adding a penalty for excessive torque on individual fingers to prevent overcompensation.",
+  "qualitative_feedback": "The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers jitter violently, the thumb remains inactive, and some joints hyperextend. This suggests the policy has found a solution that works in simulation but would fail or damage hardware in reality. Smoothing the control policy and enforcing anatomical plausibility are critical for sim-to-real transfer."
+}
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 45.0,
+    "visual_score": 69.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in index and middle fingers during object rotation",
+        "Thumb remains stiff and unresponsive while other fingers overcompensate",
+        "Erratic finger repositioning with no clear coordination between proximal and distal joints",
+        "Unnatural hyperextension of the ring finger observed at multiple time points"
+    ],
+    "reward_suggestion": "The agent achieves task success but exhibits reward hacking through high-frequency joint oscillations and frozen degrees of freedom. Add penalties for joint acceleration (to reduce jitter) and penalize deviation from a neutral hand pose to encourage natural finger coordination. Consider adding a penalty for excessive torque on individual fingers to prevent overcompensation.",
+    "qualitative_feedback": "The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers jitter violently, the thumb remains inactive, and some joints hyperextend. This suggests the policy has found a solution that works in simulation but would fail or damage hardware in reality. Smoothing the control policy and enforcing anatomical plausibility are critical for sim-to-real transfer."
+}
+[2025-12-15 01:21:10,611][root][INFO] - ================================================================================
+[2025-12-15 01:21:10,611][root][INFO] - [VLM Evaluation #4] Completed - Visual Score: 69.00
+[2025-12-15 01:21:13,896][root][INFO] - ================================================================================
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 69.00/100
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Motion Quality Score: 45.00/100
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in finger joints during manipulation, Erratic finger movements with individual fingers twitching independently, Excessive, uncoordinated closing/opening of the hand not correlated with object rotation progress, Stiff thumb while other fingers overcompensate with unnatural motion
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is achieving the task but with highly unnatural motion. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent erratic twitching), and penalize deviation from a default anthropomorphic pose to encourage coordinated finger motion.
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully grasps and rotates the object toward the target orientation, demonstrating functional competence. However, the motion is visibly unnatural: fingers jitter violently, move asynchronously, and exhibit excessive, uncoordinated opening/closing. The thumb remains stiff while other digits flail to compensate, indicating poor motor coordination. While task success is achieved, this behavior suggests reward hacking or insufficient regularization in the policy, which would severely hinder sim-to-real transfer. Smoothing the control policy and enforcing biomechanical plausibility would significantly improve dexterity.
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 01:21:13,896][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 45.0,
+  "visual_score": 69.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in finger joints during manipulation",
+    "Erratic finger movements with individual fingers twitching independently",
+    "Excessive, uncoordinated closing/opening of the hand not correlated with object rotation progress",
+    "Stiff thumb while other fingers overcompensate with unnatural motion"
+  ],
+  "reward_suggestion": "The agent is achieving the task but with highly unnatural motion. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent erratic twitching), and penalize deviation from a default anthropomorphic pose to encourage coordinated finger motion.",
+  "qualitative_feedback": "The robot successfully grasps and rotates the object toward the target orientation, demonstrating functional competence. However, the motion is visibly unnatural: fingers jitter violently, move asynchronously, and exhibit excessive, uncoordinated opening/closing. The thumb remains stiff while other digits flail to compensate, indicating poor motor coordination. While task success is achieved, this behavior suggests reward hacking or insufficient regularization in the policy, which would severely hinder sim-to-real transfer. Smoothing the control policy and enforcing biomechanical plausibility would significantly improve dexterity."
+}
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 01:21:13,896][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 45.0,
+    "visual_score": 69.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in finger joints during manipulation",
+        "Erratic finger movements with individual fingers twitching independently",
+        "Excessive, uncoordinated closing/opening of the hand not correlated with object rotation progress",
+        "Stiff thumb while other fingers overcompensate with unnatural motion"
+    ],
+    "reward_suggestion": "The agent is achieving the task but with highly unnatural motion. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent erratic twitching), and penalize deviation from a default anthropomorphic pose to encourage coordinated finger motion.",
+    "qualitative_feedback": "The robot successfully grasps and rotates the object toward the target orientation, demonstrating functional competence. However, the motion is visibly unnatural: fingers jitter violently, move asynchronously, and exhibit excessive, uncoordinated opening/closing. The thumb remains stiff while other digits flail to compensate, indicating poor motor coordination. While task success is achieved, this behavior suggests reward hacking or insufficient regularization in the policy, which would severely hinder sim-to-real transfer. Smoothing the control policy and enforcing biomechanical plausibility would significantly improve dexterity."
+}
+[2025-12-15 01:21:13,896][root][INFO] - ================================================================================
+[2025-12-15 01:21:13,897][root][INFO] - [VLM Evaluation #2] Completed - Visual Score: 69.00
+[2025-12-15 01:21:13,897][root][INFO] - ================================================================================
+[2025-12-15 01:21:13,897][root][INFO] - VLM Evaluation Summary (All Scores):
+[2025-12-15 01:21:13,897][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 01:21:13,897][root][INFO] - Candidate # 1: Visual=  0.00
+[2025-12-15 01:21:13,897][root][INFO] -   Feedback: Evaluation Failed...
+[2025-12-15 01:21:13,897][root][INFO] - Candidate # 2: Visual= 69.00 | Functional= 85.00 | Quality= 45.00
+[2025-12-15 01:21:13,897][root][INFO] -   Feedback: Visual Feedback: The robot successfully grasps and rotates the object toward the target orientation, demonstrating functional competence. However, the motion is visibly unnatural: fingers jitter viole...
+[2025-12-15 01:21:13,897][root][INFO] - Candidate # 3: Visual= 49.00 | Functional= 25.00 | Quality= 85.00
+[2025-12-15 01:21:13,897][root][INFO] -   Feedback: Visual Feedback: The robot successfully initiates contact and attempts rotation, but lacks fine motor control to maintain grasp. The motion is mostly smooth with no jitter or unnatural poses, indicati...
+[2025-12-15 01:21:13,897][root][INFO] - Candidate # 4: Visual= 69.00 | Functional= 85.00 | Quality= 45.00
+[2025-12-15 01:21:13,897][root][INFO] -   Feedback: Visual Feedback: The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers jitter ...
+[2025-12-15 01:21:13,897][root][INFO] - Candidate # 5: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-15 01:21:13,897][root][INFO] -   Feedback: Visual Feedback: The robot fails to perform the core manipulation task: forming a stable grasp. Instead, it exhibits uncoordinated, twitchy finger movements that push the object away rather than contr...
+[2025-12-15 01:21:13,898][root][INFO] - ================================================================================
+[2025-12-15 01:21:13,898][root][INFO] - ================================================================================
+[2025-12-15 01:21:13,898][root][INFO] - Generation 2: Training Results Ranking
+[2025-12-15 01:21:13,898][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 01:21:13,898][root][INFO] - Rank  1: Cand  2 | Phy   8.6392 | Vis  69.0 | SkipVLM=False
+[2025-12-15 01:21:13,898][root][INFO] - Rank  2: Cand  3 | Phy   7.9439 | Vis  49.0 | SkipVLM=False
+[2025-12-15 01:21:13,898][root][INFO] - Rank  3: Cand  4 | Phy   5.8186 | Vis  69.0 | SkipVLM=False
+[2025-12-15 01:21:13,898][root][INFO] - Rank  4: Cand  5 | Phy   2.2025 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,898][root][INFO] - Rank  5: Cand  1 | Phy   0.3050 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,898][root][INFO] - Rank  6: Cand  7 | Phy   0.2526 | Vis   0.0 | SkipVLM=True
+[2025-12-15 01:21:13,898][root][INFO] - Rank  7: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 01:21:13,898][root][INFO] - Rank  8: Cand  6 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 01:21:13,898][root][INFO] - Generation 2: Execution Rate: 75.00% (6/8)
+[2025-12-15 01:21:13,925][root][INFO] - ================================================================================
+[2025-12-15 01:21:13,926][root][INFO] - Generation 2: Population Ranking (all candidates)
+[2025-12-15 01:21:13,926][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 01:21:13,926][root][INFO] - Rank  1: Cand  2 | Phy   8.6392 | Vis  69.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  2: Cand  3 | Phy   7.9439 | Vis  49.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  3: Cand  3 | Phy   6.9528 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  4: Cand  4 | Phy   6.0854 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  5: Cand  4 | Phy   5.8186 | Vis  69.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  6: Cand  0 | Phy   5.5645 | Vis  69.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  7: Cand  1 | Phy   5.2167 | Vis  67.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  8: Cand  5 | Phy   5.1125 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank  9: Cand  2 | Phy   4.9173 | Vis  67.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank 10: Cand  6 | Phy   3.0996 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank 11: Cand  7 | Phy   2.9623 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank 12: Cand  5 | Phy   2.2025 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank 13: Cand  1 | Phy   0.3050 | Vis   0.0 | SkipVLM=False
+[2025-12-15 01:21:13,926][root][INFO] - Rank 14: Cand  7 | Phy   0.2526 | Vis   0.0 | SkipVLM=True
+[2025-12-15 01:21:13,926][root][INFO] - Rank 15: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 01:21:13,926][root][INFO] - Rank 16: Cand  6 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 01:21:13,926][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 01:21:14,374][root][INFO] - Generation 2: Saved summary plot (summary.png) and data (summary.npz)
+[2025-12-15 01:21:47,867][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:22:04,274][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:22:25,108][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:22:57,618][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:23:14,057][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:23:31,598][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:24:06,078][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:24:35,410][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 01:24:35,411][root][INFO] - Gen 3: Training 8 candidates...
+[2025-12-15 01:24:35,424][root][INFO] - Gen 3 Cand 0: Waiting for environment build...
+[2025-12-15 01:24:52,046][root][INFO] - Gen 3 Cand 2: Waiting for environment build...
+[2025-12-15 01:25:12,612][root][INFO] - Gen 3 Cand 3: Waiting for environment build...
+[2025-12-15 01:25:31,227][root][INFO] - Gen 3 Cand 4: Waiting for environment build...
+[2025-12-15 01:25:37,111][root][INFO] - Gen 3 Cand 5: Waiting for environment build...
+[2025-12-15 01:25:55,264][root][INFO] - Gen 3 Cand 6: Waiting for environment build...
+[2025-12-15 01:26:15,043][root][INFO] - Gen 3 Cand 7: Waiting for environment build...
+[2025-12-15 01:26:34,853][root][INFO] - Waiting for training...
+[2025-12-15 01:26:34,854][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-24-38/runs/ShadowHandQwen-2025-12-15_01-24-38/summaries/events.out.tfevents.1765733087.g0101
+[2025-12-15 02:34:54,298][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-24-55/runs/ShadowHandQwen-2025-12-15_01-24-55/summaries/events.out.tfevents.1765733105.g0101
+[2025-12-15 02:40:11,047][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-25-15/runs/ShadowHandQwen-2025-12-15_01-25-16/summaries/events.out.tfevents.1765733125.g0101
+[2025-12-15 02:40:13,691][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-25-40/runs/ShadowHandQwen-2025-12-15_01-25-40/summaries/events.out.tfevents.1765733149.g0101
+[2025-12-15 02:40:13,726][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-25-58/runs/ShadowHandQwen-2025-12-15_01-25-58/summaries/events.out.tfevents.1765733168.g0101
+[2025-12-15 02:40:16,569][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-26-18/runs/ShadowHandQwen-2025-12-15_01-26-18/summaries/events.out.tfevents.1765733187.g0101
+[2025-12-15 02:40:16,612][root][INFO] - Filter Complete: Keeping Top 3/7 (Ratio: 0.5)
+[2025-12-15 02:40:16,612][root][INFO] - Recording videos for survivors...
+[2025-12-15 02:40:16,613][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-24-55/runs/ShadowHandQwen-2025-12-15_01-24-55/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 02:41:11,683][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-40-19/videos/ShadowHandQwen_2025-12-15_02-40-20/rl-video-step-0.mp4
+[2025-12-15 02:41:11,685][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-25-15/runs/ShadowHandQwen-2025-12-15_01-25-16/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 02:42:06,753][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-41-14/videos/ShadowHandQwen_2025-12-15_02-41-15/rl-video-step-0.mp4
+[2025-12-15 02:42:06,754][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-25-40/runs/ShadowHandQwen-2025-12-15_01-25-40/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 02:43:01,826][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-42-09/videos/ShadowHandQwen_2025-12-15_02-42-10/rl-video-step-0.mp4
+[2025-12-15 02:43:01,827][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-15 02:43:09,666][root][INFO] - ================================================================================
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Motion Quality Score: 100.00/100
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Reward Suggestion: The robot has not initiated any meaningful manipulation or grasping motion. Consider adding a reward for proximity to the object or initial contact to encourage exploration and task engagement.
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains stationary throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter, no unnatural poses), functional success is entirely absent. This suggests the policy has not yet learned to engage with the task.
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 02:43:09,666][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 100.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [],
+  "reward_suggestion": "The robot has not initiated any meaningful manipulation or grasping motion. Consider adding a reward for proximity to the object or initial contact to encourage exploration and task engagement.",
+  "qualitative_feedback": "The robot remains stationary throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter, no unnatural poses), functional success is entirely absent. This suggests the policy has not yet learned to engage with the task."
+}
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 100.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [],
+    "reward_suggestion": "The robot has not initiated any meaningful manipulation or grasping motion. Consider adding a reward for proximity to the object or initial contact to encourage exploration and task engagement.",
+    "qualitative_feedback": "The robot remains stationary throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter, no unnatural poses), functional success is entirely absent. This suggests the policy has not yet learned to engage with the task."
+}
+[2025-12-15 02:43:09,666][root][INFO] - ================================================================================
+[2025-12-15 02:43:09,666][root][INFO] - [VLM Evaluation #5] Completed - Visual Score: 0.00
+[2025-12-15 02:43:10,434][root][INFO] - ================================================================================
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Abnormalities Detected: Robot hand fails to make contact with or grasp the object, No meaningful rotation or manipulation of the object occurs, Fingers remain in static, open configuration without coordinated motion
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is not attempting to grasp or manipulate the object. Add a dense reward for proximity to the object and contact forces between fingers and object. Penalize idle joint states to encourage active exploration.
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains completely passive throughout the episode. No grasping, no rotation, no attempt to interact with the object. This indicates a failure in basic task engagement, likely due to sparse or misaligned reward signals. The motion quality is non-existent as no functional motion occurred.
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 02:43:10,435][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Robot hand fails to make contact with or grasp the object",
+    "No meaningful rotation or manipulation of the object occurs",
+    "Fingers remain in static, open configuration without coordinated motion"
+  ],
+  "reward_suggestion": "The agent is not attempting to grasp or manipulate the object. Add a dense reward for proximity to the object and contact forces between fingers and object. Penalize idle joint states to encourage active exploration.",
+  "qualitative_feedback": "The robot remains completely passive throughout the episode. No grasping, no rotation, no attempt to interact with the object. This indicates a failure in basic task engagement, likely due to sparse or misaligned reward signals. The motion quality is non-existent as no functional motion occurred."
+}
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Robot hand fails to make contact with or grasp the object",
+        "No meaningful rotation or manipulation of the object occurs",
+        "Fingers remain in static, open configuration without coordinated motion"
+    ],
+    "reward_suggestion": "The agent is not attempting to grasp or manipulate the object. Add a dense reward for proximity to the object and contact forces between fingers and object. Penalize idle joint states to encourage active exploration.",
+    "qualitative_feedback": "The robot remains completely passive throughout the episode. No grasping, no rotation, no attempt to interact with the object. This indicates a failure in basic task engagement, likely due to sparse or misaligned reward signals. The motion quality is non-existent as no functional motion occurred."
+}
+[2025-12-15 02:43:10,435][root][INFO] - ================================================================================
+[2025-12-15 02:43:10,435][root][INFO] - [VLM Evaluation #2] Completed - Visual Score: 0.00
+[2025-12-15 02:43:12,946][root][INFO] - ================================================================================
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] Abnormalities Detected: Robot hand is not grasping or manipulating any object; appears idle or in initialization state., No meaningful motion or task progression observed throughout the clip.
+[2025-12-15 02:43:12,946][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is not attempting the task. Ensure the reward function includes a strong positive incentive for initiating contact with the object and beginning rotation. Consider adding exploration bonuses to avoid stagnation.
+[2025-12-15 02:43:12,947][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains completely static throughout the video, showing no attempt to grasp or rotate the target object. This indicates either a failure to initialize the policy, a stuck controller, or an unresponsive reward signal. No functional progress or motion quality can be assessed.
+[2025-12-15 02:43:12,947][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 02:43:12,947][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 02:43:12,947][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Robot hand is not grasping or manipulating any object; appears idle or in initialization state.",
+    "No meaningful motion or task progression observed throughout the clip."
+  ],
+  "reward_suggestion": "The agent is not attempting the task. Ensure the reward function includes a strong positive incentive for initiating contact with the object and beginning rotation. Consider adding exploration bonuses to avoid stagnation.",
+  "qualitative_feedback": "The robot remains completely static throughout the video, showing no attempt to grasp or rotate the target object. This indicates either a failure to initialize the policy, a stuck controller, or an unresponsive reward signal. No functional progress or motion quality can be assessed."
+}
+[2025-12-15 02:43:12,947][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 02:43:12,947][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Robot hand is not grasping or manipulating any object; appears idle or in initialization state.",
+        "No meaningful motion or task progression observed throughout the clip."
+    ],
+    "reward_suggestion": "The agent is not attempting the task. Ensure the reward function includes a strong positive incentive for initiating contact with the object and beginning rotation. Consider adding exploration bonuses to avoid stagnation.",
+    "qualitative_feedback": "The robot remains completely static throughout the video, showing no attempt to grasp or rotate the target object. This indicates either a failure to initialize the policy, a stuck controller, or an unresponsive reward signal. No functional progress or motion quality can be assessed."
+}
+[2025-12-15 02:43:12,947][root][INFO] - ================================================================================
+[2025-12-15 02:43:12,947][root][INFO] - [VLM Evaluation #3] Completed - Visual Score: 0.00
+[2025-12-15 02:43:12,947][root][INFO] - ================================================================================
+[2025-12-15 02:43:12,947][root][INFO] - VLM Evaluation Summary (All Scores):
+[2025-12-15 02:43:12,947][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 02:43:12,947][root][INFO] - Candidate # 2: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-15 02:43:12,947][root][INFO] -   Feedback: Visual Feedback: The robot remains completely passive throughout the episode. No grasping, no rotation, no attempt to interact with the object. This indicates a failure in basic task engagement, likel...
+[2025-12-15 02:43:12,947][root][INFO] - Candidate # 3: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-15 02:43:12,947][root][INFO] -   Feedback: Visual Feedback: The robot remains completely static throughout the video, showing no attempt to grasp or rotate the target object. This indicates either a failure to initialize the policy, a stuck co...
+[2025-12-15 02:43:12,948][root][INFO] - Candidate # 5: Visual=  0.00 | Functional=  0.00 | Quality=100.00
+[2025-12-15 02:43:12,948][root][INFO] -   Feedback: Visual Feedback: The robot remains stationary throughout the clip, showing no attempt to grasp or rotate the object. While motion quality is perfect (no jitter, no unnatural poses), functional success...
+[2025-12-15 02:43:12,948][root][INFO] - ================================================================================
+[2025-12-15 02:43:12,948][root][INFO] - ================================================================================
+[2025-12-15 02:43:12,948][root][INFO] - Generation 3: Training Results Ranking
+[2025-12-15 02:43:12,948][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 02:43:12,948][root][INFO] - Rank  1: Cand  5 | Phy   5.8563 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,948][root][INFO] - Rank  2: Cand  3 | Phy   3.6690 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,948][root][INFO] - Rank  3: Cand  2 | Phy   2.7199 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,948][root][INFO] - Rank  4: Cand  7 | Phy   0.0596 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,948][root][INFO] - Rank  5: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,948][root][INFO] - Rank  6: Cand  1 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,948][root][INFO] - Rank  7: Cand  4 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,948][root][INFO] - Rank  8: Cand  6 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,948][root][INFO] - Generation 3: Execution Rate: 50.00% (4/8)
+[2025-12-15 02:43:12,981][root][INFO] - ================================================================================
+[2025-12-15 02:43:12,981][root][INFO] - Generation 3: Population Ranking (all candidates)
+[2025-12-15 02:43:12,982][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 02:43:12,982][root][INFO] - Rank  1: Cand  0 | Phy   8.6392 | Vis  69.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  2: Cand  4 | Phy   7.9439 | Vis  49.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  3: Cand  5 | Phy   6.9528 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  4: Cand  6 | Phy   6.0854 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  5: Cand  5 | Phy   5.8563 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  6: Cand  1 | Phy   5.8186 | Vis  69.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  7: Cand  2 | Phy   5.5645 | Vis  69.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  8: Cand  3 | Phy   5.2167 | Vis  67.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank  9: Cand  7 | Phy   5.1125 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank 10: Cand  3 | Phy   3.6690 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank 11: Cand  2 | Phy   2.7199 | Vis   0.0 | SkipVLM=False
+[2025-12-15 02:43:12,982][root][INFO] - Rank 12: Cand  7 | Phy   0.0596 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,982][root][INFO] - Rank 13: Cand  0 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,982][root][INFO] - Rank 14: Cand  1 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,982][root][INFO] - Rank 15: Cand  4 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,982][root][INFO] - Rank 16: Cand  6 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-15 02:43:12,982][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 02:43:13,398][root][INFO] - Generation 3: Saved summary plot (summary.png) and data (summary.npz)
+[2025-12-15 02:43:31,013][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:43:55,748][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:44:14,198][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:44:28,124][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:44:43,069][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:45:04,923][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:45:34,016][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:45:46,057][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-15 02:45:46,058][root][INFO] - Gen 4: Training 8 candidates...
+[2025-12-15 02:45:46,072][root][INFO] - Gen 4 Cand 0: Waiting for environment build...
+[2025-12-15 02:46:03,176][root][INFO] - Gen 4 Cand 1: Waiting for environment build...
+[2025-12-15 02:46:20,752][root][INFO] - Gen 4 Cand 2: Waiting for environment build...
+[2025-12-15 02:46:40,255][root][INFO] - Gen 4 Cand 3: Waiting for environment build...
+[2025-12-15 02:46:58,413][root][INFO] - Gen 4 Cand 4: Waiting for environment build...
+[2025-12-15 02:47:18,164][root][INFO] - Gen 4 Cand 5: Waiting for environment build...
+[2025-12-15 02:47:37,989][root][INFO] - Gen 4 Cand 6: Waiting for environment build...
+[2025-12-15 02:48:00,287][root][INFO] - Gen 4 Cand 7: Waiting for environment build...
+[2025-12-15 02:48:20,033][root][INFO] - Waiting for training...
+[2025-12-15 04:04:56,163][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-45-49/runs/ShadowHandQwen-2025-12-15_02-45-49/summaries/events.out.tfevents.1765737957.g0101
+[2025-12-15 04:10:15,607][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-46-06/runs/ShadowHandQwen-2025-12-15_02-46-06/summaries/events.out.tfevents.1765737974.g0101
+[2025-12-15 04:26:01,686][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-46-23/runs/ShadowHandQwen-2025-12-15_02-46-24/summaries/events.out.tfevents.1765737993.g0101
+[2025-12-15 04:26:04,201][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-46-43/runs/ShadowHandQwen-2025-12-15_02-46-44/summaries/events.out.tfevents.1765738012.g0101
+[2025-12-15 04:26:06,699][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-47-01/runs/ShadowHandQwen-2025-12-15_02-47-01/summaries/events.out.tfevents.1765738031.g0101
+[2025-12-15 04:26:09,145][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-47-21/runs/ShadowHandQwen-2025-12-15_02-47-21/summaries/events.out.tfevents.1765738050.g0101
+[2025-12-15 04:30:09,757][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-47-41/runs/ShadowHandQwen-2025-12-15_02-47-41/summaries/events.out.tfevents.1765738071.g0101
+[2025-12-15 04:30:12,340][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-48-03/runs/ShadowHandQwen-2025-12-15_02-48-03/summaries/events.out.tfevents.1765738092.g0101
+[2025-12-15 04:30:12,373][root][INFO] - Filter Complete: Keeping Top 4/8 (Ratio: 0.5)
+[2025-12-15 04:30:12,373][root][INFO] - Recording videos for survivors...
+[2025-12-15 04:30:12,374][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-46-06/runs/ShadowHandQwen-2025-12-15_02-46-06/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 04:31:07,450][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_04-30-15/videos/ShadowHandQwen_2025-12-15_04-30-15/rl-video-step-0.mp4
+[2025-12-15 04:31:07,451][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-46-43/runs/ShadowHandQwen-2025-12-15_02-46-44/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 04:31:37,501][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_04-31-10/videos/ShadowHandQwen_2025-12-15_04-31-10/rl-video-step-0.mp4
+[2025-12-15 04:31:37,502][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-47-41/runs/ShadowHandQwen-2025-12-15_02-47-41/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 04:32:32,574][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_04-31-40/videos/ShadowHandQwen_2025-12-15_04-31-40/rl-video-step-0.mp4
+[2025-12-15 04:32:32,575][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_02-48-03/runs/ShadowHandQwen-2025-12-15_02-48-03/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-15 04:33:27,650][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_04-32-35/videos/ShadowHandQwen_2025-12-15_04-32-36/rl-video-step-0.mp4
+[2025-12-15 04:33:27,650][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-15 04:33:36,178][root][INFO] - ================================================================================
+[2025-12-15 04:33:36,178][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 04:33:36,178][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 04:33:36,178][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 0.00/100
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Functional Score: 0.00/100
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Motion Quality Score: 0.00/100
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Abnormalities Detected: Robot hand is not interacting with any object; no manipulation task is being performed., Fingers are in a static, non-functional pose for the entire duration., No rotation or movement toward a target orientation is observed.
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is not attempting the task. Add a dense reward signal for proximity to the object and initial contact to encourage exploration and engagement.
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot remains completely passive and does not attempt to grasp or rotate any object. No functional progress is made, and motion quality is irrelevant as no task execution occurs. The episode appears to be stuck in an idle state.
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 04:33:36,179][root][INFO] - {
+  "functional_score": 0.0,
+  "motion_quality_score": 0.0,
+  "visual_score": 0.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "Robot hand is not interacting with any object; no manipulation task is being performed.",
+    "Fingers are in a static, non-functional pose for the entire duration.",
+    "No rotation or movement toward a target orientation is observed."
+  ],
+  "reward_suggestion": "The agent is not attempting the task. Add a dense reward signal for proximity to the object and initial contact to encourage exploration and engagement.",
+  "qualitative_feedback": "The robot remains completely passive and does not attempt to grasp or rotate any object. No functional progress is made, and motion quality is irrelevant as no task execution occurs. The episode appears to be stuck in an idle state."
+}
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 0.0,
+    "motion_quality_score": 0.0,
+    "visual_score": 0.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "Robot hand is not interacting with any object; no manipulation task is being performed.",
+        "Fingers are in a static, non-functional pose for the entire duration.",
+        "No rotation or movement toward a target orientation is observed."
+    ],
+    "reward_suggestion": "The agent is not attempting the task. Add a dense reward signal for proximity to the object and initial contact to encourage exploration and engagement.",
+    "qualitative_feedback": "The robot remains completely passive and does not attempt to grasp or rotate any object. No functional progress is made, and motion quality is irrelevant as no task execution occurs. The episode appears to be stuck in an idle state."
+}
+[2025-12-15 04:33:36,179][root][INFO] - ================================================================================
+[2025-12-15 04:33:36,179][root][INFO] - [VLM Evaluation #1] Completed - Visual Score: 0.00
+[2025-12-15 04:33:37,636][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 29.00/100
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Functional Score: 35.00/100
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Motion Quality Score: 20.00/100
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Success Detected: False
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in finger joints during attempted grasp, Fingers exhibit uncoordinated, independent twitching instead of synchronized motion, Object slips and rotates erratically without controlled reorientation, Wrist and forearm show excessive, non-purposeful rotation during manipulation
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent is failing to stabilize the object due to uncoordinated finger control. Add a penalty for joint acceleration variance and inter-finger coordination error. Consider rewarding smooth torque application over time rather than just final orientation.
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot fails to achieve the target orientation and exhibits highly unnatural, jittery finger motions that suggest reward hacking or poor policy learning. The manipulation lacks dexterity and control, with fingers moving independently in an uncoordinated manner. While the task goal is not met, the primary issue is the chaotic motion quality, which would severely hinder sim-to-real transfer.
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 04:33:37,636][root][INFO] - {
+  "functional_score": 35.0,
+  "motion_quality_score": 20.0,
+  "visual_score": 29.0,
+  "success_detected": false,
+  "abnormalities_detected": [
+    "High-frequency jitter in finger joints during attempted grasp",
+    "Fingers exhibit uncoordinated, independent twitching instead of synchronized motion",
+    "Object slips and rotates erratically without controlled reorientation",
+    "Wrist and forearm show excessive, non-purposeful rotation during manipulation"
+  ],
+  "reward_suggestion": "The agent is failing to stabilize the object due to uncoordinated finger control. Add a penalty for joint acceleration variance and inter-finger coordination error. Consider rewarding smooth torque application over time rather than just final orientation.",
+  "qualitative_feedback": "The robot fails to achieve the target orientation and exhibits highly unnatural, jittery finger motions that suggest reward hacking or poor policy learning. The manipulation lacks dexterity and control, with fingers moving independently in an uncoordinated manner. While the task goal is not met, the primary issue is the chaotic motion quality, which would severely hinder sim-to-real transfer."
+}
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 35.0,
+    "motion_quality_score": 20.0,
+    "visual_score": 29.0,
+    "success_detected": false,
+    "abnormalities_detected": [
+        "High-frequency jitter in finger joints during attempted grasp",
+        "Fingers exhibit uncoordinated, independent twitching instead of synchronized motion",
+        "Object slips and rotates erratically without controlled reorientation",
+        "Wrist and forearm show excessive, non-purposeful rotation during manipulation"
+    ],
+    "reward_suggestion": "The agent is failing to stabilize the object due to uncoordinated finger control. Add a penalty for joint acceleration variance and inter-finger coordination error. Consider rewarding smooth torque application over time rather than just final orientation.",
+    "qualitative_feedback": "The robot fails to achieve the target orientation and exhibits highly unnatural, jittery finger motions that suggest reward hacking or poor policy learning. The manipulation lacks dexterity and control, with fingers moving independently in an uncoordinated manner. While the task goal is not met, the primary issue is the chaotic motion quality, which would severely hinder sim-to-real transfer."
+}
+[2025-12-15 04:33:37,636][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,636][root][INFO] - [VLM Evaluation #3] Completed - Visual Score: 29.00
+[2025-12-15 04:33:37,884][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 69.00/100
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Motion Quality Score: 45.00/100
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in index and middle fingers during grasp stabilization, Thumb remains overly stiff while other fingers compensate with erratic motion, Excessive finger closing/opening cycles not correlated with object rotation progress, Wrist joint exhibits unnatural hyperextension during final orientation hold
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent achieves the goal but exhibits reward hacking through high-frequency finger vibrations and compensatory stiffness. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent violent opening/closing), and deviation from anthropomorphic default pose (to avoid hyperextension). Consider adding a torque penalty to discourage high-energy flailing.
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers vibrate excessively, the thumb freezes while others overcompensate, and the wrist hyperextends unnaturally during the final hold. This indicates the policy is exploiting simulation physics rather than learning dexterous, human-like manipulation. While task-successful, this behavior has poor sim-to-real transfer potential and requires regularization in the reward function.
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 04:33:37,885][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 04:33:37,885][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 45.0,
+  "visual_score": 69.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in index and middle fingers during grasp stabilization",
+    "Thumb remains overly stiff while other fingers compensate with erratic motion",
+    "Excessive finger closing/opening cycles not correlated with object rotation progress",
+    "Wrist joint exhibits unnatural hyperextension during final orientation hold"
+  ],
+  "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency finger vibrations and compensatory stiffness. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent violent opening/closing), and deviation from anthropomorphic default pose (to avoid hyperextension). Consider adding a torque penalty to discourage high-energy flailing.",
+  "qualitative_feedback": "The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers vibrate excessively, the thumb freezes while others overcompensate, and the wrist hyperextends unnaturally during the final hold. This indicates the policy is exploiting simulation physics rather than learning dexterous, human-like manipulation. While task-successful, this behavior has poor sim-to-real transfer potential and requires regularization in the reward function."
+}
+[2025-12-15 04:33:37,886][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 04:33:37,886][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 45.0,
+    "visual_score": 69.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in index and middle fingers during grasp stabilization",
+        "Thumb remains overly stiff while other fingers compensate with erratic motion",
+        "Excessive finger closing/opening cycles not correlated with object rotation progress",
+        "Wrist joint exhibits unnatural hyperextension during final orientation hold"
+    ],
+    "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency finger vibrations and compensatory stiffness. Add penalties for joint acceleration (to reduce jitter), action smoothness (to prevent violent opening/closing), and deviation from anthropomorphic default pose (to avoid hyperextension). Consider adding a torque penalty to discourage high-energy flailing.",
+    "qualitative_feedback": "The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers vibrate excessively, the thumb freezes while others overcompensate, and the wrist hyperextends unnaturally during the final hold. This indicates the policy is exploiting simulation physics rather than learning dexterous, human-like manipulation. While task-successful, this behavior has poor sim-to-real transfer potential and requires regularization in the reward function."
+}
+[2025-12-15 04:33:37,886][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,886][root][INFO] - [VLM Evaluation #6] Completed - Visual Score: 69.00
+[2025-12-15 04:33:37,973][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] ========== SCORES ==========
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Visual Score (Weighted): 69.00/100
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Functional Score: 85.00/100
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Motion Quality Score: 45.00/100
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Success Detected: True
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] ========== DETAILS ==========
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Abnormalities Detected: High-frequency jitter in finger joints during grasp and rotation, Erratic finger repositioning with independent twitching of individual phalanges, Excessive opening/closing cycles not correlated with object orientation progress, Unnatural hyperextension of thumb joint during stabilization attempts
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Reward Suggestion: The agent achieves the goal but exhibits reward hacking through high-frequency control. Add penalties for joint acceleration (especially finger DOFs), action rate-of-change, and deviation from default hand pose to encourage smoother, more coordinated motion.
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Qualitative Feedback: The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers jitter violently, open and close excessively without clear purpose, and exhibit uncoordinated twitching. This indicates the policy is exploiting simulation dynamics rather than learning dexterous manipulation. While task-successful, this behavior has poor sim-to-real transfer potential and should be corrected by penalizing jerkiness and promoting smooth, coordinated finger motion.
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] ========== FULL JSON DATA ==========
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Complete VLM Response JSON:
+[2025-12-15 04:33:37,973][root][INFO] - {
+  "functional_score": 85.0,
+  "motion_quality_score": 45.0,
+  "visual_score": 69.0,
+  "success_detected": true,
+  "abnormalities_detected": [
+    "High-frequency jitter in finger joints during grasp and rotation",
+    "Erratic finger repositioning with independent twitching of individual phalanges",
+    "Excessive opening/closing cycles not correlated with object orientation progress",
+    "Unnatural hyperextension of thumb joint during stabilization attempts"
+  ],
+  "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency control. Add penalties for joint acceleration (especially finger DOFs), action rate-of-change, and deviation from default hand pose to encourage smoother, more coordinated motion.",
+  "qualitative_feedback": "The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers jitter violently, open and close excessively without clear purpose, and exhibit uncoordinated twitching. This indicates the policy is exploiting simulation dynamics rather than learning dexterous manipulation. While task-successful, this behavior has poor sim-to-real transfer potential and should be corrected by penalizing jerkiness and promoting smooth, coordinated finger motion."
+}
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] ========== RAW RESPONSE ==========
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation] Raw Response [part 1]: {
+    "functional_score": 85.0,
+    "motion_quality_score": 45.0,
+    "visual_score": 69.0,
+    "success_detected": true,
+    "abnormalities_detected": [
+        "High-frequency jitter in finger joints during grasp and rotation",
+        "Erratic finger repositioning with independent twitching of individual phalanges",
+        "Excessive opening/closing cycles not correlated with object orientation progress",
+        "Unnatural hyperextension of thumb joint during stabilization attempts"
+    ],
+    "reward_suggestion": "The agent achieves the goal but exhibits reward hacking through high-frequency control. Add penalties for joint acceleration (especially finger DOFs), action rate-of-change, and deviation from default hand pose to encourage smoother, more coordinated motion.",
+    "qualitative_feedback": "The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers jitter violently, open and close excessively without clear purpose, and exhibit uncoordinated twitching. This indicates the policy is exploiting simulation dynamics rather than learning dexterous manipulation. While task-successful, this behavior has poor sim-to-real transfer potential and should be corrected by penalizing jerkiness and promoting smooth, coordinated finger motion."
+}
+[2025-12-15 04:33:37,973][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,973][root][INFO] - [VLM Evaluation #7] Completed - Visual Score: 69.00
+[2025-12-15 04:33:37,974][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,974][root][INFO] - VLM Evaluation Summary (All Scores):
+[2025-12-15 04:33:37,974][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 04:33:37,974][root][INFO] - Candidate # 1: Visual=  0.00 | Functional=  0.00 | Quality=  0.00
+[2025-12-15 04:33:37,974][root][INFO] -   Feedback: Visual Feedback: The robot remains completely passive and does not attempt to grasp or rotate any object. No functional progress is made, and motion quality is irrelevant as no task execution occurs. ...
+[2025-12-15 04:33:37,974][root][INFO] - Candidate # 3: Visual= 29.00 | Functional= 35.00 | Quality= 20.00
+[2025-12-15 04:33:37,974][root][INFO] -   Feedback: Visual Feedback: The robot fails to achieve the target orientation and exhibits highly unnatural, jittery finger motions that suggest reward hacking or poor policy learning. The manipulation lacks dex...
+[2025-12-15 04:33:37,974][root][INFO] - Candidate # 6: Visual= 69.00 | Functional= 85.00 | Quality= 45.00
+[2025-12-15 04:33:37,974][root][INFO] -   Feedback: Visual Feedback: The robot successfully rotates the object to the target orientation, demonstrating functional competence. However, the motion is biomechanically unnatural: fingers vibrate excessively...
+[2025-12-15 04:33:37,974][root][INFO] - Candidate # 7: Visual= 69.00 | Functional= 85.00 | Quality= 45.00
+[2025-12-15 04:33:37,974][root][INFO] -   Feedback: Visual Feedback: The robot successfully rotates the cylindrical object to the target orientation, demonstrating functional competence. However, the motion is highly unnatural: fingers jitter violently...
+[2025-12-15 04:33:37,974][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,974][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,974][root][INFO] - Generation 4: Training Results Ranking
+[2025-12-15 04:33:37,974][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 04:33:37,974][root][INFO] - Rank  1: Cand  6 | Phy   8.4464 | Vis  69.0 | SkipVLM=False
+[2025-12-15 04:33:37,974][root][INFO] - Rank  2: Cand  3 | Phy   8.2056 | Vis  29.0 | SkipVLM=False
+[2025-12-15 04:33:37,974][root][INFO] - Rank  3: Cand  1 | Phy   5.7608 | Vis   0.0 | SkipVLM=False
+[2025-12-15 04:33:37,974][root][INFO] - Rank  4: Cand  7 | Phy   5.0717 | Vis  69.0 | SkipVLM=False
+[2025-12-15 04:33:37,974][root][INFO] - Rank  5: Cand  5 | Phy   4.9716 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,974][root][INFO] - Rank  6: Cand  0 | Phy   4.0396 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,975][root][INFO] - Rank  7: Cand  2 | Phy   0.6780 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,975][root][INFO] - Rank  8: Cand  4 | Phy   0.3132 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,975][root][INFO] - Generation 4: Execution Rate: 100.00% (8/8)
+[2025-12-15 04:33:37,999][root][INFO] - ================================================================================
+[2025-12-15 04:33:37,999][root][INFO] - Generation 4: Population Ranking (all candidates)
+[2025-12-15 04:33:37,999][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 04:33:37,999][root][INFO] - Rank  1: Cand  0 | Phy   8.6392 | Vis  69.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  2: Cand  6 | Phy   8.4464 | Vis  69.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  3: Cand  3 | Phy   8.2056 | Vis  29.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  4: Cand  4 | Phy   7.9439 | Vis  49.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  5: Cand  5 | Phy   6.9528 | Vis   0.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  6: Cand  6 | Phy   6.0854 | Vis   0.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  7: Cand  7 | Phy   5.8563 | Vis   0.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  8: Cand  1 | Phy   5.8186 | Vis  69.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank  9: Cand  1 | Phy   5.7608 | Vis   0.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank 10: Cand  2 | Phy   5.5645 | Vis  69.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank 11: Cand  3 | Phy   5.2167 | Vis  67.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank 12: Cand  7 | Phy   5.0717 | Vis  69.0 | SkipVLM=False
+[2025-12-15 04:33:37,999][root][INFO] - Rank 13: Cand  5 | Phy   4.9716 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,999][root][INFO] - Rank 14: Cand  0 | Phy   4.0396 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,999][root][INFO] - Rank 15: Cand  2 | Phy   0.6780 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,999][root][INFO] - Rank 16: Cand  4 | Phy   0.3132 | Vis   0.0 | SkipVLM=True
+[2025-12-15 04:33:37,999][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-15 04:33:38,437][root][INFO] - Generation 4: Saved summary plot (summary.png) and data (summary.npz)
+[2025-12-15 04:33:38,842][root][INFO] - Saved final generation metrics plot (gen_best_metrics.png) and data (gen_best_metrics.npz).
+[2025-12-15 04:33:38,842][root][INFO] - Evolution Done. Champion Saved.

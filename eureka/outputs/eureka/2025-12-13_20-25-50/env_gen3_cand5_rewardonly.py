@@ -1,0 +1,89 @@
+def compute_reward(
+    object_pos: torch.Tensor,
+    object_rot: torch.Tensor,
+    goal_rot: torch.Tensor,
+    object_angvel: torch.Tensor,
+    actions: torch.Tensor,
+    fingertip_pos: torch.Tensor,
+) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+    # Compute relative rotation quaternion (object to goal)
+    quat_diff = quat_mul(object_rot, quat_conjugate(goal_rot))
+    
+    # Orientation error as angle (0 to pi)
+    w = quat_diff[:, 3]
+    w = torch.clamp(w, -1.0, 1.0)
+    rot_angle_error = 2.0 * torch.acos(torch.abs(w))
+    
+    # Dense orientation reward with appropriate temperature
+    rot_temp = 1.0
+    rot_reward = torch.exp(-rot_temp * rot_angle_error)
+    
+    # Compute desired spin axis: the axis of the minimal rotation from object to goal
+    axis_scale = torch.norm(quat_diff[:, :3], dim=-1).unsqueeze(-1)
+    spin_axis_desired = torch.where(axis_scale > 1e-6, quat_diff[:, :3] / axis_scale, torch.zeros_like(quat_diff[:, :3]))
+    
+    # If no rotation needed, any spin is bad → penalize angvel
+    no_rotation = (axis_scale.squeeze(-1) < 1e-6)
+    
+    # Project angular velocity onto desired spin axis
+    angvel_on_axis = torch.sum(object_angvel * spin_axis_desired, dim=-1)
+    angvel_off_axis = torch.norm(object_angvel - angvel_on_axis.unsqueeze(-1) * spin_axis_desired, dim=-1)
+    
+    # Encourage high spin magnitude along desired axis
+    target_angvel_mag = 3.0
+    angvel_mag_error = torch.abs(torch.abs(angvel_on_axis) - target_angvel_mag)
+    angvel_temp = 0.5
+    angvel_axis_reward = torch.exp(-angvel_temp * angvel_mag_error)
+    
+    # Penalize off-axis spinning heavily
+    off_axis_temp = 3.0
+    off_axis_penalty = torch.exp(-off_axis_temp * angvel_off_axis)
+    
+    # Combine spin rewards: only good if on correct axis AND sufficient magnitude
+    spin_reward = angvel_axis_reward * off_axis_penalty
+    
+    # When no rotation is needed, spinning is undesirable
+    spin_reward = torch.where(no_rotation, torch.exp(-2.0 * torch.norm(object_angvel, dim=-1)), spin_reward)
+    
+    # Contact reward: encourage all fingertips to stay close to the object
+    # Compute distance from each fingertip to object center
+    fingertip_object_dist = torch.norm(fingertip_pos - object_pos.unsqueeze(1), dim=-1)  # [num_envs, 5]
+    mean_fingertip_dist = torch.mean(fingertip_object_dist, dim=-1)
+    contact_temp = 10.0
+    contact_reward = torch.exp(-contact_temp * mean_fingertip_dist)
+    
+    # Light action regularization
+    action_penalty = torch.sum(actions ** 2, dim=-1)
+    action_reg_weight = 0.0001
+    action_reward = -action_reg_weight * action_penalty
+
+    total_reward = rot_reward + 2.0 * spin_reward + 1.0 * contact_reward + action_reward
+
+    reward_components = {
+        "rot_reward": rot_reward,
+        "spin_reward": spin_reward,
+        "contact_reward": contact_reward,
+        "action_reward": action_reward,
+    }
+
+    return total_reward, reward_components
+
+@torch.jit.script
+def quat_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
+    assert a.shape[-1] == 4
+    assert b.shape[-1] == 4
+
+    x1, y1, z1, w1 = a[..., 0], a[..., 1], a[..., 2], a[..., 3]
+    x2, y2, z2, w2 = b[..., 0], b[..., 1], b[..., 2], b[..., 3]
+
+    w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
+    x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2
+    y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
+    z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
+
+    return torch.stack([x, y, z, w], dim=-1)
+
+@torch.jit.script
+def quat_conjugate(a: torch.Tensor) -> torch.Tensor:
+    conj = torch.cat([-a[..., 0:3], a[..., 3:4]], dim=-1)
+    return conj

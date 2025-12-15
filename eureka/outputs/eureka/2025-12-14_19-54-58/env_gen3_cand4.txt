@@ -1,0 +1,101 @@
+Importing module 'gym_38' (/ssd/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/gym_38.so)
+Setting GYM_USD_PLUG_INFO_PATH to /ssd/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/linux-x86_64/usd/plugInfo.json
+PyTorch version 2.0.0+cu117
+Device count 1
+/ssd/home/wangyuhang/python/isaacgym/python/isaacgym/_bindings/src/gymtorch
+Using /ssd/home/wangyuhang/.cache/torch_extensions/py38_cu117 as PyTorch extensions root...
+Emitting ninja build file /ssd/home/wangyuhang/.cache/torch_extensions/py38_cu117/gymtorch/build.ninja...
+Building extension module gymtorch...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+ninja: no work to do.
+Loading extension module gymtorch...
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+2025-12-15 01:25:33,555 - INFO - logger - logger initialized
+<unknown>:3: DeprecationWarning: invalid escape sequence \*
+Error: FBX library failed to load - importing FBX data will not succeed. Message: No module named 'fbx'
+FBX tools must be installed from https://help.autodesk.com/view/FBX/2020/ENU/?guid=FBX_Developer_Help_scripting_with_python_fbx_installing_python_fbx_html
+/ssd/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/train.py:75: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_name="config", config_path="./cfg")
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/hydra/_internal/defaults_list.py:415: UserWarning: In config: Invalid overriding of hydra/job_logging:
+Default list overrides requires 'override' keyword.
+See https://hydra.cc/docs/1.2/upgrades/1.0_to_1.1/defaults_list_override for more information.
+
+  deprecation_warning(msg)
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/hydra/_internal/hydra.py:119: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/utils/tensorboard/__init__.py:4: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if not hasattr(tensorboard, "__version__") or LooseVersion(
+Setting seed: 4
+Network Directory: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-25-34/runs/ShadowHandQwen-2025-12-15_01-25-34/nn
+Tensorboard Directory: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-14_19-54-58/policy-2025-12-15_01-25-34/runs/ShadowHandQwen-2025-12-15_01-25-34/summaries
+self.seed = 4
+Started to train
+Error executing job with overrides: ['task=ShadowHandQwen', 'wandb_activate=False', 'seed=4', 'headless=True', 'capture_video=False', 'force_render=False', 'max_iterations=3000']
+Traceback (most recent call last):
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/utils/rlgames_utils.py", line 116, in create_rlgpu_env
+    module = importlib.import_module(module_name)
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1014, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 975, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 671, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 843, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/shadow_handqwen.py", line 768, in <module>
+    def compute_reward(
+  File "/home/wangyuhang/anaconda3/envs/eureka/lib/python3.8/site-packages/torch/jit/_script.py", line 1341, in script
+    fn = torch._C._jit_script_compile(
+RuntimeError: 
+undefined value angle_objective:
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/shadow_handqwen.py", line 781
+    
+    orientation_temp = 1.0
+    orientation_reward = torch.exp(-orientation_temp * angle_objective)
+                                                       ~~~~~~~~~~~~~~~ <--- HERE
+
+    # Spin maintenance around object Z-axis
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/ssd/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/train.py", line 203, in launch_rlg_hydra
+    statistics = runner.run({
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/torch_runner.py", line 124, in run
+    self.run_train(args)
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/torch_runner.py", line 98, in run_train
+    self.agent = self.algo_factory.create(self.algo_name, base_name='run', params=self.params)
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/common/object_factory.py", line 15, in create
+    return builder(**kwargs)
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/torch_runner.py", line 37, in <lambda>
+    self.algo_factory.register_builder('a2c_continuous', lambda **kwargs : a2c_continuous.A2CAgent(**kwargs))
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/algos_torch/a2c_continuous.py", line 16, in __init__
+    a2c_common.ContinuousA2CBase.__init__(self, base_name, params)
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/common/a2c_common.py", line 1076, in __init__
+    A2CBase.__init__(self, base_name, params)
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/common/a2c_common.py", line 121, in __init__
+    self.vec_env = vecenv.create_vec_env(self.env_name, self.num_actors, **self.env_config)
+  File "/ssd/home/wangyuhang/python/Eureka/rl_games/rl_games/common/vecenv.py", line 222, in create_vec_env
+    return vecenv_config[vec_env_name](config_name, num_actors, **kwargs)
+  File "/ssd/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/train.py", line 161, in <lambda>
+    vecenv.register('RLGPU', lambda config_name, num_actors, **kwargs: RLGPUEnv(config_name, num_actors, **kwargs))
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/utils/rlgames_utils.py", line 253, in __init__
+    self.env = env_configurations.configurations[config_name]['env_creator'](**kwargs)
+  File "/ssd/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/train.py", line 145, in <lambda>
+    'env_creator': lambda **kwargs: create_isaacgym_env(**kwargs),
+  File "/ssd/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/train.py", line 111, in create_isaacgym_env
+    envs = isaacgymenvs.make(
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/__init__.py", line 59, in make
+    return create_rlgpu_env()
+  File "/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/utils/rlgames_utils.py", line 119, in create_rlgpu_env
+    task_caller = isaacgym_task_map[task_name]
+KeyError: 'ShadowHandQwen'
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

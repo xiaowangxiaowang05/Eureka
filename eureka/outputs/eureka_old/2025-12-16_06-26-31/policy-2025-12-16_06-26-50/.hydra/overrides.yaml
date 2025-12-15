@@ -1,0 +1,8 @@
+- task=ShadowHandQwen
+- wandb_activate=False
+- wandb_entity=
+- wandb_project=
+- headless=False
+- capture_video=True
+- force_render=False
+- max_iterations=3000

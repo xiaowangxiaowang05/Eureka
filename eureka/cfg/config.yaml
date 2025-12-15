@@ -9,9 +9,9 @@ hydra:
     chdir: True
 
 model: qwen3-max  # LLM model (other options are gpt-4, gpt-4-0613, gpt-3.5-turbo-16k-0613)
-model_vlm: null  # VLM used for video-based evaluation. "mock" generates random scores.
-temperature: 1.0
-top_p: 0.95
+model_vlm: qwen3-vl-plus  # VLM used for video-based evaluation. "mock" generates random scores.
+temperature: 0.9
+top_p: 1
 suffix: Qwen  # suffix for generated files (indicates LLM model)
 
 # Top-level knobs for hydra overrides (population_size and generations derive from these)

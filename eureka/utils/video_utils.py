@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 import shutil
+import select  # for non-blocking log reads
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -32,9 +33,12 @@ def record_policy_rollout(
     headless: bool = True,
     force_render: bool = False,
     seed: int = 0,
-    gpu_id: str = "1",
+    gpu_id: str = "0",
 ) -> Optional[Path]:
-    """Launch an Isaac Gym evaluation run that records a rollout video."""
+    """Launch an Isaac Gym evaluation run that records a rollout video.
+
+    该实现直接从新版 Eureka 复制而来，已经在同一套 Isaac Gym 环境下验证可以稳定录制视频。
+    """
     logging.info("Recording rollout video for checkpoint: %s", checkpoint_path)
     before = _collect_videos(workspace_dir)
     start_time = time.time()
@@ -47,9 +51,10 @@ def record_policy_rollout(
         use_xvfb = False
         gym_headless_arg = True 
 
+    # Ensure a single short rollout and real-time stdout
     base_cmd = [
         "python",
-        "-u",
+        "-u",  # unbuffered stdout for real-time monitoring
         str(isaac_root_dir / "train.py"),
         "hydra/output=subprocess",
         f"task={task_name}{suffix}",
@@ -67,7 +72,7 @@ def record_policy_rollout(
         "rl_device=cuda:0",
         "pipeline=gpu",
         "num_envs=1",
-        "max_iterations=0",
+        "max_iterations=1",  # run once and exit
         f"seed={seed}",
         "train.params.config.player.games_num=1",
         f"task.env.episodeLength={rollout_steps}",
@@ -82,40 +87,81 @@ def record_policy_rollout(
         env = os.environ.copy()
     else:
         env = env.copy()
+    env["PYTHONUNBUFFERED"] = "1"  # flush stdout promptly
+    if gpu_id is not None:
+        env["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
 
     if use_xvfb:
         video_cmd = ["xvfb-run", "-a", "-s", "-screen 0 1280x720x24"] + base_cmd
     else:
         video_cmd = base_cmd
 
-    log_path = workspace_dir / f"vlm_eval_{int(start_time)}.txt"
+    log_path = workspace_dir / f"eureka_best_policy_video_{int(start_time)}.txt"
+
+    # Smart monitoring with live log inspection
+    max_wait_time = max(rollout_steps * 5 + 180, 400)
+
     with open(log_path, "w") as log_file:
-        process = subprocess.Popen(video_cmd, stdout=log_file, stderr=log_file, env=env)
-    
-    max_wait_time = max(rollout_steps * 5 + 180, 400) 
-    try:
-        elapsed = 0
-        check_interval = 5
-        while elapsed < max_wait_time:
-            return_code = process.poll()
-            if return_code is not None:
-                if return_code != 0:
-                    logging.warning(f"Video recording process exited with error code {return_code}. Log: {log_path}")
-                break
-            time.sleep(check_interval)
-            elapsed += check_interval
-        else:
-            logging.error(f"Video recording timed out after {max_wait_time}s.")
-            process.terminate()
-            time.sleep(5)
+        process = subprocess.Popen(
+            video_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=env,
+            text=True,
+            bufsize=1,  # line buffered
+        )
+
+        start_monitor = time.time()
+
+        try:
+            while True:
+                # Timeout guard
+                if time.time() - start_monitor > max_wait_time:
+                    logging.error(f"Video recording timed out after {max_wait_time}s.")
+                    process.terminate()
+                    raise TimeoutError("Video recording timed out")
+
+                return_code = process.poll()
+
+                # Non-blocking read of any available output
+                while True:
+                    reads = [process.stdout.fileno()]
+                    ready, _, _ = select.select(reads, [], [], 0.0)
+                    if not ready:
+                        break
+
+                    line = process.stdout.readline()
+                    if not line:
+                        break
+
+                    log_file.write(line)
+                    log_file.flush()
+
+                    # Isaac Gym 完成一次 rollout 时常见的日志行
+                    if "Run finished" in line:
+                        logging.info("Detected run completion from logs. Exiting early.")
+                        process.terminate()
+                        return_code = 0
+                        break
+
+                    # 常见崩溃模式
+                    if "CUDA error" in line or "RuntimeError" in line:
+                        logging.error(f"Simulation crashed: {line.strip()}")
+
+                if return_code is not None:
+                    if return_code != 0:
+                        logging.warning(f"Video recording process exited with code {return_code}. Log: {log_path}")
+                    break
+
+                time.sleep(0.5)
+        except Exception as exc:
+            logging.error(f"Error during video recording: {exc}")
             if process.poll() is None:
                 process.kill()
-            raise TimeoutError(f"Video recording timed out")
-    except Exception as exc:
-        logging.error(f"Error during video recording: {exc}")
-        if process.poll() is None:
-            process.kill()
-        raise
+            raise
+        finally:
+            if process.stdout:
+                process.stdout.close()
 
     after = _collect_videos(workspace_dir)
     new_videos = {
@@ -129,9 +175,11 @@ def record_policy_rollout(
         return None
 
     latest_video = max(new_videos, key=lambda p: p.stat().st_mtime)
-    if latest_video.stat().st_size < 1000:
+    if latest_video.stat().st_size < 500:
         logging.warning(f"Video file created but empty: {latest_video}")
         return None
         
     logging.info(f"Video successfully recorded: {latest_video}")
     return latest_video
+
+

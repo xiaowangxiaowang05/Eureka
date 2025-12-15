@@ -1,0 +1,14 @@
+You are a Robotics Physics Expert. Read the Isaac Gym environment code below.
+Extract the following technical metadata to help a visual judge understand the robot:
+1. ROBOT TYPE (e.g., Quadruped, Dexterous Hand, Drone, Cartpole).
+2. JOINT/BODY NAMES (list key joints or actuators).
+3. KEY OBSERVABLES (important physics states such as root_lin_vel, dof_pos, contact_forces).
+
+Output format (Plain Text):
+ROBOT: [Type]
+JOINTS: [List of names]
+OBSERVABLES: [List of variables]
+
+Code Snippet:
+{ENV_CODE}
+

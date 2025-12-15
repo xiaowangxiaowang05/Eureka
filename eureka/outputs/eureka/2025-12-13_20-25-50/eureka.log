@@ -1,0 +1,1081 @@
+[2025-12-13 20:25:50,967][root][INFO] - Workspace: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50
+[2025-12-13 20:25:51,029][root][INFO] - Created base task file: /ssd/home/wangyuhang/python/Eureka/isaacgymenvs/isaacgymenvs/tasks/shadow_handqwen.py
+[2025-12-13 20:25:51,030][root][INFO] - Generating Visual Rubric...
+[2025-12-13 20:25:58,902][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 20:25:58,914][root][INFO] - Rubric: {
+  "task_type": "Manipulation",
+  "critical_failures": [
+    "The object drops from the Shadow Hand and is no longer in contact with the fingers",
+    "The robot hand remains completely static or frozen for a significant portion of the episode (indicating policy failure)"
+  ],
+  "criteria": [
+    {
+      "name": "primary_goal_progress",
+      "category": "Functional",
+      "description": "Evaluate how closely the object's final orientation matches the target orientation; consider intermediate progress if the object is continuously rotated toward the goal without dropping.",
+      "weight": 0.6
+    },
+    {
+      "name": "motion_quality",
+      "category": "Quality",
+      "description": "Assess the smoothness, coordination of finger movements, and stability of the object during rotation; penalize excessive jitter, abrupt motions, or unnecessary finger oscillations.",
+      "weight": 0.4
+    }
+  ],
+  "overall_instruction": "Judge the video based on whether the Shadow Hand successfully rotates the object to the target orientation while maintaining stable, coordinated, and smooth manipulation."
+}
+[2025-12-13 20:25:58,915][root][INFO] - Generating Gen 0...
+[2025-12-13 20:26:25,103][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 20:26:47,519][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 20:27:11,950][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 20:27:39,202][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 20:27:39,204][root][INFO] - Gen 0: Training 16 candidates...
+[2025-12-13 20:27:39,212][root][INFO] - Gen 0 Cand 0: Waiting for environment build to prevent race condition...
+[2025-12-13 20:27:53,104][root][INFO] - Gen 0 Cand 1: Waiting for environment build to prevent race condition...
+[2025-12-13 20:28:07,652][root][INFO] - Gen 0 Cand 2: Waiting for environment build to prevent race condition...
+[2025-12-13 20:28:21,328][root][INFO] - Gen 0 Cand 3: Waiting for environment build to prevent race condition...
+[2025-12-13 20:28:35,763][root][INFO] - Gen 0 Cand 4: Waiting for environment build to prevent race condition...
+[2025-12-13 20:28:51,251][root][INFO] - Gen 0 Cand 5: Waiting for environment build to prevent race condition...
+[2025-12-13 20:29:08,030][root][INFO] - Gen 0 Cand 6: Waiting for environment build to prevent race condition...
+[2025-12-13 20:29:23,220][root][INFO] - Gen 0 Cand 7: Waiting for environment build to prevent race condition...
+[2025-12-13 20:29:38,980][root][INFO] - Gen 0 Cand 8: Waiting for environment build to prevent race condition...
+[2025-12-13 20:29:56,030][root][INFO] - Gen 0 Cand 9: Waiting for environment build to prevent race condition...
+[2025-12-13 20:30:14,497][root][INFO] - Gen 0 Cand 10: Waiting for environment build to prevent race condition...
+[2025-12-13 20:30:32,127][root][INFO] - Gen 0 Cand 11: Waiting for environment build to prevent race condition...
+[2025-12-13 20:30:49,553][root][INFO] - Gen 0 Cand 12: Waiting for environment build to prevent race condition...
+[2025-12-13 20:31:09,060][root][INFO] - Gen 0 Cand 13: Waiting for environment build to prevent race condition...
+[2025-12-13 20:31:29,436][root][INFO] - Gen 0 Cand 14: Waiting for environment build to prevent race condition...
+[2025-12-13 20:31:46,868][root][INFO] - Gen 0 Cand 15: Waiting for environment build to prevent race condition...
+[2025-12-13 20:32:06,152][root][INFO] - Waiting for training...
+[2025-12-13 22:05:12,625][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-27-42/runs/ShadowHandQwen-2025-12-13_20-27-42/summaries/events.out.tfevents.1765628867.g0101
+[2025-12-13 22:13:06,961][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-27-56/runs/ShadowHandQwen-2025-12-13_20-27-56/summaries/events.out.tfevents.1765628881.g0101
+[2025-12-13 22:13:09,370][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-28-10/runs/ShadowHandQwen-2025-12-13_20-28-11/summaries/events.out.tfevents.1765628896.g0101
+[2025-12-13 22:13:11,797][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-28-24/runs/ShadowHandQwen-2025-12-13_20-28-24/summaries/events.out.tfevents.1765628910.g0101
+[2025-12-13 22:13:14,215][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-28-38/runs/ShadowHandQwen-2025-12-13_20-28-39/summaries/events.out.tfevents.1765628924.g0101
+[2025-12-13 22:13:40,057][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-28-54/runs/ShadowHandQwen-2025-12-13_20-28-54/summaries/events.out.tfevents.1765628940.g0101
+[2025-12-13 22:13:42,517][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-29-11/runs/ShadowHandQwen-2025-12-13_20-29-11/summaries/events.out.tfevents.1765628957.g0101
+[2025-12-13 22:13:44,950][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-29-26/runs/ShadowHandQwen-2025-12-13_20-29-26/summaries/events.out.tfevents.1765628972.g0101
+[2025-12-13 22:13:47,456][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-29-42/runs/ShadowHandQwen-2025-12-13_20-29-42/summaries/events.out.tfevents.1765628988.g0101
+[2025-12-13 22:16:08,660][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-29-59/runs/ShadowHandQwen-2025-12-13_20-29-59/summaries/events.out.tfevents.1765629006.g0101
+[2025-12-13 22:16:11,163][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-30-17/runs/ShadowHandQwen-2025-12-13_20-30-18/summaries/events.out.tfevents.1765629024.g0101
+[2025-12-13 22:16:13,569][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-30-35/runs/ShadowHandQwen-2025-12-13_20-30-35/summaries/events.out.tfevents.1765629041.g0101
+[2025-12-13 22:16:15,992][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-30-52/runs/ShadowHandQwen-2025-12-13_20-30-53/summaries/events.out.tfevents.1765629059.g0101
+[2025-12-13 22:16:18,423][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-31-12/runs/ShadowHandQwen-2025-12-13_20-31-12/summaries/events.out.tfevents.1765629079.g0101
+[2025-12-13 22:16:18,451][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-31-32/runs/ShadowHandQwen-2025-12-13_20-31-33/summaries/events.out.tfevents.1765629099.g0101
+[2025-12-13 22:16:20,845][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-31-50/runs/ShadowHandQwen-2025-12-13_20-31-50/summaries/events.out.tfevents.1765629117.g0101
+[2025-12-13 22:16:20,875][root][INFO] - Filter Complete: Keeping Top 12/16 (Ratio: 0.75)
+[2025-12-13 22:16:20,875][root][INFO] - Recording videos for survivors...
+[2025-12-13 22:16:20,876][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-27-42/runs/ShadowHandQwen-2025-12-13_20-27-42/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:17:15,935][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-16-24/videos/ShadowHandQwen_2025-12-13_22-16-24/rl-video-step-0.mp4
+[2025-12-13 22:17:15,937][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-27-56/runs/ShadowHandQwen-2025-12-13_20-27-56/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:18:10,996][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-17-19/videos/ShadowHandQwen_2025-12-13_22-17-19/rl-video-step-0.mp4
+[2025-12-13 22:18:10,997][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-28-10/runs/ShadowHandQwen-2025-12-13_20-28-11/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:19:06,061][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-18-14/videos/ShadowHandQwen_2025-12-13_22-18-14/rl-video-step-0.mp4
+[2025-12-13 22:19:06,062][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-28-24/runs/ShadowHandQwen-2025-12-13_20-28-24/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:20:01,129][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-19-09/videos/ShadowHandQwen_2025-12-13_22-19-09/rl-video-step-0.mp4
+[2025-12-13 22:20:01,131][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-28-38/runs/ShadowHandQwen-2025-12-13_20-28-39/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:20:56,199][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-20-04/videos/ShadowHandQwen_2025-12-13_22-20-04/rl-video-step-0.mp4
+[2025-12-13 22:20:56,200][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-29-11/runs/ShadowHandQwen-2025-12-13_20-29-11/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:21:51,268][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-20-59/videos/ShadowHandQwen_2025-12-13_22-20-59/rl-video-step-0.mp4
+[2025-12-13 22:21:51,269][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-29-26/runs/ShadowHandQwen-2025-12-13_20-29-26/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:22:46,338][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-21-54/videos/ShadowHandQwen_2025-12-13_22-21-54/rl-video-step-0.mp4
+[2025-12-13 22:22:46,339][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-29-42/runs/ShadowHandQwen-2025-12-13_20-29-42/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:23:41,401][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-22-49/videos/ShadowHandQwen_2025-12-13_22-22-49/rl-video-step-0.mp4
+[2025-12-13 22:23:41,402][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-30-17/runs/ShadowHandQwen-2025-12-13_20-30-18/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:24:36,468][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-23-44/videos/ShadowHandQwen_2025-12-13_22-23-44/rl-video-step-0.mp4
+[2025-12-13 22:24:36,469][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-30-52/runs/ShadowHandQwen-2025-12-13_20-30-53/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:25:26,529][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-24-39/videos/ShadowHandQwen_2025-12-13_22-24-40/rl-video-step-0.mp4
+[2025-12-13 22:25:26,530][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-31-12/runs/ShadowHandQwen-2025-12-13_20-31-12/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:26:21,595][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-25-29/videos/ShadowHandQwen_2025-12-13_22-25-29/rl-video-step-0.mp4
+[2025-12-13 22:26:21,596][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_20-31-50/runs/ShadowHandQwen-2025-12-13_20-31-50/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 22:27:16,652][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-26-24/videos/ShadowHandQwen_2025-12-13_22-26-25/rl-video-step-0.mp4
+[2025-12-13 22:27:16,653][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-13 22:27:16,653][root][INFO] - [VLM Evaluation #0] Starting evaluation for candidate 0
+[2025-12-13 22:27:16,653][root][INFO] - [VLM Evaluation #1] Starting evaluation for candidate 1
+[2025-12-13 22:27:16,653][root][INFO] - [VLM Evaluation #0] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand0/rl-video-step-0.mp4
+[2025-12-13 22:27:16,654][root][INFO] - [VLM Evaluation #2] Starting evaluation for candidate 2
+[2025-12-13 22:27:16,654][root][INFO] - [VLM Evaluation #1] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand1/rl-video-step-0.mp4
+[2025-12-13 22:27:16,654][root][INFO] - [VLM Evaluation #3] Starting evaluation for candidate 3
+[2025-12-13 22:27:16,654][root][INFO] - [VLM Evaluation #2] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand2/rl-video-step-0.mp4
+[2025-12-13 22:27:16,655][root][INFO] - [VLM Evaluation #4] Starting evaluation for candidate 4
+[2025-12-13 22:27:16,655][root][INFO] - [VLM Evaluation #3] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand3/rl-video-step-0.mp4
+[2025-12-13 22:27:16,658][root][INFO] - [VLM Evaluation #6] Starting evaluation for candidate 6
+[2025-12-13 22:27:16,660][root][INFO] - [VLM Evaluation #7] Starting evaluation for candidate 7
+[2025-12-13 22:27:16,660][root][INFO] - [VLM Evaluation #4] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand4/rl-video-step-0.mp4
+[2025-12-13 22:27:16,661][root][INFO] - [VLM Evaluation #8] Starting evaluation for candidate 8
+[2025-12-13 22:27:16,664][root][INFO] - [VLM Evaluation #8] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand8/rl-video-step-0.mp4
+[2025-12-13 22:27:16,662][root][INFO] - [VLM Evaluation #7] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand7/rl-video-step-0.mp4
+[2025-12-13 22:27:16,661][root][INFO] - [VLM Evaluation #6] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand6/rl-video-step-0.mp4
+[2025-12-13 22:27:25,506][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The control policy failed to activate any finger movements. The hand did not attempt to rotate or manipulate the object, resulting in zero progress toward the goal.",
+  "what_went_right": "The object remained in contact with the fingers and was not dropped, which avoids one critical failure condition. However, this is insufficient due to the complete lack of motion."
+}
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The control policy failed to activate any finger movements. The hand did not attempt to rotate or manipulate the object, result
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation #3] Completed - Score: 0.00
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation #10] Starting evaluation for candidate 10
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation #10] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand10/rl-video-step-0.mp4
+[2025-12-13 22:27:25,507][root][INFO] - [VLM Evaluation #3] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or generate any control signals, resulting in a complete lack of action.",
+  "what_went_right": "The object remains in contact with the fingers (no drop), but this is irrelevant due to the total absence of intended motion."
+}
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or generate any co
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation #2] Completed - Score: 0.00
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation #12] Starting evaluation for candidate 12
+[2025-12-13 22:27:25,619][root][INFO] - [VLM Evaluation #12] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand12/rl-video-step-0.mp4
+[2025-12-13 22:27:25,620][root][INFO] - [VLM Evaluation #2] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed pose, failing to engage with or rotate the object as required by the task.",
+  "what_went_right": "The object was initially positioned within the grasp of the hand, suggesting proper initialization. No object drop occurred because no manipulation attempt was made."
+}
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed pose, failing to engage with or 
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation #6] Completed - Score: 0.00
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation #13] Starting evaluation for candidate 13
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation #6] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:25,697][root][INFO] - [VLM Evaluation #13] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand13/rl-video-step-0.mp4
+[2025-12-13 22:27:26,026][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:26,100][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:26,189][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:26,672][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0.5 seconds, the blue cylindrical object is seen falling away from the hand and remains on the ground for the rest of the episode, indicating a complete loss of grasp.
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation] Qualitative Feedback: Object dropped immediately after initial contact; no successful manipulation occurred.
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand failed to establish or maintain a stable grip on the object. The object slipped and fell within the first second, indicating poor control or insufficient finger coordination at the onset of the task.",
+  "what_went_right": "The hand attempted to engage with the object initially, showing some motion toward grasping, but this was not sustained."
+}
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0.5 seconds, the blue cylindrical object is seen falling away from the hand and remains on the ground for the rest of the episode, indicating a complete loss of grasp.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Object dropped immediately after initial contact; no successful manipulation occurred.",
+    "analysis_notes":
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation #0] Completed - Score: 0.00
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation #15] Starting evaluation for candidate 15
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation #0] Result collected - Fitness Score: 0.00, Feedback: Object dropped immediately after initial contact; no successful manipulation occurred....
+[2025-12-13 22:27:26,673][root][INFO] - [VLM Evaluation #15] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen0_cand15/rl-video-step-0.mp4
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The control policy failed to activate any finger movements. The hand is frozen in its initial pose, showing no attempt to manipulate or rotate the object.",
+  "what_went_right": "The object was initially grasped and remained in contact with the fingers without dropping, but this is irrelevant due to the complete lack of motion."
+}
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The control policy failed to activate any finger movements. The hand is frozen in its initial pose, showing no attempt to manip
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation #7] Completed - Score: 0.00
+[2025-12-13 22:27:27,104][root][INFO] - [VLM Evaluation #7] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:27,158][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:27,310][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:27,310][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:27,310][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:27,310][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:27,310][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:27,310][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with or rotate the object as required by the task.",
+  "what_went_right": "The object was initially positioned within the grasp of the hand, suggesting proper initial setup. No object drop occurred because no manipulation was attempted."
+}
+[2025-12-13 22:27:27,310][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with
+[2025-12-13 22:27:27,311][root][INFO] - [VLM Evaluation #1] Completed - Score: 0.00
+[2025-12-13 22:27:27,311][root][INFO] - [VLM Evaluation #1] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with or rotate the object as required by the task.",
+  "what_went_right": "The object was initially positioned within the grasp of the hand, suggesting proper initialization. No object drop occurred because no manipulation attempt was made."
+}
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation #8] Completed - Score: 0.00
+[2025-12-13 22:27:27,344][root][INFO] - [VLM Evaluation #8] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:27,672][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. From approximately 0.5 seconds to 12.2 seconds, there is no observable motion or adjustment of the fingers or object, violating the requirement for active control.
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation] Qualitative Feedback: Hand froze after initial grasp; no further manipulation occurred.
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "Policy failed to generate continuous control signals after initial contact. Hand remained motionless for over 11 seconds, indicating a complete halt in motor output or decision-making loop.",
+  "what_went_right": "Initial grasp was successful — object was acquired and held without dropping at the start of the episode."
+}
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. From approximately 0.5 seconds to 12.2 seconds, there is no observable motion or adjustment of the fingers or object, violating the requirement for active control.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Hand froze after initial grasp; no further manipulation occurred.",
+    "analysis_notes": {
+   
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation #4] Completed - Score: 0.00
+[2025-12-13 22:27:27,673][root][INFO] - [VLM Evaluation #4] Result collected - Fitness Score: 0.00, Feedback: Hand froze after initial grasp; no further manipulation occurred....
+[2025-12-13 22:27:28,520][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:28,617][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:28,656][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:30,117][root][WARNING] - DashScope Error: Throttling.AllocationQuota - Allocated quota exceeded, please increase your quota limit. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit
+[2025-12-13 22:27:38,576][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or generate any control signals, resulting in a complete lack of action.",
+  "what_went_right": "The object remains in contact with the fingers (no drop), but this is irrelevant due to the total absence of motion."
+}
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or generate any co
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation #12] Completed - Score: 0.00
+[2025-12-13 22:27:38,577][root][INFO] - [VLM Evaluation #12] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:38,658][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. No motion or manipulation is observed after the initial frame.
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation] Qualitative Feedback: No active manipulation occurred; the hand and object are motionless throughout the clip.
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The policy failed to initiate or sustain any movement. The hand remained frozen in place, suggesting a complete breakdown in control or execution logic.",
+  "what_went_right": "The object was initially grasped without dropping, but no further progress was made."
+}
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. No motion or manipulation is observed after the initial frame.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No active manipulation occurred; the hand and object are motionless throughout the clip.",
+    "analysis_notes": {
+        "what_went_wrong": "The policy failed to initiate or sustain any movement
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation #13] Completed - Score: 0.00
+[2025-12-13 22:27:38,659][root][INFO] - [VLM Evaluation #13] Result collected - Fitness Score: 0.00, Feedback: No active manipulation occurred; the hand and object are motionless throughout the clip....
+[2025-12-13 22:27:39,056][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:39,056][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:39,057][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:39,057][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:39,057][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the video.
+[2025-12-13 22:27:39,057][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with the object or attempt rotation. This indicates a complete lack of policy execution or control signal.",
+  "what_went_right": "The object was initially positioned within the hand’s grasp without dropping, suggesting proper initial setup. No unintended drops occurred due to lack of motion."
+}
+[2025-12-13 22:27:39,057][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the video.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with the 
+[2025-12-13 22:27:39,057][root][INFO] - [VLM Evaluation #10] Completed - Score: 0.00
+[2025-12-13 22:27:39,057][root][INFO] - [VLM Evaluation #10] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the video....
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or is stuck in an idle state, resulting in zero progress toward the goal.",
+  "what_went_right": "The object remains in contact with the fingers (no drop), but this is irrelevant due to the complete lack of motion."
+}
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or is stuck in an 
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation #15] Completed - Score: 0.00
+[2025-12-13 22:27:40,067][root][INFO] - [VLM Evaluation #15] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - ================================================================================
+[2025-12-13 22:27:40,068][root][INFO] - VLM Evaluation Summary:
+[2025-12-13 22:27:40,068][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 0: Score=  0.00 | Feedback=Object dropped immediately after initial contact; no successful manipulation occ...
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 1: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 2: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 3: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 4: Score=  0.00 | Feedback=Hand froze after initial grasp; no further manipulation occurred....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 6: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 7: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate # 8: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate #10: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the video....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate #12: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - Candidate #13: Score=  0.00 | Feedback=No active manipulation occurred; the hand and object are motionless throughout t...
+[2025-12-13 22:27:40,068][root][INFO] - Candidate #15: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 22:27:40,068][root][INFO] - ================================================================================
+[2025-12-13 22:27:40,069][root][INFO] - ================================================================================
+[2025-12-13 22:27:40,069][root][INFO] - Generation 0: Training Results Ranking
+[2025-12-13 22:27:40,069][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 22:27:40,069][root][INFO] - Rank  1: Cand  0 | Phy   3.5763 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  2: Cand  4 | Phy   2.2046 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  3: Cand 15 | Phy   1.5289 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  4: Cand  3 | Phy   1.1464 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  5: Cand  6 | Phy   0.4239 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  6: Cand 12 | Phy   0.4172 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  7: Cand  2 | Phy   0.1476 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  8: Cand  1 | Phy   0.1156 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank  9: Cand 13 | Phy   0.0797 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank 10: Cand  8 | Phy   0.0736 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank 11: Cand  7 | Phy   0.0694 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank 12: Cand 10 | Phy   0.0491 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,069][root][INFO] - Rank 13: Cand 11 | Phy   0.0470 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,069][root][INFO] - Rank 14: Cand  9 | Phy   0.0456 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,069][root][INFO] - Rank 15: Cand  5 | Phy   0.0349 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,069][root][INFO] - Rank 16: Cand 14 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,070][root][INFO] - ================================================================================
+[2025-12-13 22:27:40,070][root][INFO] - Generation 0: Population Ranking (all candidates)
+[2025-12-13 22:27:40,070][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 22:27:40,070][root][INFO] - Rank  1: Cand  0 | Phy   3.5763 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  2: Cand  4 | Phy   2.2046 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  3: Cand 15 | Phy   1.5289 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  4: Cand  3 | Phy   1.1464 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  5: Cand  6 | Phy   0.4239 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  6: Cand 12 | Phy   0.4172 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  7: Cand  2 | Phy   0.1476 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  8: Cand  1 | Phy   0.1156 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank  9: Cand 13 | Phy   0.0797 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank 10: Cand  8 | Phy   0.0736 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank 11: Cand  7 | Phy   0.0694 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank 12: Cand 10 | Phy   0.0491 | Vis   0.0 | SkipVLM=False
+[2025-12-13 22:27:40,070][root][INFO] - Rank 13: Cand 11 | Phy   0.0470 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,070][root][INFO] - Rank 14: Cand  9 | Phy   0.0456 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,070][root][INFO] - Rank 15: Cand  5 | Phy   0.0349 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,070][root][INFO] - Rank 16: Cand 14 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-13 22:27:40,070][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 22:27:57,104][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:28:12,212][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:28:24,630][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:28:42,575][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:29:02,311][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:29:31,378][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:29:54,012][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:30:10,688][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 22:30:10,689][root][INFO] - Gen 1: Training 8 candidates...
+[2025-12-13 22:30:10,700][root][INFO] - Gen 1 Cand 0: Waiting for environment build to prevent race condition...
+[2025-12-13 22:30:24,022][root][INFO] - Gen 1 Cand 1: Waiting for environment build to prevent race condition...
+[2025-12-13 22:30:38,078][root][INFO] - Gen 1 Cand 2: Waiting for environment build to prevent race condition...
+[2025-12-13 22:30:51,596][root][INFO] - Gen 1 Cand 3: Waiting for environment build to prevent race condition...
+[2025-12-13 22:31:05,142][root][INFO] - Gen 1 Cand 4: Waiting for environment build to prevent race condition...
+[2025-12-13 22:31:20,579][root][INFO] - Gen 1 Cand 5: Waiting for environment build to prevent race condition...
+[2025-12-13 22:31:36,970][root][INFO] - Gen 1 Cand 6: Waiting for environment build to prevent race condition...
+[2025-12-13 22:31:52,091][root][INFO] - Gen 1 Cand 7: Waiting for environment build to prevent race condition...
+[2025-12-13 22:32:07,507][root][INFO] - Waiting for training...
+[2025-12-13 23:20:11,608][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-30-13/runs/ShadowHandQwen-2025-12-13_22-30-14/summaries/events.out.tfevents.1765636218.g0101
+[2025-12-13 23:31:17,481][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-30-26/runs/ShadowHandQwen-2025-12-13_22-30-27/summaries/events.out.tfevents.1765636232.g0101
+[2025-12-13 23:31:19,854][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-30-41/runs/ShadowHandQwen-2025-12-13_22-30-41/summaries/events.out.tfevents.1765636246.g0101
+[2025-12-13 23:31:22,299][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-30-54/runs/ShadowHandQwen-2025-12-13_22-30-55/summaries/events.out.tfevents.1765636260.g0101
+[2025-12-13 23:31:24,671][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-08/runs/ShadowHandQwen-2025-12-13_22-31-08/summaries/events.out.tfevents.1765636274.g0101
+[2025-12-13 23:31:33,498][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-23/runs/ShadowHandQwen-2025-12-13_22-31-24/summaries/events.out.tfevents.1765636289.g0101
+[2025-12-13 23:31:35,947][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-40/runs/ShadowHandQwen-2025-12-13_22-31-40/summaries/events.out.tfevents.1765636305.g0101
+[2025-12-13 23:31:38,419][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-55/runs/ShadowHandQwen-2025-12-13_22-31-55/summaries/events.out.tfevents.1765636321.g0101
+[2025-12-13 23:31:38,461][root][INFO] - Filter Complete: Keeping Top 6/8 (Ratio: 0.75)
+[2025-12-13 23:31:38,461][root][INFO] - Recording videos for survivors...
+[2025-12-13 23:31:38,462][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-30-26/runs/ShadowHandQwen-2025-12-13_22-30-27/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 23:32:23,519][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-31-41/videos/ShadowHandQwen_2025-12-13_23-31-42/rl-video-step-0.mp4
+[2025-12-13 23:32:23,521][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-30-54/runs/ShadowHandQwen-2025-12-13_22-30-55/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 23:33:18,587][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-32-26/videos/ShadowHandQwen_2025-12-13_23-32-27/rl-video-step-0.mp4
+[2025-12-13 23:33:18,588][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-08/runs/ShadowHandQwen-2025-12-13_22-31-08/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 23:34:13,656][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-33-21/videos/ShadowHandQwen_2025-12-13_23-33-21/rl-video-step-0.mp4
+[2025-12-13 23:34:13,657][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-23/runs/ShadowHandQwen-2025-12-13_22-31-24/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 23:35:08,722][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-34-16/videos/ShadowHandQwen_2025-12-13_23-34-17/rl-video-step-0.mp4
+[2025-12-13 23:35:08,724][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-40/runs/ShadowHandQwen-2025-12-13_22-31-40/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 23:36:03,794][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-35-11/videos/ShadowHandQwen_2025-12-13_23-35-12/rl-video-step-0.mp4
+[2025-12-13 23:36:03,796][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_22-31-55/runs/ShadowHandQwen-2025-12-13_22-31-55/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-13 23:36:58,858][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-36-06/videos/ShadowHandQwen_2025-12-13_23-36-07/rl-video-step-0.mp4
+[2025-12-13 23:36:58,859][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-13 23:36:58,860][root][INFO] - [VLM Evaluation #1] Starting evaluation for candidate 1
+[2025-12-13 23:36:58,860][root][INFO] - [VLM Evaluation #3] Starting evaluation for candidate 3
+[2025-12-13 23:36:58,860][root][INFO] - [VLM Evaluation #1] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen1_cand1/rl-video-step-0.mp4
+[2025-12-13 23:36:58,860][root][INFO] - [VLM Evaluation #4] Starting evaluation for candidate 4
+[2025-12-13 23:36:58,860][root][INFO] - [VLM Evaluation #3] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen1_cand3/rl-video-step-0.mp4
+[2025-12-13 23:36:58,861][root][INFO] - [VLM Evaluation #4] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen1_cand4/rl-video-step-0.mp4
+[2025-12-13 23:36:58,861][root][INFO] - [VLM Evaluation #5] Starting evaluation for candidate 5
+[2025-12-13 23:36:58,863][root][INFO] - [VLM Evaluation #6] Starting evaluation for candidate 6
+[2025-12-13 23:36:58,865][root][INFO] - [VLM Evaluation #5] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen1_cand5/rl-video-step-0.mp4
+[2025-12-13 23:36:58,866][root][INFO] - [VLM Evaluation #7] Starting evaluation for candidate 7
+[2025-12-13 23:36:58,866][root][INFO] - [VLM Evaluation #6] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen1_cand6/rl-video-step-0.mp4
+[2025-12-13 23:36:58,867][root][INFO] - [VLM Evaluation #7] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen1_cand7/rl-video-step-0.mp4
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or is stuck in an idle state, resulting in zero progress toward any goal.",
+  "what_went_right": "The object remains in contact with the fingers (no drop), but this is irrelevant due to the complete lack of motion."
+}
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The policy appears to have failed to activate or is stuck in an 
+[2025-12-13 23:37:06,541][root][INFO] - [VLM Evaluation #6] Completed - Score: 0.00
+[2025-12-13 23:37:06,542][root][INFO] - [VLM Evaluation #6] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 23:37:06,885][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 23:37:06,885][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 23:37:06,885][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 23:37:06,885][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 8.5 seconds, the blue cylindrical object slips from the hand's grip and falls away, violating the primary task constraint.
+[2025-12-13 23:37:06,886][root][INFO] - [VLM Evaluation] Qualitative Feedback: The hand initially manipulated the object but failed to maintain grasp, resulting in a complete drop.
+[2025-12-13 23:37:06,886][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The grip on the object was not maintained during manipulation; finger coordination or force control likely failed, leading to loss of contact and object drop.",
+  "what_went_right": "Initial grasping and partial rotation were executed successfully before failure occurred."
+}
+[2025-12-13 23:37:06,886][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 8.5 seconds, the blue cylindrical object slips from the hand's grip and falls away, violating the primary task constraint.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "The hand initially manipulated the object but failed to maintain grasp, resulting in a complete drop.",
+    "analysis_notes": {
+        "what_went_wrong": 
+[2025-12-13 23:37:06,886][root][INFO] - [VLM Evaluation #1] Completed - Score: 0.00
+[2025-12-13 23:37:06,886][root][INFO] - [VLM Evaluation #1] Result collected - Fitness Score: 0.00, Feedback: The hand initially manipulated the object but failed to maintain grasp, resulting in a complete drop...
+[2025-12-13 23:37:07,185][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 23:37:07,185][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 23:37:07,185][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 23:37:07,185][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0:06, the blue cylindrical object is visibly released and falls away from the hand, failing the primary task requirement.
+[2025-12-13 23:37:07,185][root][INFO] - [VLM Evaluation] Qualitative Feedback: The hand initially grasped the object but failed to maintain grip, resulting in a complete drop. No recovery attempt was observed.
+[2025-12-13 23:37:07,186][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand lost control of the object mid-task, indicating a failure in grip maintenance or force control policy. The object was not re-grasped after falling.",
+  "what_went_right": "Initial grasp was successful; fingers coordinated to close around the object at the start of the episode."
+}
+[2025-12-13 23:37:07,186][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0:06, the blue cylindrical object is visibly released and falls away from the hand, failing the primary task requirement.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "The hand initially grasped the object but failed to maintain grip, resulting in a complete drop. No recovery attempt was observed.",
+    "analysis_notes": {
+[2025-12-13 23:37:07,186][root][INFO] - [VLM Evaluation #5] Completed - Score: 0.00
+[2025-12-13 23:37:07,186][root][INFO] - [VLM Evaluation #5] Result collected - Fitness Score: 0.00, Feedback: The hand initially grasped the object but failed to maintain grip, resulting in a complete drop. No ...
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. No motion or adjustment is observed from 0.2s to 12.2s.
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation] Qualitative Feedback: Hand is frozen mid-grip; no progress toward goal.
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "Policy failed to generate any movement after initial grasp; hand remained motionless for entire duration.",
+  "what_went_right": "Object was initially grasped successfully and did not drop."
+}
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. No motion or adjustment is observed from 0.2s to 12.2s.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Hand is frozen mid-grip; no progress toward goal.",
+    "analysis_notes": {
+        "what_went_wrong": "Policy failed to generate any movement after initial grasp; hand remained motionless for entire dur
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation #4] Completed - Score: 0.00
+[2025-12-13 23:37:07,200][root][INFO] - [VLM Evaluation #4] Result collected - Fitness Score: 0.00, Feedback: Hand is frozen mid-grip; no progress toward goal....
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for a significant portion of the episode (from 0.5s to 12.2s), indicating policy failure.
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation] Qualitative Feedback: Hand motion initiates but freezes early; no further progress or adjustment observed.
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "After an initial attempt to grasp and rotate the object, the hand becomes entirely unresponsive for the remainder of the clip. This indicates a complete policy failure or control system halt.",
+  "what_went_right": "The hand successfully initiated contact with the object and began a controlled rotation in the first few frames, showing correct initial behavior."
+}
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for a significant portion of the episode (from 0.5s to 12.2s), indicating policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Hand motion initiates but freezes early; no further progress or adjustment observed.",
+    "analysis_notes": {
+        "what_went_wrong": "After an initial attempt to grasp and rotate the object, the hand becomes entirely unresponsive for
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation #7] Completed - Score: 0.00
+[2025-12-13 23:37:07,232][root][INFO] - [VLM Evaluation #7] Result collected - Fitness Score: 0.00, Feedback: Hand motion initiates but freezes early; no further progress or adjustment observed....
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation] Qualitative Feedback: No motion observed; hand and object are stationary throughout the simulation.
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with or rotate the object toward any target orientation.",
+  "what_went_right": "The object was initially grasped and remained in contact with the fingers without dropping, which avoids one critical failure condition. However, this is insufficient due to complete lack of motion."
+}
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for the entire duration of the episode, indicating a policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "No motion observed; hand and object are stationary throughout the simulation.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand did not execute any movement or manipulation. The fingers remained in a fixed position, failing to engage with
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation #3] Completed - Score: 0.00
+[2025-12-13 23:37:07,309][root][INFO] - [VLM Evaluation #3] Result collected - Fitness Score: 0.00, Feedback: No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 23:37:07,309][root][INFO] - ================================================================================
+[2025-12-13 23:37:07,309][root][INFO] - VLM Evaluation Summary:
+[2025-12-13 23:37:07,309][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 23:37:07,310][root][INFO] - Candidate # 1: Score=  0.00 | Feedback=The hand initially manipulated the object but failed to maintain grasp, resultin...
+[2025-12-13 23:37:07,310][root][INFO] - Candidate # 3: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 23:37:07,310][root][INFO] - Candidate # 4: Score=  0.00 | Feedback=Hand is frozen mid-grip; no progress toward goal....
+[2025-12-13 23:37:07,310][root][INFO] - Candidate # 5: Score=  0.00 | Feedback=The hand initially grasped the object but failed to maintain grip, resulting in ...
+[2025-12-13 23:37:07,310][root][INFO] - Candidate # 6: Score=  0.00 | Feedback=No motion observed; hand and object are stationary throughout the simulation....
+[2025-12-13 23:37:07,310][root][INFO] - Candidate # 7: Score=  0.00 | Feedback=Hand motion initiates but freezes early; no further progress or adjustment obser...
+[2025-12-13 23:37:07,310][root][INFO] - ================================================================================
+[2025-12-13 23:37:07,310][root][INFO] - ================================================================================
+[2025-12-13 23:37:07,310][root][INFO] - Generation 1: Training Results Ranking
+[2025-12-13 23:37:07,310][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 23:37:07,310][root][INFO] - Rank  1: Cand  1 | Phy   4.0722 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,310][root][INFO] - Rank  2: Cand  5 | Phy   3.3375 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,310][root][INFO] - Rank  3: Cand  7 | Phy   2.0665 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,310][root][INFO] - Rank  4: Cand  3 | Phy   0.3622 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,310][root][INFO] - Rank  5: Cand  6 | Phy   0.1994 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,310][root][INFO] - Rank  6: Cand  4 | Phy   0.1186 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,310][root][INFO] - Rank  7: Cand  2 | Phy   0.1169 | Vis   0.0 | SkipVLM=True
+[2025-12-13 23:37:07,310][root][INFO] - Rank  8: Cand  0 | Phy   0.0167 | Vis   0.0 | SkipVLM=True
+[2025-12-13 23:37:07,336][root][INFO] - ================================================================================
+[2025-12-13 23:37:07,336][root][INFO] - Generation 1: Population Ranking (all candidates)
+[2025-12-13 23:37:07,336][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 23:37:07,336][root][INFO] - Rank  1: Cand  1 | Phy   4.0722 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,336][root][INFO] - Rank  2: Cand  0 | Phy   3.5763 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,336][root][INFO] - Rank  3: Cand  5 | Phy   3.3375 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank  4: Cand  1 | Phy   2.2046 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank  5: Cand  7 | Phy   2.0665 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank  6: Cand  2 | Phy   1.5289 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank  7: Cand  3 | Phy   1.1464 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank  8: Cand  4 | Phy   0.4239 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank  9: Cand  5 | Phy   0.4172 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank 10: Cand  3 | Phy   0.3622 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank 11: Cand  6 | Phy   0.1994 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank 12: Cand  6 | Phy   0.1476 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank 13: Cand  4 | Phy   0.1186 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank 14: Cand  2 | Phy   0.1169 | Vis   0.0 | SkipVLM=True
+[2025-12-13 23:37:07,337][root][INFO] - Rank 15: Cand  7 | Phy   0.1156 | Vis   0.0 | SkipVLM=False
+[2025-12-13 23:37:07,337][root][INFO] - Rank 16: Cand  0 | Phy   0.0167 | Vis   0.0 | SkipVLM=True
+[2025-12-13 23:37:07,337][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-13 23:37:35,201][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:38:06,037][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:38:27,164][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:38:54,565][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:39:10,999][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:39:30,301][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:39:56,566][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:40:16,060][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-13 23:40:16,060][root][INFO] - Gen 2: Training 8 candidates...
+[2025-12-13 23:40:16,072][root][INFO] - Gen 2 Cand 0: Waiting for environment build to prevent race condition...
+[2025-12-13 23:40:29,682][root][INFO] - Gen 2 Cand 1: Waiting for environment build to prevent race condition...
+[2025-12-13 23:40:44,288][root][INFO] - Gen 2 Cand 2: Waiting for environment build to prevent race condition...
+[2025-12-13 23:40:58,048][root][INFO] - Gen 2 Cand 3: Waiting for environment build to prevent race condition...
+[2025-12-13 23:41:12,052][root][INFO] - Gen 2 Cand 4: Waiting for environment build to prevent race condition...
+[2025-12-13 23:41:27,053][root][INFO] - Gen 2 Cand 5: Waiting for environment build to prevent race condition...
+[2025-12-13 23:41:43,114][root][INFO] - Gen 2 Cand 6: Waiting for environment build to prevent race condition...
+[2025-12-13 23:41:58,527][root][INFO] - Gen 2 Cand 7: Waiting for environment build to prevent race condition...
+[2025-12-13 23:42:13,583][root][INFO] - Waiting for training...
+[2025-12-14 00:28:47,297][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-40-19/runs/ShadowHandQwen-2025-12-13_23-40-19/summaries/events.out.tfevents.1765640424.g0101
+[2025-12-14 00:40:51,542][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-40-32/runs/ShadowHandQwen-2025-12-13_23-40-33/summaries/events.out.tfevents.1765640438.g0101
+[2025-12-14 00:40:54,011][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-40-47/runs/ShadowHandQwen-2025-12-13_23-40-47/summaries/events.out.tfevents.1765640452.g0101
+[2025-12-14 00:40:56,533][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-41-01/runs/ShadowHandQwen-2025-12-13_23-41-01/summaries/events.out.tfevents.1765640466.g0101
+[2025-12-14 00:40:59,051][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-41-15/runs/ShadowHandQwen-2025-12-13_23-41-15/summaries/events.out.tfevents.1765640480.g0101
+[2025-12-14 00:41:01,546][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-41-30/runs/ShadowHandQwen-2025-12-13_23-41-30/summaries/events.out.tfevents.1765640496.g0101
+[2025-12-14 00:41:04,020][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-41-46/runs/ShadowHandQwen-2025-12-13_23-41-46/summaries/events.out.tfevents.1765640512.g0101
+[2025-12-14 00:41:06,535][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-42-01/runs/ShadowHandQwen-2025-12-13_23-42-01/summaries/events.out.tfevents.1765640527.g0101
+[2025-12-14 00:41:06,567][root][INFO] - Filter Complete: Keeping Top 6/8 (Ratio: 0.75)
+[2025-12-14 00:41:06,567][root][INFO] - Recording videos for survivors...
+[2025-12-14 00:41:06,568][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-40-19/runs/ShadowHandQwen-2025-12-13_23-40-19/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 00:42:01,642][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-41-09/videos/ShadowHandQwen_2025-12-14_00-41-10/rl-video-step-0.mp4
+[2025-12-14 00:42:01,644][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-40-32/runs/ShadowHandQwen-2025-12-13_23-40-33/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 00:42:56,720][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-42-04/videos/ShadowHandQwen_2025-12-14_00-42-05/rl-video-step-0.mp4
+[2025-12-14 00:42:56,721][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-40-47/runs/ShadowHandQwen-2025-12-13_23-40-47/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 00:43:51,793][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-43-00/videos/ShadowHandQwen_2025-12-14_00-43-00/rl-video-step-0.mp4
+[2025-12-14 00:43:51,794][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-41-01/runs/ShadowHandQwen-2025-12-13_23-41-01/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 00:44:26,843][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-43-55/videos/ShadowHandQwen_2025-12-14_00-43-55/rl-video-step-0.mp4
+[2025-12-14 00:44:26,844][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-41-46/runs/ShadowHandQwen-2025-12-13_23-41-46/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 00:45:21,915][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-44-29/videos/ShadowHandQwen_2025-12-14_00-44-30/rl-video-step-0.mp4
+[2025-12-14 00:45:21,916][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-13_23-42-01/runs/ShadowHandQwen-2025-12-13_23-42-01/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 00:46:16,991][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-45-25/videos/ShadowHandQwen_2025-12-14_00-45-25/rl-video-step-0.mp4
+[2025-12-14 00:46:16,992][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-14 00:46:16,993][root][INFO] - [VLM Evaluation #0] Starting evaluation for candidate 0
+[2025-12-14 00:46:16,993][root][INFO] - [VLM Evaluation #0] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen2_cand0/rl-video-step-0.mp4
+[2025-12-14 00:46:16,993][root][INFO] - [VLM Evaluation #1] Starting evaluation for candidate 1
+[2025-12-14 00:46:16,994][root][INFO] - [VLM Evaluation #2] Starting evaluation for candidate 2
+[2025-12-14 00:46:16,995][root][INFO] - [VLM Evaluation #1] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen2_cand1/rl-video-step-0.mp4
+[2025-12-14 00:46:16,995][root][INFO] - [VLM Evaluation #2] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen2_cand2/rl-video-step-0.mp4
+[2025-12-14 00:46:16,995][root][INFO] - [VLM Evaluation #3] Starting evaluation for candidate 3
+[2025-12-14 00:46:16,996][root][INFO] - [VLM Evaluation #6] Starting evaluation for candidate 6
+[2025-12-14 00:46:16,999][root][INFO] - [VLM Evaluation #3] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen2_cand3/rl-video-step-0.mp4
+[2025-12-14 00:46:16,999][root][INFO] - [VLM Evaluation #7] Starting evaluation for candidate 7
+[2025-12-14 00:46:17,000][root][INFO] - [VLM Evaluation #6] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen2_cand6/rl-video-step-0.mp4
+[2025-12-14 00:46:17,001][root][INFO] - [VLM Evaluation #7] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen2_cand7/rl-video-step-0.mp4
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers at approximately 11.9 seconds.
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation] Qualitative Feedback: The hand initially manipulates the object but fails to maintain grip, resulting in a drop.
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand lost control of the object during rotation, leading to a complete loss of contact and a drop. This constitutes a critical failure per task rules.",
+  "what_went_right": "The hand demonstrated initial coordination and attempted controlled rotation before the failure occurred."
+}
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers at approximately 11.9 seconds.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "The hand initially manipulates the object but fails to maintain grip, resulting in a drop.",
+    "analysis_notes": {
+        "what_went_wrong": "The robotic hand lost control of the object during rotation, leading to a complete loss of contact and a drop. This cons
+[2025-12-14 00:46:24,796][root][INFO] - [VLM Evaluation #1] Completed - Score: 0.00
+[2025-12-14 00:46:24,797][root][INFO] - [VLM Evaluation #1] Result collected - Fitness Score: 0.00, Feedback: The hand initially manipulates the object but fails to maintain grip, resulting in a drop....
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At 0.1s, the hand is holding one blue cylinder, but by 0.2s, that cylinder has fallen away and is lying on the ground, failing the primary task requirement.
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation] Qualitative Feedback: Object dropped immediately at start; no recovery attempted.
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand failed to maintain grip on the object from the very beginning of the episode. The object was released or slipped out of the fingers within the first 0.1 seconds, violating the core constraint of continuous contact.",
+  "what_went_right": "None — the failure occurred instantly and catastrophically, preventing any meaningful evaluation of motion quality or goal progress."
+}
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At 0.1s, the hand is holding one blue cylinder, but by 0.2s, that cylinder has fallen away and is lying on the ground, failing the primary task requirement.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Object dropped immediately at start; no recovery attempted.",
+    "analysis_notes": {
+        "what_went_wrong": "The hand failed to maint
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation #6] Completed - Score: 0.00
+[2025-12-14 00:46:25,897][root][INFO] - [VLM Evaluation #6] Result collected - Fitness Score: 0.00, Feedback: Object dropped immediately at start; no recovery attempted....
+[2025-12-14 00:46:25,979][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 00:46:25,979][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 00:46:25,979][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 00:46:25,979][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0.5 seconds, the blue cylindrical object slips from the hand's grasp and falls away, failing the primary task requirement.
+[2025-12-14 00:46:25,979][root][INFO] - [VLM Evaluation] Qualitative Feedback: Object dropped immediately after initial manipulation attempt; no recovery or continued control observed.
+[2025-12-14 00:46:25,979][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand failed to maintain grip on the object during the initial rotation attempt, causing it to slip and fall out of the workspace. This indicates insufficient friction modeling, poor finger coordination, or inadequate force control in the policy.",
+  "what_went_right": "None — the failure occurred within the first second, preventing any meaningful progress toward the goal."
+}
+[2025-12-14 00:46:25,979][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0.5 seconds, the blue cylindrical object slips from the hand's grasp and falls away, failing the primary task requirement.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Object dropped immediately after initial manipulation attempt; no recovery or continued control observed.",
+    "analysis_notes": {
+        "what_went_wron
+[2025-12-14 00:46:25,980][root][INFO] - [VLM Evaluation #2] Completed - Score: 0.00
+[2025-12-14 00:46:25,980][root][INFO] - [VLM Evaluation #2] Result collected - Fitness Score: 0.00, Feedback: Object dropped immediately after initial manipulation attempt; no recovery or continued control obse...
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for a significant portion of the episode (from 0.5s to 12.2s), indicating policy failure.
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation] Qualitative Feedback: Hand froze mid-task after initial motion; no further progress or recovery observed.
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "After an initial attempt to grasp and rotate the object, the hand became completely immobile for the remainder of the video. This indicates a policy crash, control loop failure, or simulation hang. No recovery or adjustment occurred despite the object being only partially rotated.",
+  "what_went_right": "The hand successfully initiated contact with the object and performed a brief, coordinated rotation at the start (0.1s-0.5s), demonstrating correct initial grasping mechanics."
+}
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for a significant portion of the episode (from 0.5s to 12.2s), indicating policy failure.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Hand froze mid-task after initial motion; no further progress or recovery observed.",
+    "analysis_notes": {
+        "what_went_wrong": "After an initial attempt to grasp and rotate the object, the hand became completely immobile for the
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation #7] Completed - Score: 0.00
+[2025-12-14 00:46:26,135][root][INFO] - [VLM Evaluation #7] Result collected - Fitness Score: 0.00, Feedback: Hand froze mid-task after initial motion; no further progress or recovery observed....
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At 0.1s, the hand is attempting to grasp the blue cylinder, but by 0.2s, the object has slipped and is falling away from the hand. The hand remains open and does not recover the object for the remainder of the clip.
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation] Qualitative Feedback: Complete failure: object dropped immediately after initial contact and not recovered.
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand failed to establish or maintain a stable grip on the cylindrical object. The object slipped out of the grasp within the first 0.1 seconds and fell without any corrective action from the hand.",
+  "what_went_right": "None. The task was not completed due to immediate critical failure."
+}
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At 0.1s, the hand is attempting to grasp the blue cylinder, but by 0.2s, the object has slipped and is falling away from the hand. The hand remains open and does not recover the object for the remainder of the clip.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Complete failure: object dropped immediately after initial contact and not reco
+[2025-12-14 00:46:26,352][root][INFO] - [VLM Evaluation #0] Completed - Score: 0.00
+[2025-12-14 00:46:26,353][root][INFO] - [VLM Evaluation #0] Result collected - Fitness Score: 0.00, Feedback: Complete failure: object dropped immediately after initial contact and not recovered....
+[2025-12-14 00:46:27,267][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 3.0 seconds, the blue cylindrical object slips out of the hand's grasp and falls onto the surface below, losing all contact with the fingers for the remainder of the clip.
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation] Qualitative Feedback: The hand initially grasps the object but fails to maintain control, resulting in a complete drop.
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The grip on the object was insufficient to counteract rotational forces or gravity during manipulation, leading to a catastrophic failure where the object fell completely out of the hand.",
+  "what_went_right": "The initial grasp was successful, and finger movements were initiated toward rotation before the failure occurred."
+}
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 3.0 seconds, the blue cylindrical object slips out of the hand's grasp and falls onto the surface below, losing all contact with the fingers for the remainder of the clip.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "The hand initially grasps the object but fails to maintain control, resulting in a complete drop.",
+    "a
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation #3] Completed - Score: 0.00
+[2025-12-14 00:46:27,268][root][INFO] - [VLM Evaluation #3] Result collected - Fitness Score: 0.00, Feedback: The hand initially grasps the object but fails to maintain control, resulting in a complete drop....
+[2025-12-14 00:46:27,268][root][INFO] - ================================================================================
+[2025-12-14 00:46:27,268][root][INFO] - VLM Evaluation Summary:
+[2025-12-14 00:46:27,268][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 00:46:27,268][root][INFO] - Candidate # 0: Score=  0.00 | Feedback=Complete failure: object dropped immediately after initial contact and not recov...
+[2025-12-14 00:46:27,268][root][INFO] - Candidate # 1: Score=  0.00 | Feedback=The hand initially manipulates the object but fails to maintain grip, resulting ...
+[2025-12-14 00:46:27,268][root][INFO] - Candidate # 2: Score=  0.00 | Feedback=Object dropped immediately after initial manipulation attempt; no recovery or co...
+[2025-12-14 00:46:27,268][root][INFO] - Candidate # 3: Score=  0.00 | Feedback=The hand initially grasps the object but fails to maintain control, resulting in...
+[2025-12-14 00:46:27,268][root][INFO] - Candidate # 6: Score=  0.00 | Feedback=Object dropped immediately at start; no recovery attempted....
+[2025-12-14 00:46:27,268][root][INFO] - Candidate # 7: Score=  0.00 | Feedback=Hand froze mid-task after initial motion; no further progress or recovery observ...
+[2025-12-14 00:46:27,269][root][INFO] - ================================================================================
+[2025-12-14 00:46:27,269][root][INFO] - ================================================================================
+[2025-12-14 00:46:27,269][root][INFO] - Generation 2: Training Results Ranking
+[2025-12-14 00:46:27,269][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 00:46:27,269][root][INFO] - Rank  1: Cand  3 | Phy   4.7147 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,269][root][INFO] - Rank  2: Cand  7 | Phy   4.2925 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,269][root][INFO] - Rank  3: Cand  1 | Phy   3.7691 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,269][root][INFO] - Rank  4: Cand  6 | Phy   3.6687 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,269][root][INFO] - Rank  5: Cand  0 | Phy   2.9460 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,269][root][INFO] - Rank  6: Cand  2 | Phy   0.9117 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,269][root][INFO] - Rank  7: Cand  5 | Phy   0.1934 | Vis   0.0 | SkipVLM=True
+[2025-12-14 00:46:27,269][root][INFO] - Rank  8: Cand  4 | Phy   0.1065 | Vis   0.0 | SkipVLM=True
+[2025-12-14 00:46:27,300][root][INFO] - ================================================================================
+[2025-12-14 00:46:27,301][root][INFO] - Generation 2: Population Ranking (all candidates)
+[2025-12-14 00:46:27,301][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 00:46:27,301][root][INFO] - Rank  1: Cand  3 | Phy   4.7147 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  2: Cand  7 | Phy   4.2925 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  3: Cand  0 | Phy   4.0722 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  4: Cand  1 | Phy   3.7691 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  5: Cand  6 | Phy   3.6687 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  6: Cand  1 | Phy   3.5763 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  7: Cand  2 | Phy   3.3375 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  8: Cand  0 | Phy   2.9460 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank  9: Cand  3 | Phy   2.2046 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank 10: Cand  4 | Phy   2.0665 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank 11: Cand  5 | Phy   1.5289 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank 12: Cand  6 | Phy   1.1464 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank 13: Cand  2 | Phy   0.9117 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank 14: Cand  7 | Phy   0.4239 | Vis   0.0 | SkipVLM=False
+[2025-12-14 00:46:27,301][root][INFO] - Rank 15: Cand  5 | Phy   0.1934 | Vis   0.0 | SkipVLM=True
+[2025-12-14 00:46:27,301][root][INFO] - Rank 16: Cand  4 | Phy   0.1065 | Vis   0.0 | SkipVLM=True
+[2025-12-14 00:46:27,301][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 00:46:51,245][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:47:38,163][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:48:03,932][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:48:34,782][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:48:48,157][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:49:18,814][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:49:42,532][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:49:58,410][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 00:49:58,411][root][INFO] - Gen 3: Training 8 candidates...
+[2025-12-14 00:49:58,423][root][INFO] - Gen 3 Cand 0: Waiting for environment build to prevent race condition...
+[2025-12-14 00:50:12,314][root][ERROR] - Launch failed for cand 1: invalid syntax (<unknown>, line 8)
+[2025-12-14 00:50:12,328][root][INFO] - Gen 3 Cand 2: Waiting for environment build to prevent race condition...
+[2025-12-14 00:50:26,032][root][INFO] - Gen 3 Cand 3: Waiting for environment build to prevent race condition...
+[2025-12-14 00:50:40,043][root][INFO] - Gen 3 Cand 4: Waiting for environment build to prevent race condition...
+[2025-12-14 00:50:55,080][root][INFO] - Gen 3 Cand 5: Waiting for environment build to prevent race condition...
+[2025-12-14 00:51:09,619][root][INFO] - Gen 3 Cand 6: Waiting for environment build to prevent race condition...
+[2025-12-14 00:51:25,092][root][INFO] - Gen 3 Cand 7: Waiting for environment build to prevent race condition...
+[2025-12-14 00:51:40,379][root][INFO] - Waiting for training...
+[2025-12-14 01:41:59,284][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-50-01/runs/ShadowHandQwen-2025-12-14_00-50-01/summaries/events.out.tfevents.1765644606.g0101
+[2025-12-14 01:42:01,923][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-50-15/runs/ShadowHandQwen-2025-12-14_00-50-15/summaries/events.out.tfevents.1765644620.g0101
+[2025-12-14 01:42:04,564][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-50-29/runs/ShadowHandQwen-2025-12-14_00-50-29/summaries/events.out.tfevents.1765644634.g0101
+[2025-12-14 01:42:07,124][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-50-43/runs/ShadowHandQwen-2025-12-14_00-50-43/summaries/events.out.tfevents.1765644648.g0101
+[2025-12-14 01:42:09,695][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-50-58/runs/ShadowHandQwen-2025-12-14_00-50-58/summaries/events.out.tfevents.1765644663.g0101
+[2025-12-14 01:42:31,325][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-51-12/runs/ShadowHandQwen-2025-12-14_00-51-13/summaries/events.out.tfevents.1765644678.g0101
+[2025-12-14 01:42:52,200][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-51-28/runs/ShadowHandQwen-2025-12-14_00-51-28/summaries/events.out.tfevents.1765644694.g0101
+[2025-12-14 01:42:52,234][root][INFO] - Filter Complete: Keeping Top 3/7 (Ratio: 0.5)
+[2025-12-14 01:42:52,234][root][INFO] - Recording videos for survivors...
+[2025-12-14 01:42:52,234][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-50-15/runs/ShadowHandQwen-2025-12-14_00-50-15/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 01:43:47,307][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-42-55/videos/ShadowHandQwen_2025-12-14_01-42-55/rl-video-step-0.mp4
+[2025-12-14 01:43:47,308][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-51-12/runs/ShadowHandQwen-2025-12-14_00-51-13/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 01:44:42,383][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-43-50/videos/ShadowHandQwen_2025-12-14_01-43-50/rl-video-step-0.mp4
+[2025-12-14 01:44:42,385][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_00-51-28/runs/ShadowHandQwen-2025-12-14_00-51-28/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 01:45:37,466][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-44-45/videos/ShadowHandQwen_2025-12-14_01-44-45/rl-video-step-0.mp4
+[2025-12-14 01:45:37,467][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-14 01:45:37,467][root][INFO] - [VLM Evaluation #2] Starting evaluation for candidate 2
+[2025-12-14 01:45:37,468][root][INFO] - [VLM Evaluation #6] Starting evaluation for candidate 6
+[2025-12-14 01:45:37,468][root][INFO] - [VLM Evaluation #2] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen3_cand2/rl-video-step-0.mp4
+[2025-12-14 01:45:37,468][root][INFO] - [VLM Evaluation #6] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen3_cand6/rl-video-step-0.mp4
+[2025-12-14 01:45:37,468][root][INFO] - [VLM Evaluation #7] Starting evaluation for candidate 7
+[2025-12-14 01:45:37,470][root][INFO] - [VLM Evaluation #7] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen3_cand7/rl-video-step-0.mp4
+[2025-12-14 01:45:45,329][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 01:45:45,329][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 01:45:45,329][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 01:45:45,329][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers at approximately 0.2 seconds and remains on the ground for the rest of the episode.
+[2025-12-14 01:45:45,329][root][INFO] - [VLM Evaluation] Qualitative Feedback: The hand failed to maintain grip on the object, which fell immediately and was not recovered.
+[2025-12-14 01:45:45,330][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand lost control of the object within the first 0.2 seconds, indicating a failure in grasp stability or policy execution. The hand remained idle afterward, showing no attempt to recover the object.",
+  "what_went_right": "No positive behavior observed; the task was not completed due to immediate critical failure."
+}
+[2025-12-14 01:45:45,330][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers at approximately 0.2 seconds and remains on the ground for the rest of the episode.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "The hand failed to maintain grip on the object, which fell immediately and was not recovered.",
+    "analysis_notes": {
+        "what_went_wrong": "The hand lost control of the object within the first 0.2 seconds
+[2025-12-14 01:45:45,330][root][INFO] - [VLM Evaluation #7] Completed - Score: 0.00
+[2025-12-14 01:45:45,330][root][INFO] - [VLM Evaluation #7] Result collected - Fitness Score: 0.00, Feedback: The hand failed to maintain grip on the object, which fell immediately and was not recovered....
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0.5 seconds, the blue cylindrical object is seen falling away from the hand and remains on the ground for the rest of the episode, indicating a complete loss of grasp.
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation] Qualitative Feedback: Object dropped immediately after initial grasp attempt; no recovery or continued manipulation observed.
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand failed to maintain grip on the object, resulting in an immediate drop. This indicates a fundamental failure in grasp stability or control policy execution.",
+  "what_went_right": "Initial contact was made with the object, suggesting correct targeting or approach behavior before the failure occurred."
+}
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At approximately 0.5 seconds, the blue cylindrical object is seen falling away from the hand and remains on the ground for the rest of the episode, indicating a complete loss of grasp.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Object dropped immediately after initial grasp attempt; no recovery or continued manipulation observed.",
+    
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation #6] Completed - Score: 0.00
+[2025-12-14 01:45:45,561][root][INFO] - [VLM Evaluation #6] Result collected - Fitness Score: 0.00, Feedback: Object dropped immediately after initial grasp attempt; no recovery or continued manipulation observ...
+[2025-12-14 01:45:46,001][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 01:45:46,001][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 01:45:46,001][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 01:45:46,001][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At multiple points, such as 0.5s, 2.8s, and 6.1s, the blue cylindrical object is visibly airborne or resting on the surface, completely detached from the hand's grip.
+[2025-12-14 01:45:46,001][root][INFO] - [VLM Evaluation] Qualitative Feedback: Complete failure to maintain grasp; object repeatedly dropped and lost control.
+[2025-12-14 01:45:46,002][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The policy failed to generate a stable grasp. The fingers opened too wide or moved asynchronously, causing the object to slip out of the hand entirely. This indicates a fundamental failure in the control strategy for maintaining contact.",
+  "what_went_right": "None. The task objective of manipulating the object without dropping it was not met at any point."
+}
+[2025-12-14 01:45:46,002][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At multiple points, such as 0.5s, 2.8s, and 6.1s, the blue cylindrical object is visibly airborne or resting on the surface, completely detached from the hand's grip.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Complete failure to maintain grasp; object repeatedly dropped and lost control.",
+    "analysis_notes": {
+        "what_went_wro
+[2025-12-14 01:45:46,002][root][INFO] - [VLM Evaluation #2] Completed - Score: 0.00
+[2025-12-14 01:45:46,002][root][INFO] - [VLM Evaluation #2] Result collected - Fitness Score: 0.00, Feedback: Complete failure to maintain grasp; object repeatedly dropped and lost control....
+[2025-12-14 01:45:46,002][root][INFO] - ================================================================================
+[2025-12-14 01:45:46,002][root][INFO] - VLM Evaluation Summary:
+[2025-12-14 01:45:46,002][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 01:45:46,002][root][INFO] - Candidate # 2: Score=  0.00 | Feedback=Complete failure to maintain grasp; object repeatedly dropped and lost control....
+[2025-12-14 01:45:46,002][root][INFO] - Candidate # 6: Score=  0.00 | Feedback=Object dropped immediately after initial grasp attempt; no recovery or continued...
+[2025-12-14 01:45:46,002][root][INFO] - Candidate # 7: Score=  0.00 | Feedback=The hand failed to maintain grip on the object, which fell immediately and was n...
+[2025-12-14 01:45:46,002][root][INFO] - ================================================================================
+[2025-12-14 01:45:46,002][root][INFO] - ================================================================================
+[2025-12-14 01:45:46,002][root][INFO] - Generation 3: Training Results Ranking
+[2025-12-14 01:45:46,002][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 01:45:46,003][root][INFO] - Rank  1: Cand  7 | Phy   6.2792 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,003][root][INFO] - Rank  2: Cand  6 | Phy   5.5131 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,003][root][INFO] - Rank  3: Cand  2 | Phy   3.8789 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,003][root][INFO] - Rank  4: Cand  5 | Phy   3.8027 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,003][root][INFO] - Rank  5: Cand  0 | Phy   3.1523 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,003][root][INFO] - Rank  6: Cand  3 | Phy   2.3263 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,003][root][INFO] - Rank  7: Cand  4 | Phy   0.0308 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,003][root][INFO] - Rank  8: Cand  1 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,038][root][INFO] - ================================================================================
+[2025-12-14 01:45:46,038][root][INFO] - Generation 3: Population Ranking (all candidates)
+[2025-12-14 01:45:46,038][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 01:45:46,038][root][INFO] - Rank  1: Cand  7 | Phy   6.2792 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank  2: Cand  6 | Phy   5.5131 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank  3: Cand  0 | Phy   4.7147 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank  4: Cand  1 | Phy   4.2925 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank  5: Cand  2 | Phy   4.0722 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank  6: Cand  2 | Phy   3.8789 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank  7: Cand  5 | Phy   3.8027 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,038][root][INFO] - Rank  8: Cand  3 | Phy   3.7691 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank  9: Cand  4 | Phy   3.6687 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank 10: Cand  5 | Phy   3.5763 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank 11: Cand  6 | Phy   3.3375 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank 12: Cand  0 | Phy   3.1523 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,038][root][INFO] - Rank 13: Cand  7 | Phy   2.9460 | Vis   0.0 | SkipVLM=False
+[2025-12-14 01:45:46,038][root][INFO] - Rank 14: Cand  3 | Phy   2.3263 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,038][root][INFO] - Rank 15: Cand  4 | Phy   0.0308 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,038][root][INFO] - Rank 16: Cand  1 | Phy   0.0000 | Vis   0.0 | SkipVLM=True
+[2025-12-14 01:45:46,038][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 01:46:12,985][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:46:41,270][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:47:05,354][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:47:20,762][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:47:49,505][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:48:26,216][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:48:52,957][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:49:15,597][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-14 01:49:15,598][root][INFO] - Gen 4: Training 8 candidates...
+[2025-12-14 01:49:15,610][root][INFO] - Gen 4 Cand 0: Waiting for environment build to prevent race condition...
+[2025-12-14 01:49:29,460][root][INFO] - Gen 4 Cand 1: Waiting for environment build to prevent race condition...
+[2025-12-14 01:49:43,818][root][INFO] - Gen 4 Cand 2: Waiting for environment build to prevent race condition...
+[2025-12-14 01:49:57,726][root][INFO] - Gen 4 Cand 3: Waiting for environment build to prevent race condition...
+[2025-12-14 01:50:11,655][root][INFO] - Gen 4 Cand 4: Waiting for environment build to prevent race condition...
+[2025-12-14 01:50:27,253][root][INFO] - Gen 4 Cand 5: Waiting for environment build to prevent race condition...
+[2025-12-14 01:50:43,933][root][INFO] - Gen 4 Cand 6: Waiting for environment build to prevent race condition...
+[2025-12-14 01:50:59,959][root][INFO] - Gen 4 Cand 7: Waiting for environment build to prevent race condition...
+[2025-12-14 01:51:15,313][root][INFO] - Waiting for training...
+[2025-12-14 02:40:22,156][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-49-18/runs/ShadowHandQwen-2025-12-14_01-49-18/summaries/events.out.tfevents.1765648164.g0101
+[2025-12-14 02:49:06,925][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-49-32/runs/ShadowHandQwen-2025-12-14_01-49-32/summaries/events.out.tfevents.1765648178.g0101
+[2025-12-14 02:49:09,392][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-49-46/runs/ShadowHandQwen-2025-12-14_01-49-47/summaries/events.out.tfevents.1765648192.g0101
+[2025-12-14 02:49:11,801][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-50-00/runs/ShadowHandQwen-2025-12-14_01-50-01/summaries/events.out.tfevents.1765648206.g0101
+[2025-12-14 02:49:14,421][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-50-14/runs/ShadowHandQwen-2025-12-14_01-50-15/summaries/events.out.tfevents.1765648220.g0101
+[2025-12-14 02:49:16,987][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-50-30/runs/ShadowHandQwen-2025-12-14_01-50-30/summaries/events.out.tfevents.1765648236.g0101
+[2025-12-14 02:49:19,717][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-50-47/runs/ShadowHandQwen-2025-12-14_01-50-47/summaries/events.out.tfevents.1765648253.g0101
+[2025-12-14 02:49:22,291][tensorboard][INFO] - No path found after /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-51-03/runs/ShadowHandQwen-2025-12-14_01-51-03/summaries/events.out.tfevents.1765648268.g0101
+[2025-12-14 02:49:22,325][root][INFO] - Filter Complete: Keeping Top 4/8 (Ratio: 0.5)
+[2025-12-14 02:49:22,325][root][INFO] - Recording videos for survivors...
+[2025-12-14 02:49:22,326][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-49-32/runs/ShadowHandQwen-2025-12-14_01-49-32/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 02:49:52,381][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_02-49-25/videos/ShadowHandQwen_2025-12-14_02-49-25/rl-video-step-0.mp4
+[2025-12-14 02:49:52,383][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-49-46/runs/ShadowHandQwen-2025-12-14_01-49-47/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 02:50:47,457][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_02-49-55/videos/ShadowHandQwen_2025-12-14_02-49-55/rl-video-step-0.mp4
+[2025-12-14 02:50:47,459][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-50-00/runs/ShadowHandQwen-2025-12-14_01-50-01/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 02:51:17,516][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_02-50-50/videos/ShadowHandQwen_2025-12-14_02-50-51/rl-video-step-0.mp4
+[2025-12-14 02:51:17,517][root][INFO] - Recording rollout video for checkpoint: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_01-50-14/runs/ShadowHandQwen-2025-12-14_01-50-15/nn/last_ShadowHandQwen_ep_3000.pth
+[2025-12-14 02:52:12,592][root][INFO] - Video successfully recorded: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/policy-2025-12-14_02-51-20/videos/ShadowHandQwen_2025-12-14_02-51-21/rl-video-step-0.mp4
+[2025-12-14 02:52:12,593][root][INFO] - Starting VLM Evaluation (DashScope sampling at 10 FPS)...
+[2025-12-14 02:52:12,593][root][INFO] - [VLM Evaluation #1] Starting evaluation for candidate 1
+[2025-12-14 02:52:12,593][root][INFO] - [VLM Evaluation #1] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen4_cand1/rl-video-step-0.mp4
+[2025-12-14 02:52:12,593][root][INFO] - [VLM Evaluation #2] Starting evaluation for candidate 2
+[2025-12-14 02:52:12,594][root][INFO] - [VLM Evaluation #3] Starting evaluation for candidate 3
+[2025-12-14 02:52:12,594][root][INFO] - [VLM Evaluation #2] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen4_cand2/rl-video-step-0.mp4
+[2025-12-14 02:52:12,595][root][INFO] - [VLM Evaluation #4] Starting evaluation for candidate 4
+[2025-12-14 02:52:12,595][root][INFO] - [VLM Evaluation #3] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen4_cand3/rl-video-step-0.mp4
+[2025-12-14 02:52:12,596][root][INFO] - [VLM Evaluation #4] Video path: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-13_20-25-50/gen4_cand4/rl-video-step-0.mp4
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers at approximately 4.5 seconds.
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation] Qualitative Feedback: The hand initially rotates the object but fails to maintain grip, resulting in the object falling.
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand lost grasp of the object during rotation, indicating insufficient finger coordination or grip force control.",
+  "what_went_right": "Initial rotation was performed with coordinated finger motion, showing potential for controlled manipulation before failure."
+}
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers at approximately 4.5 seconds.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "The hand initially rotates the object but fails to maintain grip, resulting in the object falling.",
+    "analysis_notes": {
+        "what_went_wrong": "The hand lost grasp of the object during rotation, indicating insufficient finger coordination or grip force cont
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation #3] Completed - Score: 0.00
+[2025-12-14 02:52:20,397][root][INFO] - [VLM Evaluation #3] Result collected - Fitness Score: 0.00, Feedback: The hand initially rotates the object but fails to maintain grip, resulting in the object falling....
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation] Failure Reason: The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. The fingers show no coordinated movement to manipulate the object after initial contact, and the object does not rotate toward any target orientation.
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation] Qualitative Feedback: Hand failed to execute any meaningful manipulation; object remained stationary after initial grasp attempt.
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The policy failed to generate any active finger motion after initial contact. The hand froze in place, showing no progression toward rotating or reorienting the object. This indicates a complete breakdown in motor control or policy execution.",
+  "what_went_right": "The hand successfully made initial contact with the object without dropping it, which is the only positive aspect observed."
+}
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The robot hand remains completely static or frozen for a significant portion of the episode, indicating policy failure. The fingers show no coordinated movement to manipulate the object after initial contact, and the object does not rotate toward any target orientation.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Hand failed to execute any meaningful manipulation; object remained stationary after initial grasp attempt."
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation #4] Completed - Score: 0.00
+[2025-12-14 02:52:20,857][root][INFO] - [VLM Evaluation #4] Result collected - Fitness Score: 0.00, Feedback: Hand failed to execute any meaningful manipulation; object remained stationary after initial grasp a...
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At multiple points, such as 0.5s, 2.5s, and 7.5s, the blue cylindrical object is visibly floating or falling away from the hand without being grasped, violating the critical failure condition.
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation] Qualitative Feedback: Object repeatedly lost during manipulation; hand fails to maintain grip.
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The robotic hand consistently fails to maintain contact with the object. The policy appears unable to coordinate finger forces to secure the object during rotation attempts, resulting in repeated drops. This indicates a fundamental control or grasp stability failure.",
+  "what_went_right": "The hand exhibits active motion and attempts to re-grasp the object after drops, showing some level of reactive behavior. However, this is insufficient to meet the basic requirement of continuous contact."
+}
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At multiple points, such as 0.5s, 2.5s, and 7.5s, the blue cylindrical object is visibly floating or falling away from the hand without being grasped, violating the critical failure condition.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Object repeatedly lost during manipulation; hand fails to maintain grip.",
+    "analysis_notes": {
+   
+[2025-12-14 02:52:21,556][root][INFO] - [VLM Evaluation #2] Completed - Score: 0.00
+[2025-12-14 02:52:21,557][root][INFO] - [VLM Evaluation #2] Result collected - Fitness Score: 0.00, Feedback: Object repeatedly lost during manipulation; hand fails to maintain grip....
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation] Video: rl-video-step-0.mp4
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation] Fitness Score: 0.00
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation] Critical Failure Detected: True
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation] Failure Reason: The object drops from the Shadow Hand and is no longer in contact with the fingers. At 0.1s, the hand is holding the object, but by 0.2s it has already slipped out of grasp and is airborne, failing to maintain contact for the remainder of the clip.
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation] Qualitative Feedback: Complete failure to maintain grip; object immediately slips and falls.
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation] Analysis Notes: {
+  "what_went_wrong": "The hand failed to establish or maintain a stable grip on the cylindrical object. The object was released almost immediately after the trial began, indicating either insufficient finger force, poor initial contact, or policy instability.",
+  "what_went_right": "None — the task was not executed successfully even for a brief moment without failure."
+}
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation] Raw Response (first 500 chars): {
+    "critical_failure_detected": true,
+    "failure_reason": "The object drops from the Shadow Hand and is no longer in contact with the fingers. At 0.1s, the hand is holding the object, but by 0.2s it has already slipped out of grasp and is airborne, failing to maintain contact for the remainder of the clip.",
+    "fitness_score": 0.0,
+    "qualitative_feedback": "Complete failure to maintain grip; object immediately slips and falls.",
+    "analysis_notes": {
+        "what_went_wrong": "The h
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation #1] Completed - Score: 0.00
+[2025-12-14 02:54:36,345][root][INFO] - [VLM Evaluation #1] Result collected - Fitness Score: 0.00, Feedback: Complete failure to maintain grip; object immediately slips and falls....
+[2025-12-14 02:54:36,346][root][INFO] - ================================================================================
+[2025-12-14 02:54:36,346][root][INFO] - VLM Evaluation Summary:
+[2025-12-14 02:54:36,346][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 02:54:36,346][root][INFO] - Candidate # 1: Score=  0.00 | Feedback=Complete failure to maintain grip; object immediately slips and falls....
+[2025-12-14 02:54:36,346][root][INFO] - Candidate # 2: Score=  0.00 | Feedback=Object repeatedly lost during manipulation; hand fails to maintain grip....
+[2025-12-14 02:54:36,346][root][INFO] - Candidate # 3: Score=  0.00 | Feedback=The hand initially rotates the object but fails to maintain grip, resulting in t...
+[2025-12-14 02:54:36,346][root][INFO] - Candidate # 4: Score=  0.00 | Feedback=Hand failed to execute any meaningful manipulation; object remained stationary a...
+[2025-12-14 02:54:36,346][root][INFO] - ================================================================================
+[2025-12-14 02:54:36,346][root][INFO] - ================================================================================
+[2025-12-14 02:54:36,346][root][INFO] - Generation 4: Training Results Ranking
+[2025-12-14 02:54:36,346][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 02:54:36,346][root][INFO] - Rank  1: Cand  2 | Phy   6.5931 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,346][root][INFO] - Rank  2: Cand  4 | Phy   6.4186 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,346][root][INFO] - Rank  3: Cand  3 | Phy   5.3079 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,346][root][INFO] - Rank  4: Cand  1 | Phy   4.8587 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,346][root][INFO] - Rank  5: Cand  6 | Phy   3.7786 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,346][root][INFO] - Rank  6: Cand  7 | Phy   2.6115 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,346][root][INFO] - Rank  7: Cand  0 | Phy   2.2312 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,346][root][INFO] - Rank  8: Cand  5 | Phy   1.1865 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,374][root][INFO] - ================================================================================
+[2025-12-14 02:54:36,375][root][INFO] - Generation 4: Population Ranking (all candidates)
+[2025-12-14 02:54:36,375][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 02:54:36,375][root][INFO] - Rank  1: Cand  2 | Phy   6.5931 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  2: Cand  4 | Phy   6.4186 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  3: Cand  0 | Phy   6.2792 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  4: Cand  1 | Phy   5.5131 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  5: Cand  3 | Phy   5.3079 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  6: Cand  1 | Phy   4.8587 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  7: Cand  2 | Phy   4.7147 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  8: Cand  3 | Phy   4.2925 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank  9: Cand  4 | Phy   4.0722 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank 10: Cand  5 | Phy   3.8789 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank 11: Cand  6 | Phy   3.8027 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,375][root][INFO] - Rank 12: Cand  6 | Phy   3.7786 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,375][root][INFO] - Rank 13: Cand  7 | Phy   3.7691 | Vis   0.0 | SkipVLM=False
+[2025-12-14 02:54:36,375][root][INFO] - Rank 14: Cand  7 | Phy   2.6115 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,375][root][INFO] - Rank 15: Cand  0 | Phy   2.2312 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,375][root][INFO] - Rank 16: Cand  5 | Phy   1.1865 | Vis   0.0 | SkipVLM=True
+[2025-12-14 02:54:36,375][root][INFO] - --------------------------------------------------------------------------------
+[2025-12-14 02:54:36,680][root][INFO] - Saved generation best metrics plot/gen_best_metrics.png and npz.
+[2025-12-14 02:54:36,680][root][INFO] - Evolution Done. Champion Saved.

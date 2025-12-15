@@ -15,23 +15,23 @@ TASK: Modify the reward function to specifically address the defect: "{VLM_Feedb
 
 MUTATION RULES (CRITICAL):
 
-1. **DIAGNOSIS & STRATEGY**:
-   - **If Defect is "Freezing/Lazy/Static"**: The agent is likely avoiding high penalties. **ACTION**: Reduce the weights of all penalty terms (e.g., `action_penalty`, `dof_vel`) by 50% or more. Do NOT increase task rewards yet.
-   - **If Defect is "Jitter/Shaking"**: **ACTION**: Add or increase a smoothness penalty (e.g., `dof_vel_penalty` or `dof_acc_penalty`), but keep it small (e.g., 0.1x of main reward) to avoid freezing.
-   - **If Defect is "Dropping Object/Falling"**: **ACTION**: Add a shaping reward for "staying upright" or "keeping object close" (dense reward), rather than just a large penalty for failure.
-   - **If Defect is "Sparse/No Learning"**: **ACTION**: Rewrite the main goal reward to be continuous/dense (e.g., `1.0 / (1.0 + distance)` instead of `1.0 if distance < 0.1 else 0`).
+1. DIAGNOSIS & STRATEGY:
+   - If Defect is "Freezing/Lazy/Static": The agent is likely avoiding high penalties. ACTION: Reduce the weights of all penalty terms (e.g., `action_penalty`, `dof_vel`) by 50% or more. Do NOT increase task rewards yet.
+   - If Defect is "Jitter/Shaking": ACTION: Add or increase a smoothness penalty (e.g., `dof_vel_penalty` or `dof_acc_penalty`), but keep it small (e.g., 0.1x of main reward) to avoid freezing.
+   - If Defect is "Dropping Object/Falling": ACTION: Add a shaping reward for "staying upright" or "keeping object close" (dense reward), rather than just a large penalty for failure.
+   - If Defect is "Sparse/No Learning": ACTION: Rewrite the main goal reward to be continuous/dense (e.g., `1.0 / (1.0 + distance)` instead of `1.0 if distance < 0.1 else 0`).
 
-2. **AVAILABILITY CHECK**:
+2. AVAILABILITY CHECK:
    - You may ONLY use variables that are explicitly calculated in the `compute_observations` or `compute_reward` context of the provided Environment Code.
    - DO NOT invent new variable names (e.g., do not use `self.torques` if only `self.actions` is available).
 
-3. **TORCHSCRIPT COMPATIBILITY (STRICT)**:
+3. TORCHSCRIPT COMPATIBILITY (STRICT):
    - NO Python lists or list comprehensions (use `torch.cat` or direct tensor ops).
    - NO `numpy` calls.
    - Use `torch.norm(x, dim=-1)` instead of `x.norm()`.
    - Ensure all new tensors are on the same device as input tensors (`device=...`).
 
-4. **PRESERVATION**:
+4. PRESERVATION:
    - Do not remove the core task rewards unless they are mathematically wrong.
    - Ensure the function returns a tuple: `(total_reward, reward_components_dict)`.
 

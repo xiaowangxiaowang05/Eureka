@@ -1,0 +1,42 @@
+[2025-12-16 06:39:20,279][root][INFO] - Workspace: /ssd/home/wangyuhang/python/Eureka/eureka/outputs/eureka/2025-12-16_06-39-20
+[2025-12-16 06:39:20,345][root][INFO] - Generating Visual Rubric...
+[2025-12-16 06:39:29,049][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-16 06:39:29,062][root][INFO] - Rubric: {
+  "task_type": "Manipulation",
+  "robot_morphology": "5-fingered anthropomorphic Shadow Hand",
+  "success_criteria": [
+    {
+      "score_range": [
+        0,
+        20
+      ],
+      "description": "Robot fails to grasp the object or drops it immediately; no meaningful rotation toward target orientation occurs."
+    },
+    {
+      "score_range": [
+        21,
+        60
+      ],
+      "description": "Robot grasps the object and attempts rotation, but achieves less than 50% of required angular displacement, or loses stable contact during motion."
+    },
+    {
+      "score_range": [
+        61,
+        100
+      ],
+      "description": "Robot stably grasps the object and rotates it to within the success tolerance (cfg.env.successTolerance) of the target orientation without dropping or destabilizing it."
+    }
+  ],
+  "style_penalties": [
+    "High-frequency jittering or twitching of fingers during grasp or rotation",
+    "Uncoordinated finger motions (e.g., opposing fingers moving in conflicting directions without purpose)",
+    "Excessive joint velocities or abrupt starts/stops indicating non-smooth control",
+    "Unnatural hyperextension or self-collision of fingers",
+    "Rigid or frozen finger postures when fine adjustment is expected"
+  ],
+  "overall_instruction": "Judge the video by first assessing whether the Shadow Hand successfully rotated the object to the target orientation. Then, deduct for any unnatural, jerky, or uncoordinated finger movements that suggest reward hacking rather than dexterous manipulation. Prioritize stable, smooth, and human-like coordination over speed or force."
+}
+[2025-12-16 06:39:29,064][root][INFO] - Generating Gen 0...
+[2025-12-16 06:39:45,642][httpx][INFO] - HTTP Request: POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions "HTTP/1.1 200 OK"
+[2025-12-16 06:39:45,643][root][INFO] - Gen 0: Training 2 candidates...
+[2025-12-16 06:39:45,661][root][INFO] - Waiting for training...
